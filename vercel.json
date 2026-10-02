@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist",
+  "crons": [
+    {
+      "path": "/api/payments/easebuzz/reconcile-cron",
+      "schedule": "0 3 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api"
+    },
+    {
+      "source": "/demos/:product",
+      "destination": "/demos/:product/index.html"
+    },
+    {
+      "source": "/demos/:product/",
+      "destination": "/demos/:product/index.html"
+    },
+    {
+      "source": "/product/:slug",
+      "destination": "/product/:slug/index.html"
+    },
+    {
+      "source": "/product/:slug/",
+      "destination": "/product/:slug/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
