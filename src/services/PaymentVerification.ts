@@ -43,7 +43,9 @@ export async function verifyReturnedPayment(
     if (isConfirmedPaidOrder(order)) return { kind: 'paid', order };
   }
   if (result.status === 'REVOKED' || result.status === 'FAILED') {
-    return { kind: 'failed', message: result.message || 'The payment gateway did not confirm this payment.' };
+    return { kind: 'failed', message: result.status === 'REVOKED'
+      ? 'Access to this order is unavailable. Please contact support with your order reference.'
+      : 'Payment was not completed. If your bank shows a debit, contact support with your order reference.' };
   }
-  return { kind: 'pending', message: result.message };
+  return { kind: 'pending', message: 'Payment is still being confirmed. Check your account again before making another payment.' };
 }

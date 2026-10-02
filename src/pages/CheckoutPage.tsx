@@ -1,3 +1,4 @@
+import { selectCustomerCheckout, type GatewayAvailability } from '../config/checkout';
 import { hasLivePayment } from '../services/PaymentEnvironment';
 import React, { useState, useEffect } from 'react';
 import {
@@ -40,8 +41,8 @@ const loadPaddleCheckout = (): Promise<void> => {
       const script = document.createElement('script');
       script.src = PADDLE_CHECKOUT_SCRIPT;
       script.async = true;
-      script.onload = () => (window.Paddle ? resolve() : reject(new Error('Paddle.js failed to load.')));
-      script.onerror = () => reject(new Error('Paddle checkout could not load. Please check your connection.'));
+      script.onload = () => (window.Paddle ? resolve() : reject(new Error('Secure checkout failed to load.')));
+      script.onerror = () => reject(new Error('Secure checkout could not load. Please check your connection.'));
       document.body.appendChild(script);
     }).catch((error) => {
       document.querySelector(`script[src="${PADDLE_CHECKOUT_SCRIPT}"]`)?.remove();
@@ -64,8 +65,8 @@ const loadEasebuzzCheckout = (): Promise<void> => {
       script.async = true;
       script.onload = () => window.EasebuzzCheckout
         ? resolve()
-        : reject(new Error('Easebuzz checkout did not load. Please try again.'));
-      script.onerror = () => reject(new Error('Easebuzz checkout could not load. Please check your connection and try again.'));
+        : reject(new Error('Secure checkout did not load. Please try again.'));
+      script.onerror = () => reject(new Error('Secure checkout could not load. Please check your connection and try again.'));
       document.body.appendChild(script);
     }).catch((error) => {
       document.querySelector(`script[src="${EASEBUZZ_CHECKOUT_SCRIPT}"]`)?.remove();
@@ -84,13 +85,13 @@ export const CheckoutPage: React.FC = () => {
   const [customerName, setCustomerName] = useState(currentUser?.name || '');
   const [customerEmail, setCustomerEmail] = useState(currentUser?.email || '');
   const [customerPhone, setCustomerPhone] = useState(currentUser?.mobile || '');
-  const [paymentMethod, setPaymentMethod] = useState<'paddle' | 'easebuzz' | 'payu'>('easebuzz');
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [gatewayConfig, setGatewayConfig] = useState<Record<string, { configured: boolean; environment: string }>>({});
+  const [gatewayConfig, setGatewayConfig] = useState<GatewayAvailability>({});
   useEffect(() => {
     fetch('/api/config/payments').then(response => response.json()).then(data => { if(data.success) setGatewayConfig(data.gateways); }).catch(() => undefined);
   }, []);
-  const selectedGateway = gatewayConfig[paymentMethod];
+  const paymentMethod = selectCustomerCheckout(gatewayConfig, cartItems.length === 1 && cartItems[0].quantity === 1 && cartSummary.discount === 0);
+  const canCheckout = paymentMethod !== null;
 
   // Processing & Completed State
   const [isProcessing, setIsProcessing] = useState(false);
@@ -120,7 +121,7 @@ export const CheckoutPage: React.FC = () => {
             async () => {
               const order = await OrderService.fetchOrderById(orderId);
               const provider = String(order?.paymentProvider || '').toLowerCase();
-              if (!['easebuzz', 'payu', 'paddle'].includes(provider)) return { success: false, httpStatus: 409, status: 'PENDING', message: 'No gateway payment has been initiated for this order.' };
+              if (!['easebuzz', 'payu', 'paddle'].includes(provider)) return { success: false, httpStatus: 409, status: 'PENDING', message: 'No payment has been initiated for this order.' };
               const response = await fetch(`/api/payments/${provider}/reconcile/${encodeURIComponent(orderId)}`, { method: 'POST', credentials: 'include', cache: 'no-store' });
               const result = await response.json();
               return { ...result, httpStatus: response.status };
@@ -138,7 +139,7 @@ export const CheckoutPage: React.FC = () => {
             try {
               confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
             } catch {}
-            showToast('success', hasLivePayment(outcome.order) ? 'Payment confirmed' : 'Test payment confirmed', hasLivePayment(outcome.order) ? 'Your payment is confirmed.' : 'No product files will be delivered for this test.');
+            showToast('success', hasLivePayment(outcome.order) ? 'Payment confirmed' : 'Payment check complete', hasLivePayment(outcome.order) ? 'Your payment is confirmed.' : 'This transaction did not create a purchase.');
             return;
           }
           if (outcome.kind === 'failed') {
@@ -204,7 +205,7 @@ export const CheckoutPage: React.FC = () => {
   const handleProcessCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreeTerms) {
-      showToast('error', 'Terms Required', 'Please accept the licensing terms and privacy policy.');
+      showToast('error', 'Terms Required', 'Please accept the terms and purchase policies before continuing.');
       return;
     }
     if (cartItems.length === 0) {
@@ -212,7 +213,7 @@ export const CheckoutPage: React.FC = () => {
       return;
     }
 
-    if (!selectedGateway?.configured) { showToast('error', 'Gateway unavailable', 'This gateway is not configured. Please contact support.'); return; }
+    if (!canCheckout) { showToast('info', 'Checkout unavailable', 'Online checkout is temporarily unavailable. Please contact us for help.'); return; }
     setIsProcessing(true);
 
     try {
@@ -221,7 +222,7 @@ export const CheckoutPage: React.FC = () => {
       if (paymentMethod === 'payu') {
         const pendingOrder = await OrderService.createPendingOrderAsync(cartItems, { fullName: customerName, email: customerEmail, country: 'India', phone: sanitizedPhone } as any, cartSummary.discount, appliedCoupon?.code, 'PayU');
         const result = await PaymentService.initiatePayUPayment(pendingOrder.id, agreeTerms);
-        if (!result.success || !result.action || !result.fields) throw new Error(result.message || 'Could not start PayU checkout.');
+        if (!result.success || !result.action || !result.fields) throw new Error(result.message || 'Could not start secure checkout.');
         if (!['https://test.payu.in/_payment', 'https://secure.payu.in/_payment'].includes(result.action)) throw new Error('Unexpected payment destination.');
         const form = document.createElement('form');
         form.method = 'POST'; form.action = result.action;
@@ -250,7 +251,7 @@ export const CheckoutPage: React.FC = () => {
 
         if (initResult.success && initResult.priceId && initResult.clientToken) {
           if (!window.Paddle) {
-            throw new Error('Paddle.js is not initialized. Please refresh and retry.');
+            throw new Error('Secure checkout is not ready. Please refresh and retry.');
           }
 
           // Initialize Paddle with client token and environment
@@ -291,7 +292,7 @@ export const CheckoutPage: React.FC = () => {
           });
         } else {
           setIsProcessing(false);
-          showToast('error', 'Initiation Failed', initResult.message || 'Could not initiate Paddle checkout.');
+          showToast('error', 'Initiation Failed', 'We could not open checkout. Please try again or contact support.');
         }
       } else {
         // Easebuzz checkout flow
@@ -343,18 +344,18 @@ export const CheckoutPage: React.FC = () => {
           easebuzzCheckout.initiatePayment(options);
         } else {
           setIsProcessing(false);
-          showToast('error', 'Initiation Failed', initResult.message || 'Could not initiate Easebuzz gateway.');
+          showToast('error', 'Initiation Failed', 'We could not open checkout. Please try again or contact support.');
         }
       }
     } catch (err: any) {
       setIsProcessing(false);
-      showToast('error', 'Checkout Error', err.message || 'An error occurred during checkout initiation.');
+      showToast('error', 'Checkout Error', 'We could not open checkout. Please try again or contact support.');
     }
   };
 
   const handleSecureDownload = async (productId: string, defaultName: string) => {
     try {
-      showToast('info', 'Authorizing Download', 'Validating purchase access and secure token...');
+      showToast('info', 'Authorizing Download', 'Preparing your download link…');
       const res = await OrderService.requestDownloadToken(productId);
       if (res.success && res.downloadUrl) {
         showToast('success', 'Download Initiated', `Streaming ${defaultName}...`);
@@ -365,7 +366,7 @@ export const CheckoutPage: React.FC = () => {
         a.click();
         document.body.removeChild(a);
       } else {
-        showToast('error', 'Download Denied', res.message || 'Unable to authorize download.');
+        showToast('error', 'Download unavailable', 'We could not prepare your download. Check your order in your account or contact support.');
       }
     } catch (err) {
       showToast('error', 'Download Failed', 'Could not request secure download link.');
@@ -373,7 +374,7 @@ export const CheckoutPage: React.FC = () => {
   };
 
   if (completedOrder && !hasLivePayment(completedOrder)) {
-    return <div className="max-w-2xl mx-auto px-6 py-16 text-center space-y-6"><p className="eyebrow justify-center">BOOYAH STUDIO · TEST CHECKOUT</p><h1 className="text-3xl font-bold">Test payment confirmed</h1><p className="text-slate-600 leading-8">Thank you for testing with us. This was a test payment, so you will not receive product files, download access, or a purchase invoice. We will go live as soon as we are ready. Thank you for your time and support.</p><p className="text-sm">Test order: {completedOrder.orderNumber}</p><p role="status" className="text-sm">{completedOrder.emailDelivery?.status === 'sent' ? 'Your test confirmation email was accepted for delivery.' : completedOrder.emailDelivery?.status === 'failed' || completedOrder.emailDelivery?.status === 'not_configured' ? 'The test payment was recorded, but the email could not be sent. Please contact support.' : 'Your test confirmation email is being prepared.'}</p><button className="studio-button primary" onClick={()=>navigate('/account')}>View test order</button></div>;
+    return <div className="max-w-2xl mx-auto px-6 py-16 text-center space-y-6"><p className="eyebrow justify-center">BOOYAH STUDIO</p><h1 className="text-3xl font-bold">Payment check complete</h1><p className="text-slate-600 leading-8">This transaction did not create a purchase. No product files, download access or purchase invoice will be issued. Contact us if you need help with a payment shown on your bank statement.</p><p className="text-sm">Reference: {completedOrder.orderNumber}</p><p role="status" className="text-sm">{completedOrder.emailDelivery?.status === 'sent' ? 'A confirmation email has been sent.' : completedOrder.emailDelivery?.status === 'failed' || completedOrder.emailDelivery?.status === 'not_configured' ? 'This transaction was recorded, but the email could not be sent. Please contact support.' : 'A confirmation email is being prepared.'}</p><button className="studio-button primary" onClick={()=>navigate('/account')}>View account</button></div>;
   }
 
   // SUCCESS CONFIRMATION VIEW
@@ -427,7 +428,7 @@ export const CheckoutPage: React.FC = () => {
         <div className="p-5 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100">
           <div className="flex items-center gap-3 min-w-0">
             <PackageCheck className="w-6 h-6 text-blue-600 shrink-0" />
-            <h2 className="text-lg sm:text-xl font-black text-slate-900 truncate">Your Vault Access</h2>
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 truncate">Your downloads</h2>
           </div>
           <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 uppercase tracking-widest self-start sm:self-center">
             Instant Access
@@ -505,7 +506,7 @@ export const CheckoutPage: React.FC = () => {
           </h1>
           <p className="text-slate-600 max-w-lg mx-auto text-sm leading-relaxed">
             {failed
-              ? 'The gateway reported an unsuccessful payment. No download access was granted. If you were charged, your saved order will update when your payment provider confirms the final result.'
+              ? 'The payment was not completed. No download access was granted. If you were charged, your saved order will update when your payment provider confirms the final result.'
               : checking
                 ? 'Loading the latest result for your order.'
                 : 'The bank has not confirmed this payment yet. This page updates automatically when a confirmed result arrives.'}
@@ -563,24 +564,27 @@ export const CheckoutPage: React.FC = () => {
   // STANDARD CHECKOUT FORM VIEW
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <h1 className="text-3xl font-bold text-slate-900">Checkout</h1>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Checkout Form (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           <form onSubmit={handleProcessCheckout} className="space-y-6">
             {/* 1. Customer Digital Delivery Info */}
             <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 space-y-4">
-              <h3 className="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">
                   1
                 </span>
                 <span>Customer & Digital Delivery Info</span>
-              </h3>
+              </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+                  <label htmlFor="checkout-name" className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
                   <input
                     type="text"
+                    id="checkout-name"
+                    autoComplete="name"
                     required
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
@@ -590,11 +594,13 @@ export const CheckoutPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Account Email <span className="text-slate-400 font-normal">(for file delivery)</span>
+                  <label htmlFor="checkout-email" className="block text-xs font-bold text-slate-700 mb-1">
+                    Account Email <span className="text-slate-600 font-normal">(for file delivery)</span>
                   </label>
                   <input
                     type="email"
+                    id="checkout-email"
+                    autoComplete="email"
                     required
                     value={customerEmail}
                     readOnly
@@ -606,11 +612,13 @@ export const CheckoutPage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Indian Mobile Number</label>
+                  <label htmlFor="checkout-phone" className="block text-xs font-bold text-slate-700 mb-1">Indian Mobile Number</label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-bold">+91</span>
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-600 font-bold">+91</span>
                     <input
                       type="tel"
+                      id="checkout-phone"
+                      autoComplete="tel-national"
                       required
                       pattern="[6-9][0-9]{9}"
                       value={customerPhone}
@@ -630,20 +638,20 @@ export const CheckoutPage: React.FC = () => {
 
             {/* 2. Payment Method Selector */}
             <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 space-y-4">
-              <h3 className="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">
                   2
                 </span>
                 <span>Payment Method</span>
-              </h3>
+              </h2>
 
-              <div className="space-y-3" role="group" aria-label="Payment gateway">
-                {(['easebuzz','payu','paddle'] as const).filter(id => id !== 'paddle' || gatewayConfig.paddle?.configured).map(id => <button type="button" key={id} aria-pressed={paymentMethod === id} onClick={()=>setPaymentMethod(id)} className={`w-full text-left p-4 rounded-xl border ${paymentMethod === id ? 'border-blue-600 bg-blue-50' : 'border-slate-200'}`}><span className="font-bold block">{id === 'easebuzz' ? 'Easebuzz' : id === 'payu' ? 'PayU' : 'Paddle'}</span><span className="text-sm text-slate-600">{gatewayConfig[id]?.configured ? (gatewayConfig[id].environment === 'test' ? 'Test mode · no product delivery' : 'Live checkout') : 'Not configured yet'} · {id === 'paddle' ? 'Cards' : 'UPI, cards & netbanking'}</span></button>)}
+              <div className="rounded-xl border border-slate-200 p-4 space-y-2">
+                <p className="font-bold text-slate-900">Secure online payment</p>
+                <p className="text-sm text-slate-600">Choose from the payment options available when you continue. Your order total is shown before you pay.</p>
+                <p className="text-sm text-slate-600">Delivery on email · Secure download links are sent after payment confirmation.</p>
               </div>
-              <div role="status" className="p-4 rounded-xl border border-amber-200 bg-amber-50 text-sm text-amber-900 leading-6">
-                {!selectedGateway ? 'Checking payment availability…' : !selectedGateway.configured ? 'This gateway is not configured yet. Payment is currently unavailable.' : selectedGateway.environment === 'test' ? 'TEST MODE: Use sandbox payment details only. You will receive a test confirmation email, not product files, download access, or a purchase invoice.' : 'Live checkout: digital delivery begins after verified payment. Save your transaction reference.'}
-              </div>
-              <p className="text-xs leading-6 text-slate-600">India checkout · INR · Digital delivery only, no shipping fees. Review the <button type="button" onClick={()=>navigate('/refund')} className="underline">refund policy</button>, <button type="button" onClick={()=>navigate('/policies/cancellation')} className="underline">cancellation policy</button>, and <button type="button" onClick={()=>navigate('/policies/shipping-delivery')} className="underline">delivery terms</button> before paying. Change-of-mind refunds are generally unavailable after access is delivered; non-delivery, defects, and duplicate charges remain covered.</p>
+              {!canCheckout && <p role="status" className="text-sm text-slate-600 leading-6">Online checkout is temporarily unavailable. <button type="button" onClick={() => navigate('/contact')} className="underline font-semibold">Contact us for help</button>.</p>}
+              <p className="text-xs leading-6 text-slate-600">India checkout · INR · Digital delivery only, no shipping fees. Review the <button type="button" onClick={()=>navigate('/policies/refund')} className="underline font-medium hover:text-blue-600">Refund & Return Policy</button>, <button type="button" onClick={()=>navigate('/policies/cancellation')} className="underline font-medium hover:text-blue-600">Cancellation Policy</button>, and <button type="button" onClick={()=>navigate('/policies/delivery')} className="underline font-medium hover:text-blue-600">Digital Delivery Policy</button> before paying. Change-of-mind refunds are generally unavailable after access is delivered; non-delivery, defects, and duplicate charges remain covered.</p>
 
               {/* Terms Checkbox */}
               <div className="pt-2 flex items-start gap-2.5">
@@ -658,7 +666,7 @@ export const CheckoutPage: React.FC = () => {
                   I explicitly acknowledge and agree to the BOOYAH STUDIO{' '}
                   <button
                     type="button"
-                    onClick={() => navigate('/terms')}
+                    onClick={() => navigate('/policies/terms')}
                     className="text-blue-600 font-bold hover:underline inline-block align-baseline"
                   >
                     Terms & Conditions
@@ -666,12 +674,12 @@ export const CheckoutPage: React.FC = () => {
                   ,{' '}
                   <button
                     type="button"
-                    onClick={() => navigate('/refund')}
+                    onClick={() => navigate('/policies/refund')}
                     className="text-blue-600 font-bold hover:underline inline-block align-baseline"
                   >
-                    Refund Policy
+                    Refund & Return Policy
                   </button>
-                  , and{' '}
+                  ,{' '}
                   <button
                     type="button"
                     onClick={() => navigate('/policies/delivery')}
@@ -679,7 +687,23 @@ export const CheckoutPage: React.FC = () => {
                   >
                     Digital Delivery Policy
                   </button>
-                  .
+                  , and{' '}
+                  <button
+                    type="button"
+                    onClick={() => navigate('/policies/cancellation')}
+                    className="text-blue-600 font-bold hover:underline inline-block align-baseline"
+                  >
+                    Cancellation Policy
+                  </button>
+                  . I have read the{' '}
+                  <button
+                    type="button"
+                    onClick={() => navigate('/policies/privacy')}
+                    className="text-blue-600 font-bold hover:underline inline-block align-baseline"
+                  >
+                    Privacy Policy
+                  </button>
+                  {' '}and understand that digital delivery begins after payment confirmation.
                 </label>
               </div>
             </div>
@@ -688,7 +712,7 @@ export const CheckoutPage: React.FC = () => {
             <button
               id="submit-order-btn"
               type="submit"
-              disabled={isProcessing || !selectedGateway?.configured}
+              disabled={isProcessing || !canCheckout}
               className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-extrabold rounded-2xl text-base transition-all shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center gap-2 active:scale-98"
             >
               {isProcessing ? (
@@ -699,7 +723,7 @@ export const CheckoutPage: React.FC = () => {
               ) : (
                 <>
                   <Lock className="w-4 h-4" />
-                  <span>{!selectedGateway?.configured ? "Payment currently unavailable" : `${selectedGateway.environment === "test" ? "Continue to test payment" : "Continue to payment"} (₹${cartSummary.total.toFixed(2)})`}</span>
+                  <span>{!canCheckout ? "Checkout temporarily unavailable" : `Continue to payment (₹${cartSummary.total.toFixed(2)})`}</span>
                 </>
               )}
             </button>
@@ -709,9 +733,9 @@ export const CheckoutPage: React.FC = () => {
         {/* Order Review Sidebar (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-md p-6 space-y-4 sticky top-24">
-            <h3 className="text-base font-bold text-slate-900 pb-3 border-b border-slate-100">
+            <h2 className="text-base font-bold text-slate-900 pb-3 border-b border-slate-100">
               Order Review ({cartItems.length} Items)
-            </h3>
+            </h2>
 
             <div className="divide-y divide-slate-100 max-h-72 overflow-y-auto space-y-2">
               {cartItems.map((item) => (
@@ -742,7 +766,7 @@ export const CheckoutPage: React.FC = () => {
               )}
               <div className="flex justify-between text-slate-600">
                 <span>Delivery:</span>
-                <span className="text-emerald-600 font-semibold">Instant Digital Delivery</span>
+                <span className="text-emerald-700 font-semibold">Delivery on email</span>
               </div>
               <div className="pt-2 border-t border-slate-100 flex justify-between items-baseline">
                 <span className="text-sm font-bold text-slate-900">Total Price:</span>
@@ -757,7 +781,7 @@ export const CheckoutPage: React.FC = () => {
               <div className="space-y-0.5">
                 <span className="font-bold block">BOOYAH STUDIO Digital Delivery</span>
                 <p className="text-blue-700/90 leading-relaxed">
-                  Direct digital download delivery via email and dashboard. Protected by 24-48 hr resolution policy for download issues or payment disputes.
+                  Secure download links are delivered by email and in your account after payment confirmation. We aim to acknowledge support complaints within 48 hours; see our policies for resolution and refund timelines.
                 </p>
               </div>
             </div>

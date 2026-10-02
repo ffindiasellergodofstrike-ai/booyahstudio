@@ -7,7 +7,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "margin-portfolio",
     "title": "Margin Portfolio — Designer portfolio",
     "shortDescription": "A considered home for independent design. Selected projects, a little process, and a clear next step.",
-    "description": "A considered home for independent design. Selected projects, a little process, and a clear next step.\n\nFilterable project archive with full project notes. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A considered home for independent design. Selected projects, a little process, and a clear next step.\n\nFilterable project archive with full project notes. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -55,8 +55,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -78,7 +78,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "clay-shelf",
     "title": "Clay Shelf — Ceramics storefront",
     "shortDescription": "Warm shapes. Useful details. A small collection of objects that make a table feel like home.",
-    "description": "Warm shapes. Useful details. A small collection of objects that make a table feel like home.\n\nEditable local cart with quantity controls and subtotal. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "Warm shapes. Useful details. A small collection of objects that make a table feel like home.\n\nEditable local cart with quantity controls and subtotal. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -126,8 +126,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -149,7 +149,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "line-and-space",
     "title": "Line and Space — Architecture portfolio",
     "shortDescription": "A project archive for practices that care about light, material and the way a space is used.",
-    "description": "A project archive for practices that care about light, material and the way a space is used.\n\nProject type filtering and expandable project notes. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A project archive for practices that care about light, material and the way a space is used.\n\nProject type filtering and expandable project notes. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -197,8 +197,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -220,7 +220,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "first-light",
     "title": "First Light — Product launch page",
     "shortDescription": "Introduce a small digital product with a focused page, transparent plans and answers people can find.",
-    "description": "Introduce a small digital product with a focused page, transparent plans and answers people can find.\n\nMonthly/yearly illustrative plan switch and FAQ accordion. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "Introduce a small digital product with a focused page, transparent plans and answers people can find.\n\nMonthly/yearly illustrative plan switch and FAQ accordion. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -268,8 +268,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -290,7 +290,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "lesson-path",
     "title": "Lesson Path — Learning directory",
     "shortDescription": "An organised course frontend for short lessons, useful notes and a visible sense of progress.",
-    "description": "An organised course frontend for short lessons, useful notes and a visible sense of progress.\n\nFour original micro-lessons with locally saved completion progress. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "An organised course frontend for short lessons, useful notes and a visible sense of progress.\n\nFour original micro-lessons with locally saved completion progress. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -338,8 +338,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -361,7 +361,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "orbit-board",
     "title": "Orbit Board — Project board workspace",
     "shortDescription": "Give your next project a calm workspace. Capture tasks, move the work forward and keep your data portable.",
-    "description": "Give your next project a calm workspace. Capture tasks, move the work forward and keep your data portable.\n\nTask creation, lane movement, deletion, local persistence and JSON export. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "Give your next project a calm workspace. Capture tasks, move the work forward and keep your data portable.\n\nTask creation, lane movement, deletion, local persistence and JSON export. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -409,8 +409,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -431,7 +431,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "clear-quote",
     "title": "Clear Quote — Quotation workspace",
     "shortDescription": "Turn a short scope into a readable estimate. Add line items, choose quantities and print a client-ready quotation.",
-    "description": "Turn a short scope into a readable estimate. Add line items, choose quantities and print a client-ready quotation.\n\nDynamic quote rows, quantity/rate calculations and print stylesheet. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "Turn a short scope into a readable estimate. Add line items, choose quantities and print a client-ready quotation.\n\nDynamic quote rows, quantity/rate calculations and print stylesheet. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -479,8 +479,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -501,7 +501,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "pocket-page",
     "title": "Pocket Page — Creator link hub",
     "shortDescription": "A personal corner of the web for a few good links, your latest work and a way to get in touch.",
-    "description": "A personal corner of the web for a few good links, your latest work and a way to get in touch.\n\nSearchable link cards and a persistent light/dark theme. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A personal corner of the web for a few good links, your latest work and a way to get in touch.\n\nSearchable link cards and a persistent light/dark theme. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -549,8 +549,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -571,7 +571,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "gather-agenda",
     "title": "Gather Agenda — Event programme",
     "shortDescription": "Make a small gathering easy to explore, with a readable programme and a personal saved-session list.",
-    "description": "Make a small gathering easy to explore, with a readable programme and a personal saved-session list.\n\nSession-type filter and locally saved personal agenda. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "Make a small gathering easy to explore, with a readable programme and a personal saved-session list.\n\nSession-type filter and locally saved personal agenda. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -619,8 +619,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -642,7 +642,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "leaf-counter",
     "title": "Leaf Counter — Plant shop frontend",
     "shortDescription": "A welcoming shop layout for a thoughtfully chosen collection, with useful care notes beside every plant.",
-    "description": "A welcoming shop layout for a thoughtfully chosen collection, with useful care notes beside every plant.\n\nLight-condition filters, cart controls and transparent sample pricing. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A welcoming shop layout for a thoughtfully chosen collection, with useful care notes beside every plant.\n\nLight-condition filters, cart controls and transparent sample pricing. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -690,8 +690,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -713,7 +713,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "table-notes",
     "title": "Table Notes — Café menu",
     "shortDescription": "A readable digital menu for a neighbourhood café, from a first morning coffee to a slow afternoon plate.",
-    "description": "A readable digital menu for a neighbourhood café, from a first morning coffee to a slow afternoon plate.\n\nMenu search, category filters and dietary labels. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A readable digital menu for a neighbourhood café, from a first morning coffee to a slow afternoon plate.\n\nMenu search, category filters and dietary labels. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -761,8 +761,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -784,7 +784,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "frame-study",
     "title": "Frame Study — Visual artist portfolio",
     "shortDescription": "An image-led portfolio with an original abstract study collection, designed to give each piece room to breathe.",
-    "description": "An image-led portfolio with an original abstract study collection, designed to give each piece room to breathe.\n\nKeyboard-accessible artwork dialog with next/previous navigation. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "An image-led portfolio with an original abstract study collection, designed to give each piece room to breathe.\n\nKeyboard-accessible artwork dialog with next/previous navigation. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -832,8 +832,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -855,7 +855,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "field-journal",
     "title": "Field Journal — Editorial journal",
     "shortDescription": "An editorial space for small observations, walking notes and stories worth returning to.",
-    "description": "An editorial space for small observations, walking notes and stories worth returning to.\n\nFull article reading dialog, search and saved reading list. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "An editorial space for small observations, walking notes and stories worth returning to.\n\nFull article reading dialog, search and saved reading list. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -903,8 +903,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -926,7 +926,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "scope-studio",
     "title": "Scope Studio — Creative studio site",
     "shortDescription": "A clear introduction to a creative practice, with a useful scope builder that helps start better conversations.",
-    "description": "A clear introduction to a creative practice, with a useful scope builder that helps start better conversations.\n\nInteractive project-scope estimator and copyable enquiry summary. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A clear introduction to a creative practice, with a useful scope builder that helps start better conversations.\n\nInteractive project-scope estimator and copyable enquiry summary. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -974,8 +974,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -996,7 +996,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "room-palette",
     "title": "Room Palette — Interior moodboard",
     "shortDescription": "A visual starting point for room ideas: layered colours, material notes and a palette to make your own.",
-    "description": "A visual starting point for room ideas: layered colours, material notes and a palette to make your own.\n\nSelectable colour moodboard with local saving and CSS palette export. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A visual starting point for room ideas: layered colours, material notes and a palette to make your own.\n\nSelectable colour moodboard with local saving and CSS palette export. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -1044,8 +1044,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1067,7 +1067,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "audio-notebook",
     "title": "Audio Notebook — Podcast editorial site",
     "shortDescription": "An editorial home for an independent show: episode summaries, readable transcripts and a saved listening list.",
-    "description": "An editorial home for an independent show: episode summaries, readable transcripts and a saved listening list.\n\nEpisode search, transcript dialog and saved list; no licensed audio required. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "An editorial home for an independent show: episode summaries, readable transcripts and a saved listening list.\n\nEpisode search, transcript dialog and saved list; no licensed audio required. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -1115,8 +1115,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1138,7 +1138,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "common-calendar",
     "title": "Common Calendar — Community noticeboard",
     "shortDescription": "A friendly noticeboard for a local group, with clear event details and a personal list of plans.",
-    "description": "A friendly noticeboard for a local group, with clear event details and a personal list of plans.\n\nEvent filtering and local attendance intentions, explicitly not a booking system. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A friendly noticeboard for a local group, with clear event details and a personal list of plans.\n\nEvent filtering and local attendance intentions, explicitly not a booking system. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -1186,8 +1186,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1209,7 +1209,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "focus-week",
     "title": "Focus Week — Weekly planning workspace",
     "shortDescription": "A gentle weekly workspace with enough structure to begin and enough space for plans to change.",
-    "description": "A gentle weekly workspace with enough structure to begin and enough space for plans to change.\n\nDay-based task creation, completion, deletion, local persistence and JSON export. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A gentle weekly workspace with enough structure to begin and enough space for plans to change.\n\nDay-based task creation, completion, deletion, local persistence and JSON export. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -1257,8 +1257,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1279,7 +1279,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "plain-handbook",
     "title": "Plain Handbook — Documentation centre",
     "shortDescription": "A searchable handbook frontend that turns setup notes and everyday questions into an organised reading experience.",
-    "description": "A searchable handbook frontend that turns setup notes and everyday questions into an organised reading experience.\n\nSearchable documentation, category navigation and expandable reading panels. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A searchable handbook frontend that turns setup notes and everyday questions into an organised reading experience.\n\nSearchable documentation, category navigation and expandable reading panels. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -1327,8 +1327,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1350,7 +1350,7 @@ export const NEW_PRODUCTS: Product[] = [
     "slug": "signal-deck",
     "title": "Signal Deck — SaaS marketing kit",
     "shortDescription": "A complete static marketing starting point for a small software product, with an interactive plan calculator and product tour.",
-    "description": "A complete static marketing starting point for a small software product, with an interactive plan calculator and product tour.\n\nSeat-based plan calculator, billing toggle and interactive product-tour tabs. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included. Gateway approval depends on your merchant account, final content and integration; it is not included with this template.",
+    "description": "A complete static marketing starting point for a small software product, with an interactive plan calculator and product tour.\n\nSeat-based plan calculator, billing toggle and interactive product-tour tabs. Includes four linked static pages and original geometric illustrations. All sample content is fictional. This is an editable frontend template, not a hosted business or backend service. No authentication, real checkout, booking, email sending or shared database is included. Workspace data, where used, stays in the visitor’s browser.\n\nDeploy the supplied folder as a static Vercel project with no build command. Customisation and deployment instructions are included.",
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
@@ -1398,8 +1398,8 @@ export const NEW_PRODUCTS: Product[] = [
         "answer": "Yes. Original SVG geometry and fictional sample copy are included. There are no external photos, fonts, logos or audio recordings to license."
       },
       {
-        "question": "What happens in test checkout?",
-        "answer": "BOOYAH STUDIO test payments send only a test notice. Files and purchase access are issued only for verified live payments."
+        "question": "How will I receive my purchase?",
+        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",

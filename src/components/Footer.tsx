@@ -1,7 +1,7 @@
+import React, { useState } from 'react';
+import { ArrowRight, Check, ShieldCheck } from 'lucide-react';
 import { BUSINESS } from '../config/business';
 import { Brand } from './Brand';
-import React, { useState } from 'react';
-import { ArrowRight, Check, Flame } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useToast } from '../context/ToastContext';
 
@@ -11,25 +11,170 @@ export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [pending, setPending] = useState(false);
+
   const handleSubscribe = async (event: React.FormEvent) => {
     event.preventDefault();
     if (pending) return;
     setPending(true);
     try {
-      const response = await fetch('/api/newsletter/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error('Subscription failed');
       setSubscribed(true);
       setEmail('');
     } catch {
       showToast('error', 'Could not subscribe', 'Please try again in a moment.');
-    } finally { setPending(false); }
+    } finally {
+      setPending(false);
+    }
   };
-  const groups = [
-    { title: 'Explore', links: [['Templates', '/products'], ['Your wishlist', '/wishlist'], ['Your account', '/account'], ['Help & FAQs', '/faq']] },
-    { title: 'Get to know us', links: [['Our story', '/about'], ['Contact & support', '/contact'], ['Terms & conditions', '/terms'], ['Privacy policy', '/privacy']] },
+
+  const exploreLinks = [
+    { label: 'All Templates', path: '/products' },
+    { label: 'Your Wishlist', path: '/wishlist' },
+    { label: 'Customer Account', path: '/account' },
+    { label: 'Help & FAQs', path: '/faq' },
+    { label: 'Our Story', path: '/about' },
+    { label: 'Contact & Support', path: '/contact' },
   ];
+
+  const policyLinks = [
+    { label: 'Terms & Conditions', path: '/policies/terms' },
+    { label: 'Privacy Policy', path: '/policies/privacy' },
+    { label: 'Refund & Return Policy', path: '/policies/refund' },
+    { label: 'Cancellation Policy', path: '/policies/cancellation' },
+    { label: 'Digital Delivery Policy', path: '/policies/delivery' },
+    { label: 'Chargeback & Dispute Policy', path: '/policies/chargebacks' },
+    { label: 'Complaints & Grievance Support', path: '/policies/grievance' },
+    { label: 'Product License', path: '/policies/license' },
+  ];
+
   return (
-    <footer className="studio-footer"><div className="studio-container"><div className="footer-main"><div className="footer-brand-column"><button className="studio-brand" onClick={() => navigate('/')} aria-label="BOOYAH STUDIO Home"><Brand /></button><p>Thoughtful digital goods.<br />For the things you haven’t built yet.</p><address className="not-italic text-xs leading-6 mt-4">{BUSINESS.address}<br/><a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a><br/><a href={BUSINESS.phoneHref}>{BUSINESS.phone}</a></address><span className="footer-made">A little inspiration. A lot of possibility.</span></div>{groups.map(group => <div className="footer-link-column" key={group.title}><h3>{group.title}</h3>{group.links.map(([label, path]) => <button key={path} onClick={() => navigate(path)}>{label}</button>)}</div>)}<div className="footer-newsletter"><h3>A little good stuff in your inbox.</h3><p>New templates, fresh ideas. Only the good things.</p>{subscribed ? <p className="newsletter-success" role="status"><Check size={17} /> You’re on the list. Stay inspired.</p> : <form onSubmit={handleSubscribe}><label className="sr-only" htmlFor="newsletter-email">Email address</label><input id="newsletter-email" type="email" autoComplete="email" required placeholder="Your email address" value={email} onChange={e => setEmail(e.target.value)} /><button disabled={pending} aria-label={pending ? 'Subscribing' : 'Subscribe to product updates'}>{pending ? '…' : <ArrowRight size={18} />}</button></form>}</div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} BOOYAH STUDIO. Made for your next chapter.</span><div><button onClick={() => navigate('/refund')}>Refunds</button><button onClick={() => navigate('/policies/cancellation')}>Cancellations</button><button onClick={() => navigate('/policies/shipping-delivery')}>Digital delivery</button><button onClick={() => navigate('/policies/grievance')}>Grievance support</button></div></div></div></footer>
+    <footer className="studio-footer" aria-label="Store Footer">
+      <div className="studio-container">
+        <div className="footer-main">
+          {/* Brand & Contact Column */}
+          <div className="footer-brand-column">
+            <button
+              className="studio-brand"
+              onClick={() => navigate('/')}
+              aria-label="BOOYAH STUDIO Home"
+            >
+              <Brand />
+            </button>
+            <p>
+              Thoughtful digital goods.
+              <br />
+              For the things you haven’t built yet.
+            </p>
+            <address className="not-italic text-xs leading-6 mt-4 text-slate-600">
+              {BUSINESS.address}
+              <br />
+              <a href={`mailto:${BUSINESS.email}`} className="hover:underline">
+                {BUSINESS.email}
+              </a>
+              <br />
+              <a href={BUSINESS.phoneHref} className="hover:underline">
+                {BUSINESS.phone}
+              </a>
+              <br />
+              <span className="text-[11px] text-slate-500">
+                Hours: {BUSINESS.supportHours}
+              </span>
+            </address>
+            <span className="footer-made">A little inspiration. A lot of possibility.</span>
+          </div>
+
+          {/* Explore Column */}
+          <div className="footer-link-column">
+            <h3>Explore</h3>
+            <nav aria-label="Explore store navigation">
+              {exploreLinks.map((link) => (
+                <button
+                  key={link.path}
+                  onClick={() => navigate(link.path)}
+                  className="footer-nav-link"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Policies Column - Direct links to all 8 relevant policies */}
+          <div className="footer-link-column">
+            <h3>Policies</h3>
+            <nav aria-label="Store policies">
+              {policyLinks.map((policy) => (
+                <button
+                  key={policy.path}
+                  onClick={() => navigate(policy.path)}
+                  className="footer-nav-link"
+                >
+                  {policy.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Newsletter Column */}
+          <div className="footer-newsletter">
+            <h3>A little good stuff in your inbox.</h3>
+            <p>New templates, fresh ideas. Only the good things.</p>
+            {subscribed ? (
+              <p className="newsletter-success" role="status">
+                <Check size={17} /> You’re on the list. Stay inspired.
+              </p>
+            ) : (
+              <form onSubmit={handleSubscribe}>
+                <label className="sr-only" htmlFor="newsletter-email">
+                  Email address
+                </label>
+                <input
+                  id="newsletter-email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  placeholder="Your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <button
+                  disabled={pending}
+                  aria-label={pending ? 'Subscribing' : 'Subscribe to product updates'}
+                >
+                  {pending ? '…' : <ArrowRight size={18} />}
+                </button>
+              </form>
+            )}
+
+            <div className="mt-5 p-3 rounded-xl bg-[#eceee1] border border-[#dce1d1] text-[10px] text-[#556149] leading-relaxed flex items-start gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#456331] shrink-0 mt-0.5" />
+              <span>
+                100% digital templates. Fast electronic delivery to your email and customer vault upon payment.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Bottom Bar - Organized, readable, no duplicate links */}
+        <div className="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} {BUSINESS.name}. All rights reserved.
+          </span>
+          <div className="footer-bottom-badges">
+            <span>India Store</span>
+            <span aria-hidden="true">·</span>
+            <span>All Prices in INR (₹)</span>
+            <span aria-hidden="true">·</span>
+            <span>Electronic Delivery Only</span>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 };

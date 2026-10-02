@@ -10,13 +10,12 @@ export const FAQPage: React.FC = () => {
 
   const faqs: FAQItem[] = [
     {category:'General',question:'What does BOOYAH STUDIO sell?',answer:'Digital website templates and source-code packages. Read each listing for included files, features, dependencies, and licensing. No physical products are shipped.'},
-    {category:'Downloads',question:'When do I receive my files?',answer:'After a verified live payment, download access normally appears in your account within 5 minutes. If delivery is delayed beyond 24 hours, contact connectbooyahstudio@gmail.com with your order ID. A test payment never unlocks paid files.'},
-    {category:'Payments',question:'What happens in test mode?',answer:'Test checkout uses sandbox payment methods. You receive a test confirmation email when email is configured, but no product files, download access, or purchase invoice. A test order is not a live purchase.'},
-    {category:'Payments',question:'Which payment methods are available?',answer:'Configured Easebuzz and PayU checkout can offer UPI, cards, and netbanking, subject to gateway availability. The checkout shows whether each gateway is in test mode, live, or not yet configured. India checkout uses INR.'},
+    {category:'Downloads',question:'When do I receive my files?',answer:'After payment confirmation, we email your secure download link and make the files available in your account, normally within 5 minutes. If delivery is delayed beyond 24 hours, contact connectbooyahstudio@gmail.com with your order ID.'},
+    {category:'Payments',question:'Which payment methods are available?',answer:'Available payment options are shown during secure checkout. Orders are charged in INR and checkout supports customers in India. Check the final amount before authorising payment.'},
     {category:'Refunds',question:'Can I request a refund or cancellation?',answer:'Contact support before delivery to request cancellation. Duplicate charges, non-delivery, wrong files, and unresolved material defects may qualify for a refund. Change-of-mind refunds are generally unavailable after delivery. Approved refunds are initiated to the original method within 5–7 working days; bank processing may take longer. Applicable consumer rights remain available.'},
     {category:'Technical',question:'Can I customize the templates?',answer:'Yes, subject to the product license and any third-party licenses. Hosting, backend integrations, and custom development are not included unless the listing says otherwise. Do not redistribute or resell the source package as a competing template.'},
     {category:'Technical',question:'Are future updates included?',answer:'Check the individual product listing for update and support terms. Do not assume a lifetime update commitment unless it is explicitly stated for that product.'},
-    {category:'Security',question:'Do you store my card details?',answer:'Payment credentials are entered with your selected gateway. BOOYAH STUDIO does not store full card numbers, CVVs, OTPs, or UPI PINs. Never share these with our support team.'},
+    {category:'Security',question:'Do you store my card details?',answer:'Payment credentials are entered on the secure payment page. BOOYAH STUDIO does not store full card numbers, CVVs, OTPs, or UPI PINs. Never share these with our support team.'},
     {category:'General',question:'How do I contact support?',answer:'Email connectbooyahstudio@gmail.com or call +91 9208661701. Our contact address is House No. 12, Thakur Niwas, C Block, Shantipuram, Phaphamau, Prayagraj, Uttar Pradesh 211013, India.'},
   ];
 
@@ -87,7 +86,7 @@ export const FAQPage: React.FC = () => {
       <div className="p-8 rounded-3xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-center space-y-3">
         <h3 className="text-lg font-bold text-slate-900">Still have questions?</h3>
         <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-          Our technical support engineers are on standby to answer any pre-sale architectural or licensing questions.
+          Contact us for help with product features, licensing, your order or download access.
         </p>
         <button
           onClick={() => navigate('/contact')}

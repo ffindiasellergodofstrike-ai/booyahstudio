@@ -5,6 +5,7 @@ import { Header } from './components/Header';
 import { MobileMenu } from './components/MobileMenu';
 import { Footer } from './components/Footer';
 import { QuickSearchModal } from './components/QuickSearchModal';
+import { SEOHead } from './components/SEOHead';
 import { motion, AnimatePresence } from 'motion/react';
 import { Flame } from 'lucide-react';
 
@@ -24,9 +25,16 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { FAQPage } from './pages/FAQPage';
-import { LegalPoliciesPage } from './pages/LegalPoliciesPage';
 import { PolicyDetailsPage } from './pages/policies/PolicyDetailsPage';
-import { AdminPage } from './pages/AdminPage';
+import {
+  SUPPORTED_POLICY_SLUGS,
+  POLICY_REDIRECTS,
+  type SupportedPolicySlug,
+} from './data/policyData';
+
+const AdminPage = React.lazy(() =>
+  import('./pages/AdminPage').then((module) => ({ default: module.AdminPage }))
+);
 
 const AppContent: React.FC = () => {
   const { currentPath, pathParams, isNavigating } = useApp();
@@ -36,6 +44,19 @@ const AppContent: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   }, [currentPath, pathParams]);
 
+  // Maintain crawler instructions: noindex on private routes, index on public storefront
+  useEffect(() => {
+    const privateRoutes = ['/admin', '/account', '/checkout', '/cart', '/login', '/register', '/forgot-password'];
+    const isPrivate = privateRoutes.some((p) => currentPath === p || currentPath.startsWith(p + '/'));
+    let metaRobots = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+    if (!metaRobots) {
+      metaRobots = document.createElement('meta');
+      metaRobots.name = 'robots';
+      document.head.appendChild(metaRobots);
+    }
+    metaRobots.content = isPrivate ? 'noindex, nofollow' : 'index, follow';
+  }, [currentPath]);
+
   // Route Resolver
   const renderCurrentPage = () => {
     if (currentPath.startsWith('/product/')) {
@@ -44,9 +65,21 @@ const AppContent: React.FC = () => {
     if (currentPath.startsWith('/category/')) {
       return <CategoryPage />;
     }
+    if (currentPath === '/policies' || currentPath === '/policies/') {
+      return <PolicyDetailsPage slug="terms" />;
+    }
     if (currentPath.startsWith('/policies/')) {
-      const slug = currentPath.substring('/policies/'.length);
+      const slug = currentPath.substring('/policies/'.length).replace(/\/$/, '');
       return <PolicyDetailsPage slug={slug} />;
+    }
+
+    // Direct root paths for policies or retired policy redirects (e.g. /terms, /privacy, /refund, /delivery, /cancellation, /chargebacks, /grievance, /license, /shipping, /cookies, etc.)
+    const rootSlug = currentPath.startsWith('/') ? currentPath.slice(1).replace(/\/$/, '') : '';
+    if (
+      SUPPORTED_POLICY_SLUGS.includes(rootSlug as SupportedPolicySlug) ||
+      Boolean(POLICY_REDIRECTS[rootSlug])
+    ) {
+      return <PolicyDetailsPage slug={rootSlug} />;
     }
 
     switch (currentPath) {
@@ -79,16 +112,18 @@ const AppContent: React.FC = () => {
         return <ContactPage />;
       case '/faq':
         return <FAQPage />;
-      case '/terms':
-        return <PolicyDetailsPage slug="terms" />;
-      case '/privacy':
-        return <PolicyDetailsPage slug="privacy" />;
-      case '/refund':
-        return <PolicyDetailsPage slug="refund" />;
-      case '/policies':
-        return <LegalPoliciesPage />;
       case '/admin':
-        return <AdminPage />;
+        return (
+          <React.Suspense
+            fallback={
+              <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full border-4 border-slate-300 border-t-blue-600 animate-spin" />
+              </div>
+            }
+          >
+            <AdminPage />
+          </React.Suspense>
+        );
       default:
         return <HomePage />;
     }
@@ -96,6 +131,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white w-full max-w-full overflow-x-hidden">
+      <SEOHead />
       {/* Header */}
       <Header />
 

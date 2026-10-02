@@ -92,7 +92,7 @@ export function registerPayURoutes(app: Express, requireAuth: RequestHandler, he
       const callback=`${helpers.appUrl()}/api/payments/payu/callback`;
       const fields:Record<string,string>={key:config.key,txnid,amount:total.toFixed(2),productinfo:`${BUSINESS.name} digital templates`,firstname,email,phone,surl:callback,furl:callback,udf1:order.id,udf2:order.userId,udf3:config.environment,udf4:'',udf5:''};
       fields.hash=payuRequestHash(fields,config.salt);
-      Object.assign(order,{payuTxnId:txnid,payuMerchantKey:config.key,payuIdentity:{firstname,email,productinfo:fields.productinfo},paymentEnvironment:config.environment,paymentProvider:'PayU',paymentInitiatedAt:new Date().toISOString(),termsAccepted:true,termsAcceptedAt:new Date().toISOString(),termsAcceptedPolicies:['terms','privacy','refund','cancellation','shipping-delivery'],status:'PENDING_PAYMENT'});
+      Object.assign(order,{payuTxnId:txnid,payuMerchantKey:config.key,payuIdentity:{firstname,email,productinfo:fields.productinfo},paymentEnvironment:config.environment,paymentProvider:'PayU',paymentInitiatedAt:new Date().toISOString(),termsAccepted:true,termsAcceptedAt:new Date().toISOString(),termsAcceptedPolicies:['terms','privacy','refund','cancellation','delivery'],status:'PENDING_PAYMENT'});
       await FirebaseRtdb.saveGlobalOrder(order);
       res.json({success:true,action:config.checkoutUrl,fields,environment:config.environment});
     } catch {res.status(503).json({success:false,message:'Could not start PayU checkout. Please try again.'});}

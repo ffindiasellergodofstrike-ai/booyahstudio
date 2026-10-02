@@ -1,4 +1,0 @@
-import React from 'react';
-import { policyData } from '../data/policyData';
-import { useApp } from '../context/AppContext';
-export const LegalPoliciesPage: React.FC = () => { const {navigate}=useApp(); return <div className="max-w-6xl mx-auto px-6 py-14 space-y-8"><p className="eyebrow">BOOYAH STUDIO</p><h1 className="text-4xl font-bold">Store policies</h1><p className="text-slate-600">How we handle your order, payments, digital delivery, and personal information.</p><div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">{Object.values(policyData).map(policy=><button key={policy.slug} className="bg-white p-6 rounded-xl border border-slate-200 text-left hover:border-blue-500" onClick={()=>navigate(`/policies/${policy.slug}`)}><h2 className="font-bold">{policy.title}</h2><p className="text-sm text-slate-600 mt-3 leading-6">{policy.quickSummary[0]}</p></button>)}</div></div>; };

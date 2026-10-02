@@ -1,4 +1,6 @@
 import { registerPayURoutes, getPayUConfig } from './payu';
+import { seoMiddleware } from './seoMiddleware';
+import fs from 'node:fs';
 import { hasLivePayment } from '../src/services/PaymentEnvironment';
 import { BUSINESS } from '../src/config/business';
 import express, { Request, Response, NextFunction } from 'express';
@@ -116,6 +118,39 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
 
+// Block direct access to internal data, private archives, server source code, and configuration files
+const BLOCKED_PATH_PATTERNS = [
+  /^\/(\.data|\.env|demofiles|templates|server|scripts|build)(\/|$)/i,
+  /^\/api\/index(\.ts|\.js)?$/i,
+  /\.zip$/i,
+  /\.ya?ml$/i,
+  /\.lock$/i,
+  /\.py$/i,
+  /\.sh$/i,
+  /\.mjs$/i,
+  /^\/(package|tsconfig|components|metadata|database\.rules|vercel)\.json$/i,
+  /^\/server\.ts$/i,
+];
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  let safePath = req.path;
+  try {
+    safePath = path.posix.normalize(decodeURIComponent(req.path));
+  } catch {
+    return res.status(400).send('Bad Request');
+  }
+
+  if (safePath.includes('..')) {
+    return res.status(404).send('Not Found');
+  }
+
+  if (BLOCKED_PATH_PATTERNS.some(pattern => pattern.test(safePath))) {
+    return res.status(404).send('Not Found');
+  }
+
+  next();
+});
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || origin.replace(/\/+$/, '') === getConfiguredAppUrl()) {
@@ -144,6 +179,41 @@ app.use(express.json({
   },
 }));
 app.use(express.urlencoded({ extended: true }));
+
+app.get('/robots.txt', (_req: Request, res: Response) => {
+  res.type('text/plain').send(`User-agent: *
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /cart
+Disallow: /api/
+Disallow: /.data/
+
+Sitemap: https://www.booyahstudio.shop/sitemap.xml
+`);
+});
+
+app.get('/sitemap.xml', (_req: Request, res: Response) => {
+  const sitemapPath = path.join(process.cwd(), 'dist', 'sitemap.xml');
+  if (fs.existsSync(sitemapPath)) {
+    return res.type('application/xml').sendFile(sitemapPath);
+  }
+  const policySlugs = ['terms', 'privacy', 'refund', 'cancellation', 'delivery', 'chargebacks', 'grievance', 'license'];
+  const paths = [
+    '/',
+    '/products',
+    '/about',
+    '/contact',
+    '/faq',
+    '/search',
+    ...policySlugs.map((p) => `/policies/${p}`),
+    ...PRODUCTS.map((p) => `/product/${p.slug}`),
+  ];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map((p) => `<url><loc>https://www.booyahstudio.shop${p}</loc></url>`).join('')}</urlset>`;
+  res.type('application/xml').send(xml);
+});
+
+app.use(seoMiddleware);
 
 // RTDB-backed Auth Rate Limiter
 const authRateLimiter = async (req: Request, res: Response, next: NextFunction) => {
@@ -217,14 +287,15 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.get('/api/firebase-status', async (req: Request, res: Response) => {
+app.get('/api/firebase-status', requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const status = await FirebaseRtdb.testConnection();
   res.json({
     status: 'ok',
     firebase: {
       connected: status.connected,
       mode: status.mode,
-      ...(process.env.NODE_ENV !== 'production' ? { databaseUrl: status.url, error: status.error } : {}),
+      databaseUrl: status.url,
+      error: status.error,
     },
   });
 });
@@ -250,8 +321,8 @@ app.get('/api/products/:slugOrId', async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, message: 'Product not found.' });
     }
     res.json({ success: true, product: found });
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to fetch product.' });
+  } catch {
+    res.status(500).json({ success: false, message: 'Failed to fetch product.' });
   }
 });
 
@@ -792,7 +863,7 @@ app.post('/api/payments/easebuzz/initiate', requireAuth, async (req: Authenticat
       order.paymentInitiationIp = buyerIp || null;
       order.termsAccepted = true;
       order.termsAcceptedAt = initiatedAt;
-      order.termsAcceptedPolicies = ['terms', 'refund', 'privacy'];
+      order.termsAcceptedPolicies = ['terms', 'refund', 'privacy', 'cancellation', 'delivery'];
       order.termsDocumentUrl = `${baseAppUrl}/terms`;
       order.paymentProvider = 'Easebuzz';
       order.paymentEnvironment = EASEBUZZ_ENV === 'prod' ? 'live' : 'test';
@@ -1304,8 +1375,8 @@ app.post('/api/payments/easebuzz/reconcile/:orderId', async (req: AuthenticatedR
     const result = await verifyAndSyncEasebuzzOrder(orderId);
     res.set('Cache-Control', 'private, no-store, max-age=0');
     res.json(result);
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Reconciliation failed.' });
+  } catch {
+    res.status(500).json({ success: false, message: 'Reconciliation failed.' });
   }
 });
 
@@ -1340,8 +1411,8 @@ const reconcileCron = async (req: Request, res: Response) => {
     }
 
     res.json({ success: true, reconciledCount: results.length, results });
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Cron reconciliation failed.' });
+  } catch {
+    res.status(500).json({ success: false, message: 'Cron reconciliation failed.' });
   }
 };
 // ============================================
@@ -1519,7 +1590,7 @@ app.post('/api/payments/paddle/initiate', requireAuth, async (req: Authenticated
     order.paymentInitiatedAt = initiatedAt;
     order.termsAccepted = true;
     order.termsAcceptedAt = initiatedAt;
-    order.termsAcceptedPolicies = ['terms', 'refund', 'privacy'];
+    order.termsAcceptedPolicies = ['terms', 'refund', 'privacy', 'cancellation', 'delivery'];
     order.termsDocumentUrl = `${baseAppUrl}/terms`;
     order.paymentEnvironment = environment === 'production' ? 'live' : 'test';
     order.paymentProvider = 'Paddle';
@@ -1550,8 +1621,8 @@ app.post('/api/payments/paddle/initiate', requireAuth, async (req: Authenticated
       clientToken,
       environment,
     });
-  } catch (err: any) {
-    return res.status(500).json({ success: false, message: err.message || 'Paddle payment initiation failed.' });
+  } catch {
+    return res.status(500).json({ success: false, message: 'Paddle payment initiation failed.' });
   }
 });
 
@@ -1720,8 +1791,8 @@ app.post('/api/payments/paddle/reconcile/:orderId', async (req: AuthenticatedReq
 
     res.set('Cache-Control', 'private, no-store, max-age=0');
     return res.json({ success: false, status: order.paymentStatus || 'PENDING', orderId: order.id, message: 'Payment is pending webhook verification.' });
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Paddle reconciliation failed.' });
+  } catch {
+    res.status(500).json({ success: false, message: 'Paddle reconciliation failed.' });
   }
 });
 

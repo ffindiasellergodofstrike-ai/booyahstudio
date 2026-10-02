@@ -24,7 +24,7 @@ export const QuickSearchModal: React.FC = () => {
   const handleSelect = (slug: string) => {
     setIsQuickSearchOpen(false);
     setQuery('');
-    navigate('/product/:slug', { slug });
+    navigate(`/product/${slug}`);
   };
 
   const handleSearchAll = () => {
@@ -91,7 +91,7 @@ export const QuickSearchModal: React.FC = () => {
                 key={c.id}
                 onClick={() => {
                   setIsQuickSearchOpen(false);
-                  navigate('/category/:slug', { slug: c.slug });
+                  navigate(`/category/${c.slug}`);
                 }}
                 className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 transition-all whitespace-nowrap font-bold text-[10px] sm:text-xs shrink-0 border border-transparent hover:shadow-md hover:shadow-blue-500/20 min-h-[32px] flex items-center"
               >
@@ -134,7 +134,7 @@ export const QuickSearchModal: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 pl-3 shrink-0">
-                      <span className="text-sm font-extrabold text-emerald-600">${item.price.toFixed(2)}</span>
+                      <span className="text-sm font-extrabold text-emerald-600">₹{item.price.toFixed(2)}</span>
                       <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
                     </div>
                   </div>

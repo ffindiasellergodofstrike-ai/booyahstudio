@@ -40,16 +40,16 @@ export class PaymentService {
     return [
       {
         id: 'paddle',
-        name: 'Credit / Debit Card / PayPal / Apple Pay (Paddle)',
-        description: 'Instant global digital checkout via Paddle (Cards, PayPal, Apple Pay, Google Pay)',
+        name: 'Card and digital wallet',
+        description: 'Choose an available payment option at checkout',
         icon: 'CreditCard',
         status: 'active',
         fee: 0,
       },
       {
         id: 'easebuzz',
-        name: 'UPI / Cards / Netbanking (Easebuzz)',
-        description: 'Secure payment via Easebuzz (India, INR)',
+        name: 'UPI / Cards / Netbanking',
+        description: 'Secure online payment in INR',
         icon: 'CreditCard',
         status: 'active',
         fee: 0,

@@ -14,6 +14,29 @@ export default defineConfig(() => {
     server: {
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      fs: {
+        strict: true,
+        deny: [
+          '.data/**',
+          'demofiles/**',
+          'templates/**',
+          'server/**',
+          'scripts/**',
+          '.env*',
+          '**/*.zip',
+          'build/**',
+          'package.json',
+          'tsconfig.json',
+          'components.json',
+          'metadata.json',
+          'database.rules.json',
+          'vercel.json',
+          'server.ts',
+        ],
+      },
+    },
+    build: {
+      sourcemap: false,
     },
   };
 });

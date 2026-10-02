@@ -13,7 +13,7 @@ export const SearchPage: React.FC = () => {
 
   const [query, setQuery] = useState(initialQuery);
   const [category, setCategory] = useState(searchParams.category || 'all');
-  const [maxPrice, setMaxPrice] = useState<number>(300);
+  const [maxPrice, setMaxPrice] = useState<number>(2000);
   const [minRating, setMinRating] = useState<number>(0);
   const [sortBy, setSortBy] = useState<'popular' | 'newest' | 'price-low' | 'price-high' | 'rating'>('popular');
 
@@ -27,7 +27,7 @@ export const SearchPage: React.FC = () => {
   const filterParams: ProductFilters = {
     query: query.trim() || undefined,
     category: category !== 'all' ? category : undefined,
-    maxPrice: maxPrice < 300 ? maxPrice : undefined,
+    maxPrice: maxPrice < 2000 ? maxPrice : undefined,
     minRating: minRating > 0 ? minRating : undefined,
     sortBy,
   };
@@ -42,7 +42,7 @@ export const SearchPage: React.FC = () => {
   const handleClearFilters = () => {
     setQuery('');
     setCategory('all');
-    setMaxPrice(300);
+    setMaxPrice(2000);
     setMinRating(0);
     setSortBy('popular');
   };
@@ -131,19 +131,19 @@ export const SearchPage: React.FC = () => {
             <span>Max Price:</span>
             <input
               type="range"
-              min="20"
-              max="300"
-              step="10"
+              min="100"
+              max="2000"
+              step="50"
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
               className="w-20 accent-blue-600"
             />
-            <span className="font-mono font-bold text-slate-900">${maxPrice}</span>
+            <span className="font-mono font-bold text-slate-900">₹{maxPrice}</span>
           </div>
         </div>
 
         {/* Active Filters Clear */}
-        {(query || category !== 'all' || maxPrice < 300 || minRating > 0) && (
+        {(query || category !== 'all' || maxPrice < 2000 || minRating > 0) && (
           <button
             onClick={handleClearFilters}
             className="text-xs font-bold text-blue-600 hover:text-blue-800"

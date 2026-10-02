@@ -1,3 +1,4 @@
+import { customerProductFaqs, customerProductDescription } from '../src/data/customerProductCopy';
 import { normalizeProductPreviewUrl } from './productPreview';
 
 const HIDDEN_PRODUCT_STATUSES = new Set(['archived', 'draft', 'inactive']);
@@ -35,7 +36,7 @@ export function normalizeProductAssets(product: any, fallback?: any): any {
       : String(product?.id || 'Untitled Product'),
     slug: typeof product?.slug === 'string' && product.slug ? product.slug : product?.id,
     shortDescription: typeof product?.shortDescription === 'string' ? product.shortDescription : '',
-    description: typeof product?.description === 'string' ? product.description : '',
+    description: customerProductDescription(product?.description),
     category: typeof product?.category === 'string' && product.category ? product.category : 'other',
     categoryLabel: typeof product?.categoryLabel === 'string' && product.categoryLabel
       ? product.categoryLabel
@@ -52,7 +53,7 @@ export function normalizeProductAssets(product: any, fallback?: any): any {
     features: normalizeStringArray(product?.features),
     requirements: normalizeStringArray(product?.requirements),
     whatsIncluded: normalizeStringArray(product?.whatsIncluded),
-    faqs: Array.isArray(product?.faqs) ? product.faqs : [],
+    faqs: customerProductFaqs(product?.faqs),
     previewUrl: normalizeProductPreviewUrl(product?.previewUrl, product?.id)
       || normalizeProductPreviewUrl(fallback?.previewUrl, fallback?.id),
   };

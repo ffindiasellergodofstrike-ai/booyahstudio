@@ -110,9 +110,12 @@ export class ProductService {
         const titleMatch = p.title.toLowerCase().includes(q);
         const descMatch = p.description.toLowerCase().includes(q) || p.shortDescription.toLowerCase().includes(q);
         const catMatch = p.category.toLowerCase().includes(q) || p.categoryLabel.toLowerCase().includes(q);
-        const tagsMatch = p.tags.some((t) => t.toLowerCase().includes(q));
+        const tagsMatch = p.tags?.some((t) => t.toLowerCase().includes(q)) || false;
         const typeMatch = p.productType.toLowerCase().includes(q);
-        return titleMatch || descMatch || catMatch || tagsMatch || typeMatch;
+        const featureMatch = p.features?.some((f) => f.toLowerCase().includes(q)) || false;
+        const includedMatch = p.whatsIncluded?.some((w) => w.toLowerCase().includes(q)) || false;
+        const formatMatch = p.fileFormat?.toLowerCase().includes(q) || false;
+        return titleMatch || descMatch || catMatch || tagsMatch || typeMatch || featureMatch || includedMatch || formatMatch;
       });
     }
 

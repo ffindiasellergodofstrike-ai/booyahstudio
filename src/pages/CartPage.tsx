@@ -114,7 +114,7 @@ export const CartPage: React.FC = () => {
 
               <div className="flex justify-between text-slate-600">
                 <span>Digital Delivery & Handling</span>
-                <span className="text-emerald-600 font-semibold">FREE (Instant)</span>
+                <span className="text-emerald-600 font-semibold">Free digital delivery</span>
               </div>
 
               <div className="pt-3 border-t border-slate-100 flex justify-between items-baseline">
@@ -187,13 +187,13 @@ export const CartPage: React.FC = () => {
                 onClick={() => navigate('/checkout')}
                 className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl text-sm sm:text-base transition-all shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 active:scale-98"
               >
-                <span>Proceed to Instant Checkout</span>
+                <span>Proceed to Checkout</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
 
               <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
                 <Lock className="w-3.5 h-3.5 text-emerald-500" />
-                <span>Secure Instant Digital Delivery</span>
+                <span>Delivery on email after payment confirmation</span>
               </div>
             </div>
           </div>

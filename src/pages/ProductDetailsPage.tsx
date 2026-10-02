@@ -36,7 +36,9 @@ import { Price } from '../components/Price';
 import { WishlistButton } from '../components/WishlistButton';
 import { FAQAccordion, FAQItem } from '../components/FAQAccordion';
 import { Modal } from '../components/Modal';
+import { ShareModal } from '../components/ShareModal';
 import { ProductCard } from '../components/ProductCard';
+import { AlertCircle } from 'lucide-react';
 import { ProductType } from '../types';
 import { useProductCatalog } from '../hooks/useProductCatalog';
 
@@ -125,6 +127,7 @@ export const ProductDetailsPage: React.FC = () => {
 
   const quantity = 1;
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [previewLoadStatus, setPreviewLoadStatus] = useState<'loading' | 'ready' | 'slow'>('loading');
   const [previewReloadKey, setPreviewReloadKey] = useState(0);
 
@@ -139,36 +142,30 @@ export const ProductDetailsPage: React.FC = () => {
     return () => window.clearTimeout(slowLoadTimer);
   }, [isDemoModalOpen, previewReloadKey, product?.previewUrl]);
 
-  useEffect(() => {
-    if (!product) return;
-    const oldTitle = document.title;
-    document.title = `${product.title} | BOOYAH STUDIO`;
-    const changes = [
-      ['meta[name="description"]', 'content', product.shortDescription],
-      ['meta[property="og:title"]', 'content', product.title],
-      ['meta[property="og:description"]', 'content', product.shortDescription],
-      ['link[rel="canonical"]', 'href', `https://www.booyahstudio.shop/product/${encodeURIComponent(product.slug)}`],
-    ];
-    const restore = changes.map(([selector, attribute, value]) => {
-      const element = document.querySelector(selector);
-      const old = element?.getAttribute(attribute);
-      element?.setAttribute(attribute, value);
-      return () => { if (element && old !== null && old !== undefined) element.setAttribute(attribute, old); };
-    });
-    return () => { document.title = oldTitle; restore.forEach(fn => fn()); };
-  }, [product]);
-
   if (!product) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-slate-900">Product Not Found</h2>
-        <p className="text-slate-600 mt-2">The requested digital item does not exist or has been retired.</p>
-        <button
-          onClick={() => navigate('/products')}
-          className="mt-6 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold"
-        >
-          Return to Catalog
-        </button>
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-6">
+        <div className="inline-flex p-4 rounded-3xl bg-rose-50 text-rose-600 mb-2 border border-rose-100">
+          <AlertCircle className="w-10 h-10" />
+        </div>
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight">404 — Product Not Found</h1>
+        <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
+          The digital template or software package you are searching for is not in our active catalog.
+        </p>
+        <div className="pt-2 flex flex-wrap justify-center gap-3">
+          <button
+            onClick={() => navigate('/products')}
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl text-xs sm:text-sm transition-all shadow-md"
+          >
+            Explore Product Catalog
+          </button>
+          <button
+            onClick={() => navigate('/search')}
+            className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-2xl text-xs sm:text-sm transition-all"
+          >
+            Search Store
+          </button>
+        </div>
       </div>
     );
   }
@@ -185,19 +182,8 @@ export const ProductDetailsPage: React.FC = () => {
     navigate('/checkout');
   };
 
-  const handleShare = async () => {
-    const url = new URL(`/product/${encodeURIComponent(product.slug)}`, window.location.origin).href;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: product.title, text: product.shortDescription, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        showToast('success', 'Link copied', 'Product URL copied to clipboard.');
-      }
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') return;
-      window.prompt('Copy this product link:', url);
-    }
+  const handleShare = () => {
+    setIsShareModalOpen(true);
   };
 
   const handlePreviewLoad = (event: React.SyntheticEvent<HTMLIFrameElement>) => {
@@ -218,11 +204,11 @@ export const ProductDetailsPage: React.FC = () => {
   const faqsList: FAQItem[] = product.faqs || [
     {
       question: 'How is this digital product delivered after payment?',
-      answer: 'Delivery is immediate. As soon as your payment is verified, the order is updated to Paid and access is unlocked in your My Downloads vault with secure download tokens.',
+      answer: 'After payment confirmation, secure download links are delivered by email and in your account, normally within 5 minutes. Contact support if access is missing after 24 hours.',
     },
     {
       question: 'Are future version updates and security fixes included?',
-      answer: 'Yes! Every purchase comes with access to future updates, patches, and maintenance releases for this product.',
+      answer: 'Review this product’s listing and supplied documentation for its update and support terms. Future updates are included only when expressly stated.',
     },
     {
       question: 'Can I customize the purchased files for my own project?',
@@ -289,7 +275,7 @@ export const ProductDetailsPage: React.FC = () => {
             </div>
             <div className="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Delivery</span>
-              <p className="text-sm font-extrabold text-emerald-600">Verified live payment</p>
+              <p className="text-sm font-extrabold text-emerald-700">Delivery on email</p>
             </div>
           </div>
         </div>
@@ -302,7 +288,7 @@ export const ProductDetailsPage: React.FC = () => {
               <div className="flex items-center justify-between gap-2 mb-2">
                 <span className="text-xs font-semibold text-slate-600 flex items-center gap-1">
                   <Lock className="w-3 h-3 text-emerald-600" />
-                  Verified Digital Item
+                  Digital source package
                 </span>
               </div>
 
@@ -352,7 +338,7 @@ export const ProductDetailsPage: React.FC = () => {
             <div className="pt-2 border-t border-slate-100 space-y-2 text-xs text-slate-600">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Instant electronic delivery upon payment confirmation</span>
+                <span>Delivery on email after payment confirmation</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -601,12 +587,23 @@ export const ProductDetailsPage: React.FC = () => {
                   }}
                   className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold"
                 >
-                  Add to Cart (${product.price.toFixed(2)})
+                  Add to Cart (₹{product.price.toFixed(2)})
                 </button>
               </div>
             </div>
           )}
         </Modal>
+      )}
+
+      {/* Share Modal */}
+      {product && (
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          title={product.title}
+          description={product.shortDescription}
+          path={`/product/${product.slug}`}
+        />
       )}
     </div>
   );

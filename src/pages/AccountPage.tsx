@@ -114,7 +114,7 @@ export const AccountPage: React.FC = () => {
         a.click();
         document.body.removeChild(a);
       } else {
-        showToast('error', 'Download Denied', res.message || 'Unable to authorize download.');
+        showToast('error', 'Download Denied', 'We could not prepare your download. Please contact support with your order reference.');
       }
     } catch (err) {
       showToast('error', 'Download Failed', 'Could not request secure download link.');
@@ -172,7 +172,7 @@ export const AccountPage: React.FC = () => {
         a.click();
         document.body.removeChild(a);
       } else {
-        showToast('error', 'Download Unauthorized', authResult.message || 'Access denied.');
+        showToast('error', 'Download Unauthorized', 'We could not confirm download access. Please contact support with your order reference.');
       }
     } catch {
       showToast('error', 'Download Error', 'Could not generate verified download token.');
@@ -375,7 +375,7 @@ export const AccountPage: React.FC = () => {
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         : 'bg-amber-50 text-amber-700 border-amber-200'
                     }`}>
-                      {order.paymentStatus?.toUpperCase() === 'PAID' ? hasLivePayment(order) ? 'PAID' : 'TEST PAYMENT' : order.status.toUpperCase()}
+                      {order.paymentStatus?.toUpperCase() === 'PAID' ? hasLivePayment(order) ? 'PAID' : 'NO PURCHASE' : order.status.toUpperCase()}
                     </span>
                     <button
                       onClick={() => setViewingOrder(order)}
@@ -406,7 +406,7 @@ export const AccountPage: React.FC = () => {
                 <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                   <div className="flex items-center gap-2 text-[10px] sm:text-xs text-slate-500 font-bold uppercase tracking-widest min-w-0">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                    <span className="truncate">Method: {order.paymentMethod ? order.paymentMethod.toUpperCase() : 'GATEWAY'}</span>
+                    <span className="truncate">Payment: Online</span>
                   </div>
                   <div className="flex items-baseline justify-end gap-2">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</span>
@@ -660,7 +660,7 @@ export const AccountPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
                   <div className="min-w-0">
                     <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Payment Status</p>
-                    <p className="text-sm font-black text-amber-900 truncate">{isTest ? 'TEST PAYMENT CONFIRMED' : 'PAYMENT PENDING'}</p>
+                    <p className="text-sm font-black text-amber-900 truncate">{isTest ? 'NO PURCHASE CREATED' : 'PAYMENT PENDING'}</p>
                   </div>
                   <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-amber-200 shrink-0 self-start sm:self-center">
                     <Clock className="w-4 h-4 text-amber-500" />
@@ -672,14 +672,14 @@ export const AccountPage: React.FC = () => {
               {!isPaid && !isFailed && (
                 <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-center gap-3 text-xs text-amber-800">
                   <Clock className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span className="font-medium">{isTest ? 'This is a test order. No product files or purchase invoice will be delivered.' : 'Download and receipt unlock after your live payment is verified.'}</span>
+                  <span className="font-medium">{isTest ? 'This transaction did not create a purchase. No files or purchase invoice will be issued.' : 'Downloads and your receipt become available after payment confirmation.'}</span>
                 </div>
               )}
               {isPaid && <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-700 space-y-1">
-                <p>{hasLivePayment(viewingOrder) ? `Invoice: ${viewingOrder.invoiceNumber || `INV-${viewingOrder.orderNumber}`}` : 'Test/verification-only order — no paid files or invoice.'}</p>
+                <p>{hasLivePayment(viewingOrder) ? `Invoice: ${viewingOrder.invoiceNumber || `INV-${viewingOrder.orderNumber}`}` : 'No completed purchase — no files or invoice.'}</p>
                 <p>Payment verified: {formatISTDate(viewingOrder.paymentVerifiedAt)}</p>
                 <p>Digital access: {isDelivered ? `Delivered ${formatISTDate(viewingOrder.deliveredAt)}` : 'Preparing delivery'}</p>
-                <p>Email: {viewingOrder.emailDelivery?.status === 'sent' ? 'Accepted by mail provider' : 'Pending or retrying'}</p>
+                <p>Email: {viewingOrder.emailDelivery?.status === 'sent' ? 'Sent' : ['failed', 'not_configured'].includes(viewingOrder.emailDelivery?.status || '') ? 'Delivery needs attention — contact support' : 'Being prepared'}</p>
               </div>}
 
               <div className="space-y-3">

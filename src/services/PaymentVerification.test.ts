@@ -54,3 +54,16 @@ test('a failed gateway report yields failure only when the order has not become 
   );
   assert.equal(outcome.kind, 'paid');
 });
+
+test('customer payment results never expose provider diagnostics', async () => {
+  for (const status of ['PENDING', 'FAILED', 'REVOKED']) {
+    const outcome = await verifyReturnedPayment(
+      async () => pendingOrder,
+      async () => ({ httpStatus: 503, status, message: 'Easebuzz TEST MODE: merchant key not configured' }),
+    );
+    assert.notEqual(outcome.kind, 'paid');
+    assert.ok('message' in outcome);
+    assert.doesNotMatch(outcome.message || '', /Easebuzz|TEST|configured|merchant/i);
+    assert.match(outcome.message || '', /order|account/);
+  }
+});

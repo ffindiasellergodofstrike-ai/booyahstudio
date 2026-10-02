@@ -11,7 +11,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'gr
   const { navigate, addToCart, cartItems } = useApp();
   const isInCart = cartItems.some(item => item.product.id === product.id);
   const [name, subtitle] = product.title.split(' — ');
-  const details = () => navigate('/product/:slug', { slug: product.slug });
+  const details = () => navigate(`/product/${product.slug}`);
   return (
     <article id={`product-card-${product.id}`} className={`studio-product-card ${variant === 'list' ? 'product-list' : ''}`}>
       <div className={`product-visual product-visual-${product.id}`}>
