@@ -21,6 +21,20 @@ export class AuthServiceServer {
     return session;
   }
   static async destroyOpaqueSession(token: string) { if (typeof token === 'string') await Store.delete(`sessions/${hash(token)}`); }
+  static async hashPassword(password: string): Promise<string> {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const derivedKey = crypto.scryptSync(password, salt, 64).toString('hex');
+    return `${salt}:${derivedKey}`;
+  }
+  static async verifyPassword(password: string, storedHash: string): Promise<boolean> {
+    if (!storedHash || !storedHash.includes(':')) return false;
+    const [salt, key] = storedHash.split(':');
+    const derivedKey = crypto.scryptSync(password, salt, 64).toString('hex');
+    return crypto.timingSafeEqual(Buffer.from(key, 'hex'), Buffer.from(derivedKey, 'hex'));
+  }
+  static async resetPasswordWithEmailAndMobile(_params: { email?: string; mobile?: string; newPassword?: string; confirmNewPassword?: string }): Promise<{ success: boolean; message: string }> {
+    return { success: false, message: 'Password reset via email and mobile is not supported.' };
+  }
 }
 export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
   app.post('/api/auth/register', limiter, async (req, res) => {

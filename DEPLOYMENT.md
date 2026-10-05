@@ -1,7 +1,7 @@
 # Booyahstudio: GitHub + Vercel deployment
 
-MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio
-GSTIN 09JALPS3433P1ZP · connectbooyahstudio@gmail.com · WhatsApp +91 7393845435
+MANISH KUMAR SONKAR | Booyahstudio
+connectbooyahstudio@gmail.com · WhatsApp +91 7393845435
 
 ## 1. Project files and GitHub
 

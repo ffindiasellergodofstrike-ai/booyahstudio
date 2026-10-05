@@ -1,6 +1,5 @@
-MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio
+MANISH KUMAR SONKAR | Booyahstudio
 
-GSTIN: 09JALPS3433P1ZP
 Address: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003
 Customer support and grievances: connectbooyahstudio@gmail.com
 WhatsApp: +91 7393845435 (https://wa.me/917393845435)
@@ -12,7 +11,7 @@ Last updated: October 5, 2026
 
 ## 2. Responsible contact
 
-MANISH KUMAR SONKAR, FF ONLINE SHOP, operating Booyahstudio, is the named support and grievance contact. Email connectbooyahstudio@gmail.com or WhatsApp +91 7393845435. Written grievances may also be addressed to the business address above. These are the same channels for order, delivery, product, privacy, intellectual-property and payment-related complaints.
+MANISH KUMAR SONKAR, operating Booyahstudio, is the named support and grievance contact. Email connectbooyahstudio@gmail.com or WhatsApp +91 7393845435. Written grievances may also be addressed to the business address above. These are the same channels for order, delivery, product, privacy, intellectual-property and payment-related complaints.
 
 ## 3. Submit your concern
 

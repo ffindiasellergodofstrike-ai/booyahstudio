@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import type { Express, RequestHandler } from 'express';
+import { FirebaseRtdb } from './firebaseRtdb';
 
 export type PaddleEnvironment = 'sandbox' | 'production';
 
@@ -247,4 +249,87 @@ export async function fetchPaddleTransaction(
   } catch (err: any) {
     return { success: false, message: err.message || 'Failed to connect to Paddle API.' };
   }
+}
+
+export function registerPaddleRoutes(app: Express, requireAuth: RequestHandler) {
+  app.get('/api/config/paddle', (_req, res) => {
+    res.json({ success: true, ...getClientPaddleConfig() });
+  });
+
+  app.post('/api/payments/paddle/initiate', requireAuth, async (req: any, res) => {
+    const { orderId, agreeTerms } = req.body || {};
+    if (agreeTerms !== true) {
+      return res.status(400).json({ success: false, message: 'Terms agreement required.' });
+    }
+    if (!orderId || typeof orderId !== 'string') {
+      return res.status(400).json({ success: false, message: 'Order ID is required.' });
+    }
+    const order = await FirebaseRtdb.getUserOrderById(req.userId, orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found.' });
+    }
+    const priceId = getPaddlePriceIdForProduct(order.productId);
+    res.json({ success: true, priceId, orderId: order.id });
+  });
+
+  app.post('/api/payments/paddle/webhook', async (req: any, res) => {
+    const signatureHeader = req.headers['paddle-signature'] || req.get('paddle-signature');
+    const rawBody = req.rawBody || JSON.stringify(req.body);
+    const verification = verifyPaddleWebhookSignature(rawBody, signatureHeader);
+    if (!verification.isValid) {
+      return res.status(400).json({ success: false, message: verification.reason || 'Invalid signature' });
+    }
+
+    const { event_id, event_type, data } = req.body || {};
+    if (!event_id) {
+      return res.status(400).json({ success: false, message: 'Missing event_id' });
+    }
+
+    const existing = await FirebaseRtdb.getPaymentEvent(event_id);
+    if (existing) {
+      return res.json({ success: true, message: 'Event already processed.' });
+    }
+
+    await FirebaseRtdb.savePaymentEvent(event_id, { processedAt: new Date().toISOString() });
+
+    if (event_type === 'transaction.completed' && data) {
+      const orderId = data.custom_data?.orderId;
+      if (!orderId) {
+        return res.status(400).json({ success: false, message: 'Missing orderId in custom_data' });
+      }
+
+      const order = await FirebaseRtdb.getGlobalOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ success: false, message: 'Order not found' });
+      }
+
+      const receivedAmountMinor = parseInt(data.details?.totals?.total || '0', 10);
+      const expectedAmountMinor = Math.round((order.total || 0) * 100);
+
+      if (receivedAmountMinor < expectedAmountMinor) {
+        return res.json({ success: false, message: 'Underpaid transaction' });
+      }
+
+      const isLive = getPaddleEnvironment() === 'production';
+      order.paymentStatus = 'PAID';
+      order.paymentProvider = 'Paddle';
+      order.paddleTransactionId = data.id;
+      order.downloadStatus = 'UNAVAILABLE';
+      order.paymentEnvironment = isLive ? 'live' : 'test';
+      order.deliveryStatus = isLive ? 'DELIVERED' : 'TEST_ONLY';
+
+      await FirebaseRtdb.saveGlobalOrder(order);
+      return res.json({ success: true, status: 'PAID' });
+    }
+
+    res.json({ success: true, message: 'Event recorded.' });
+  });
+
+  app.post('/api/payments/paddle/reconcile/:orderId', requireAuth, async (req: any, res) => {
+    const order = await FirebaseRtdb.getUserOrderById(req.userId, req.params.orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found.' });
+    }
+    res.json({ success: true, status: order.paymentStatus || 'PENDING' });
+  });
 }

@@ -68,7 +68,7 @@ export function registerPayURoutes(app: Express, requireAuth: RequestHandler, he
       // Re-read so a concurrent revocation cannot be overwritten by the network request.
       const latest=await FirebaseRtdb.getGlobalOrder(id);
       if(!latest || ['REFUNDED','PARTIALLY_REFUNDED','REVOKED','CANCELLED'].includes(latest.status)) return {success:false,status:'REVOKED'};
-      Object.assign(order,latest,{status:'PAID',paymentStatus:'PAID',orderStatus:'PAID',transactionId:String(payment.mihpayid),paymentId:String(payment.mihpayid),paymentVerifiedAt:new Date().toISOString(),deliveryStatus:'PENDING',downloadStatus:'UNAVAILABLE'});
+      Object.assign(order,latest,{status:'PAID',paymentStatus:'PAID',orderStatus:'PAID',transactionId:String(payment.mihpayid),paymentId:String(payment.mihpayid),paymentVerifiedAt:new Date().toISOString(),deliveryStatus:order.paymentEnvironment==='live'?'PENDING':'TEST_ONLY',downloadStatus:'UNAVAILABLE'});
       if(order.paymentEnvironment==='live') order.invoiceNumber ||= `INV-${order.id}`;
       await FirebaseRtdb.saveGlobalOrder(order);
     }

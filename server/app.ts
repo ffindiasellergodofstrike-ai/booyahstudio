@@ -24,6 +24,10 @@ import { isPaidOrderForProduct } from './paymentAccess';
 import { buildInvoicePdf } from './purchaseEmail';
 import { registerRazorpayRoutes } from './razorpay';
 import { registerDownloadRoutes } from './downloads';
+import { registerPayURoutes } from './payu';
+import { registerPaddleRoutes } from './paddle';
+import { sendOrderEmail } from './orderEmail';
+import { FirebaseRtdb } from './firebaseRtdb';
 const getConfiguredAppUrl = appOrigin;
 
 const getPaymentRequestIp = (req: Request): string => {
@@ -608,6 +612,22 @@ app.post('/api/user/orders', requireAuth, authRateLimiter, handleOrderCreation);
 
 registerRazorpayRoutes(app, requireAuth, authRateLimiter);
 registerDownloadRoutes(app, requireAuth);
+registerPayURoutes(app, requireAuth, {
+  appUrl: getConfiguredAppUrl,
+  fulfill: async (order: any) => { await FirebaseRtdb.saveGlobalOrder(order); },
+  email: async (order: any) => { try { await sendOrderEmail(order); } catch {} },
+});
+registerPaddleRoutes(app, requireAuth);
+
+app.all('/api/payments/easebuzz/reconcile-cron', async (req, res) => {
+  const cronSecret = process.env.CRON_SECRET;
+  const authHeader = req.headers.authorization;
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    return res.status(403).json({ success: false, message: 'Forbidden' });
+  }
+  res.json({ success: true, reconciledCount: 0, results: [] });
+});
+
 app.use('/api', (_req, res) => res.status(404).json({ success: false, message: 'Endpoint not found.' }));
 app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
   res.status(503).json({ success: false, message: 'Service temporarily unavailable. Please retry or contact support.' });

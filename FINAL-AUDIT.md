@@ -1,7 +1,6 @@
 # FINAL AUDIT — Booyahstudio
 
-MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio
-GSTIN: 09JALPS3433P1ZP
+MANISH KUMAR SONKAR | Booyahstudio
 
 Audit date: 5 October 2026. Repository: `ffindiasellergodofstrike-ai/booyahstudio`. Base revision: `9e434ad1d993c3aac1760833bf122b35d7a66ab1`.
 

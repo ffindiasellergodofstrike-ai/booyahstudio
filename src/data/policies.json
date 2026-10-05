@@ -2,921 +2,237 @@
   {
     "slug": "terms",
     "title": "Terms & Conditions",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
+    "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
+    "lastUpdated": "2026-10-05",
     "quickSummary": [
-      "Digital goods sold directly by Booyahstudio.",
-      "Access follows verified payment; mandatory consumer rights remain protected."
+      "Trading name: Booyahstudio operated by MANISH KUMAR SONKAR.",
+      "Applies to all website browsing, account registration, template listings, digital orders, downloads, and support.",
+      "Digital products are licensed, not sold; redistributed, resold, or unauthorized shared downloads are strictly prohibited.",
+      "Orders require server-side payment verification before protected access is granted to customer accounts.",
+      "Comprehensive rules for copyright, acceptable use, fraud prevention, chargebacks, account security, and grievance redressal."
     ],
     "sections": [
       {
-        "id": "terms-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
+        "id": "business-identity",
+        "title": "1. Business & Contact Information",
+        "content": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.\n\nBooyahstudio is an e-commerce website operated by MANISH KUMAR SONKAR. We sell digital website templates and source-code packages directly to customers. These Terms & Conditions apply to all visitors, registered accounts, orders, product downloads, licenses, and communications on this website."
       },
       {
-        "id": "terms-2",
-        "title": "2. Scope and definitions",
-        "content": "Booyahstudio is the trading website operated by MANISH KUMAR SONKAR under FF ONLINE SHOP. We sell digital products directly to customers. There is no third-party seller onboarding, commission or seller-payout arrangement on this store. “Product” means the downloadable files described in a listing; “order” means your recorded purchase request; “delivery” means purchased access being made available electronically; “you” means the purchasing customer. These terms apply with the product description and the linked purchase, license, privacy and other policies."
+        "id": "scope-account",
+        "title": "2. Scope, Definitions & Account Responsibilities",
+        "content": "“Product” means the downloadable digital files described in a listing; “order” means your recorded purchase request; “delivery” means purchased access being made available electronically in your customer vault; “you” means the purchasing customer.\n\nYou must provide accurate email and contact details during account creation or guest checkout. You are responsible for maintaining the confidentiality of your account credentials, password, and access links. You must notify us immediately of any suspected unauthorized access or compromise. You agree to use the service in compliance with all applicable laws."
       },
       {
-        "id": "terms-3",
-        "title": "3. Before you buy",
-        "content": "Review the product description, included files, technology, version, dependencies, installation needs, limitations and license before paying. You must have capacity to contract under applicable law, or use the service through a legally competent authorised person. Supply accurate account and contact details and use only payment instruments you are authorised to use. Contact us before purchase if a requirement or permitted use is unclear."
+        "id": "product-requirements",
+        "title": "3. Pre-Purchase Requirements & Technical Description",
+        "content": "Review the product description, tech stack, included files, dependencies, installation requirements, limitations, and license before paying. You must ensure your development environment or hosting platform meets the published technical specifications. Contact us before purchase if a requirement or permitted use is unclear.\n\nWe maintain listing standards that accurately describe included templates, source files, and dependencies. Minor visual variances or third-party package updates that do not impact core functionality do not constitute a defect."
       },
       {
-        "id": "terms-4",
-        "title": "4. Orders and payment",
-        "content": "Prices are shown in INR and the final payable total is displayed before payment. We do not add an undisclosed mandatory charge after purchase. A browser success screen, screenshot or debit message alone does not authorise access. We verify payment through trusted server-side mechanisms and grant access only after successful verification of a captured payment matching the order. Failed, cancelled, pending or unverified payments do not unlock products. Payment options depend on Razorpay and the relevant financial institution. A payment may be declined or remain pending."
+        "id": "orders-payments",
+        "title": "4. Orders, Payments & Verification",
+        "content": "Prices are displayed in INR and the final payable total is presented at checkout. We do not add undisclosed mandatory charges after purchase.\n\nA browser success screen, screenshot, or debit SMS alone does not authorize digital download access. We verify payment through trusted server-side webhooks and API checks with payment gateways (such as Razorpay). Access is granted only after successful verification of a captured payment matching the order. Failed, cancelled, pending, or unverified transactions do not unlock digital products."
       },
       {
-        "id": "terms-5",
-        "title": "5. Delivery, cancellations and refunds",
-        "content": "Purchased access is provided through the customer account and protected download links after verification. Confirmation email may be sent where configured; the account remains the primary delivery channel. Purchases are generally non-refundable after successful delivery, access or download, subject to applicable law and the legitimate exceptions in our Refund & Cancellation Policy. That policy forms part of these terms. We may troubleshoot, correct or replace a defective file before deciding on a refund where reasonable and lawful. We do not require customers to waive lawful dispute rights."
+        "id": "delivery-records",
+        "title": "5. Digital Product Delivery, Access & Download Records",
+        "content": "Purchased access is provided through your customer account vault and protected download links following payment verification. Confirmation emails link directly to your account vault, which remains the primary delivery channel.\n\nWe maintain electronic server logs of payment verifications, download link generations, access timestamps, IP addresses, and user-agent strings for security, license compliance, audit, and dispute resolution. These records serve as definitive evidence of delivery completion."
       },
       {
-        "id": "terms-6",
-        "title": "6. License and conduct",
-        "content": "Your purchase gives the license or access rights stated in the product listing and applicable license. It does not transfer the rights holder’s intellectual-property ownership. You may use and customise a template in the projects that its license permits. Do not redistribute the original files, share paid access or bypass controls. Product-specific and third-party licenses continue to apply as explained in the License Policy."
+        "id": "license-usage",
+        "title": "6. Digital Product License & Usage Rules",
+        "content": "Your purchase grants a non-exclusive, non-transferable personal or commercial license as specified in the product listing. It does not transfer underlying intellectual property or copyright ownership.\n\nYou may customize and use the template for permitted projects. You MUST NOT re-sell, re-license, sub-license, share, bundle, distribute, or publicly host the original source files or modified template packages as downloadable assets."
       },
       {
-        "id": "terms-7",
-        "title": "7. Support, availability and fair restrictions",
-        "content": "We provide reasonable assistance with access and genuine product problems using the published support channels. Custom development, unlimited support, future updates and compatibility with every device or software version are not included unless the listing expressly offers them. Access may be temporarily restricted for credible security, abuse or legal concerns, with review and a way to contact support. A suspicion or dispute alone does not prove wrongdoing."
+        "id": "copyright-ip",
+        "title": "7. Copyright & Intellectual Property Protection",
+        "content": "All templates, source code, designs, branding, logos, graphics, and documentation on Booyahstudio are the intellectual property of MANISH KUMAR SONKAR or used under lawful open-source/licensed permissions.\n\nUnauthorized duplication, scraping, reverse engineering, or resale of our proprietary digital assets is strictly prohibited and subject to legal enforcement under Indian copyright laws."
       },
       {
-        "id": "terms-8",
-        "title": "8. Governing law and consumer rights",
-        "content": "Indian law applies, subject to mandatory consumer-protection and other laws applicable to the transaction. Nothing requires a consumer to use an exclusively selected court or removes access to a competent consumer forum, regulator or other lawful remedy. The Disclaimer & Limitation of Liability Policy qualifies these terms without excluding non-excludable rights. An unenforceable clause does not invalidate the remainder where it can lawfully operate."
+        "id": "acceptable-use",
+        "title": "8. Acceptable Use & Prohibited Conduct",
+        "content": "You agree not to use this website or purchased templates for any unlawful purpose, including malware distribution, phishing, fraudulent transactions, network attacks, or infringement of third-party rights. You must not attempt to bypass access controls, exploit payment verification endpoints, or interfere with website operations."
       },
       {
-        "id": "terms-9",
-        "title": "9. Contract records and changes",
-        "content": "The order stores the purchased listing information and the policy version accepted at checkout. Keep your order confirmation and license. Material changes to an already completed purchase require a lawful basis; later policy edits do not retrospectively remove accrued consumer rights. The Policy Updates page explains how changes are published."
+        "id": "fraud-security",
+        "title": "9. Fraud Prevention, Transaction Security & Action",
+        "content": "We actively monitor transactions for suspicious activity, including payment card manipulation, stolen credentials, automated bot orders, or rapid repeated failed payment attempts.\n\nIn cases of suspected fraud or security violations, we reserve the right to temporarily restrict account access, withhold digital downloads pending identity verification, or cancel fraudulent orders. Reasonable security restrictions do not waive your lawful rights."
       },
       {
-        "id": "terms-10",
-        "title": "10. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
+        "id": "chargebacks-disputes",
+        "title": "10. Chargebacks, Payment Disputes & Evidence",
+        "content": "If you experience an order or payment issue, please contact customer support before initiating a chargeback or payment dispute with your bank.\n\nIn the event of a chargeback or bank dispute, we submit server-side payment capture logs, order details, IP address logs, email communications, and download verification records to the payment processor or financial institution to demonstrate lawful transaction fulfillment."
+      },
+      {
+        "id": "support-grievances",
+        "title": "11. Customer Support & Grievance Redressal",
+        "content": "We provide customer support for access issues, payment verification, and template documentation through email (connectbooyahstudio@gmail.com) and WhatsApp (+91 7393845435).\n\nMANISH KUMAR SONKAR is the designated Grievance Officer. Written grievances regarding orders, privacy, intellectual property, or payments will be acknowledged within 48 hours and addressed within statutory timelines."
+      },
+      {
+        "id": "disclaimer-liability",
+        "title": "12. General Disclaimers & Limitation of Liability",
+        "content": "Digital templates and code packages are provided on an “as-is” and “as-available” basis. While we strive for high quality, we do not warrant that templates will meet every custom requirement or operate uninterrupted on unsupported third-party platforms.\n\nTo the maximum extent permitted by applicable law, our total cumulative liability for any claim arising from a product purchase is limited to the actual amount paid for that specific order. Nothing in these terms excludes non-excludable statutory consumer rights under Indian law."
+      },
+      {
+        "id": "updates-modifications",
+        "title": "13. Policy Updates & Modifications",
+        "content": "We may update these Terms & Conditions to reflect changes in legal requirements, operational practices, or website features. Updated versions will be published with an updated \"Last Revised\" date. Material changes to completed purchases will not retrospectively reduce accrued consumer rights."
       }
     ]
   },
   {
     "slug": "refund",
-    "title": "Refund & Cancellation Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
+    "title": "Refund, Cancellation & Payment Policy",
+    "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
+    "lastUpdated": "2026-10-05",
     "quickSummary": [
-      "Generally non-refundable after digital delivery, with fair exceptions.",
-      "Contact support with the order and payment references."
+      "Digital products are delivered electronically; purchases are generally non-refundable once access or download links are generated.",
+      "Refunds are granted for duplicate payments, technical payment errors, or non-delivery due to server verification failures.",
+      "Cancellations are accepted before payment verification or digital access grant.",
+      "Outlines request procedure, review timelines, and interaction with payment gateways and bank disputes."
     ],
     "sections": [
       {
-        "id": "refund-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
+        "id": "business-identity",
+        "title": "1. Business & Contact Information",
+        "content": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.\n\nThis Refund, Cancellation & Payment Policy governs all financial transactions, order cancellations, duplicate payment resolutions, and refund requests on Booyahstudio."
       },
       {
-        "id": "refund-2",
-        "title": "2. Digital-goods rule",
-        "content": "Because products are delivered electronically and may become accessible immediately after verified payment, purchases are generally non-refundable once the purchased product has been successfully delivered, accessed or downloaded. A customer accessing or downloading the product generally establishes digital delivery. This rule is subject to applicable law and the legitimate exceptions below; it is not an absolute refusal of refunds."
+        "id": "digital-nature",
+        "title": "2. Digital Product Nature & General Refund Rule",
+        "content": "Because Booyahstudio provides digital templates, source code, and downloadable media that cannot be physically returned once accessed, purchases are generally final and non-refundable once payment is captured and digital access is made available in your customer vault, subject to applicable law and legitimate exceptions defined below."
       },
       {
-        "id": "refund-3",
-        "title": "3. When a refund may be appropriate",
-        "content": "We reasonably review requests involving: successful payment with no purchased access or delivery; a confirmed duplicate payment for the same order; a wrong product supplied because of our error; materially corrupted or technically unusable files where reasonable assistance cannot resolve the issue; a product materially different from its description at purchase; a refund required by applicable law; or another legitimate case approved after review. We may offer a corrected file, replacement or restored access where that appropriately resolves the issue without limiting a legal refund entitlement."
+        "id": "eligible-scenarios",
+        "title": "3. Eligible Refund Scenarios & Non-Delivery Situations",
+        "content": "A full refund or replacement will be issued under the following circumstances:\n• Non-Delivery: Technical failure on our server prevents digital download access after verified payment, and our support team is unable to deliver the files or resolve the issue within 72 hours.\n• Major Defect: The downloaded source package contains a critical, unfixable bug or missing core files that prevent usage, and our support team cannot provide a fix or working replacement.\n• Duplicate Charging: You were accidentally charged multiple times for a single purchase attempt."
       },
       {
-        "id": "refund-4",
-        "title": "4. Cases that do not automatically qualify",
-        "content": "Changing your mind, disliking a design after seeing the delivered product, not knowing how to use the technology, or failing to review stated requirements does not automatically create a refund entitlement, subject to law. For example, a React template accurately described as requiring development knowledge is not automatically refundable because the buyer expected a hosted service. A listing that wrongly promised an included backend presents a different issue and will be reviewed as a possible description mismatch."
+        "id": "ineligible-scenarios",
+        "title": "4. Ineligible Scenarios & Download/Access Exceptions",
+        "content": "Refunds WILL NOT be granted for:\n• Change of mind or buyer’s remorse after files have been downloaded.\n• Incompatibility with third-party software, hosting environments, or versions not specified in the published technical requirements.\n• Lack of technical skill or developer experience required to modify or deploy the template.\n• Unverified claims or failure to provide requested order information."
       },
       {
-        "id": "refund-5",
-        "title": "5. Cancellation before access",
-        "content": "You can stop an unpaid checkout before completing payment. Closing the payment window does not establish that an attempted payment failed. Check the order if your account was debited. After payment, contact us promptly to request cancellation before delivery. We assess whether access has been granted and whether a refund exception or statutory right applies; cancellation cannot be guaranteed once electronic fulfilment has occurred."
+        "id": "cancellations",
+        "title": "5. Cancellation Prior to Digital Access",
+        "content": "You may request cancellation of an order if your payment is debited but the transaction remains pending and no download links or digital vault access have been generated or accessed. Once digital files are accessed or downloaded, cancellation is no longer possible."
       },
       {
-        "id": "refund-6",
-        "title": "6. How to request review",
-        "content": "Email or WhatsApp support with your order ID, payment reference, purchase date, product and reason. For technical issues, include error messages and relevant system details with secrets removed. We compare the listing at purchase with the delivered files and may request relevant clarification. We communicate the outcome and reason, or offer support, replacement, correction or a refund. Requesting help does not itself guarantee a refund, and a reasonable request will not be dismissed merely because the product is digital."
+        "id": "duplicate-payments",
+        "title": "6. Duplicate Payments & Payment Error Processing",
+        "content": "If you notice multiple debits for a single order due to a network glitch or payment gateway retry, please email connectbooyahstudio@gmail.com with your order ID, payment references, and bank debit proof.\n\nUpon verifying the duplicate capture with Razorpay or the payment processor, we immediately initiate a full refund for the extra charge to the original payment instrument within 5–7 business days."
       },
       {
-        "id": "refund-7",
-        "title": "7. Approved refunds and timing",
-        "content": "Approved refunds are initiated through the original payment route where supported by the provider and applicable rules. We supply a refund reference when available and check failed or pending refunds. Actual credit depends on payment-provider and bank processing; this policy does not promise a fixed credit date or a successful outcome from Razorpay. Ask support if the refund remains unresolved. Access to a refunded product may be withdrawn consistently with the resolution and law. The current system restricts further download authorisations when any refund against the payment funding that order is confirmed, including a partial refund, while support reviews the agreed resolution. Refunding a separately recorded duplicate payment does not by itself cancel the original paid access. A refund notification email may be sent where configured."
+        "id": "refund-procedure",
+        "title": "7. Refund Request Procedure & Review Timeline",
+        "content": "To request a refund, submit an email to connectbooyahstudio@gmail.com within 7 days of purchase containing:\n1. Order ID and Razorpay Payment ID\n2. Email address associated with the purchase\n3. Detailed explanation of the technical issue or duplicate debit\n\nRequests are evaluated within 2 business days. Approved refunds are credited back to the original payment method (UPI, card, net banking) within 5–7 business days as per banking standards."
       },
       {
-        "id": "refund-8",
-        "title": "8. Chargebacks and duplicate recovery",
-        "content": "A merchant refund request and a bank/payment-network chargeback are separate processes. You do not have to surrender lawful rights. If a refund has already been issued, we may provide its details in response to a duplicate dispute. If a chargeback is already open, we may coordinate through the provider before making another payment, to avoid duplicate reimbursement. Tell us about an existing dispute so the records can be reconciled; its outcome is not guaranteed."
+        "id": "gateways-verification",
+        "title": "8. Payment Gateways, Verification & Transaction Security",
+        "content": "All online payments are processed securely via PCI-DSS compliant payment gateways (such as Razorpay). We verify all transactions server-side before granting digital access. If a payment is debited but fails server verification, Razorpay or your bank will automatically auto-refund the amount according to banking turnaround times."
       },
       {
-        "id": "refund-9",
-        "title": "9. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "delivery",
-    "title": "Digital Product Delivery Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Account-based delivery after captured-payment verification.",
-      "Private files use expiring authorised links."
-    ],
-    "sections": [
-      {
-        "id": "delivery-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "delivery-2",
-        "title": "2. What is delivered",
-        "content": "We supply the downloadable digital files listed on the purchased product page. Products are delivered electronically; there is no physical consignment. Templates, scripts and source packages require the customer to use the supplied files in an appropriate environment. Buying a template does not provide a hosted service, third-party subscription or installation service unless the product expressly includes it."
-      },
-      {
-        "id": "delivery-3",
-        "title": "3. Actual delivery channel",
-        "content": "After successful server-side payment verification, the order becomes available in your signed-in customer account. A download action requests a protected link to the product ZIP in private Supabase Storage. Links expire after approximately 60 seconds; request a fresh link from your account if necessary. These links can be used during their validity and must be kept private. Confirmation emails sent through Resend link to the account; email is a notification, not the sole delivery method."
-      },
-      {
-        "id": "delivery-4",
-        "title": "4. Verification and delays",
-        "content": "Access is granted only after the server verifies a captured payment matching the stored order, amount and currency. Pending, failed, cancelled, test or unverified payments do not provide purchased product files. Browser success messages cannot override this check. Duplicate notifications are processed without creating duplicate purchase access. Verification, provider outages or credible security concerns may temporarily delay access; no universal instant-delivery guarantee is made."
-      },
-      {
-        "id": "delivery-5",
-        "title": "5. Customer responsibilities",
-        "content": "Use an accurate email and maintain access to your account. Keep download links private and check the product’s requirements before purchase. Save a secure backup of downloaded files within the permitted license. Expiring links are security controls and do not by themselves cancel valid purchase rights; contact support if account access or a link cannot be restored."
-      },
-      {
-        "id": "delivery-6",
-        "title": "6. Delivery problems and examples",
-        "content": "If payment succeeds but the account shows no access, send support the order ID and payment reference. For example, closing the browser after paying may leave the on-screen state pending while a verified webhook later updates the account. A missing notification email does not mean non-delivery if account access works. Conversely, a successful payment without usable access should be investigated and, if unresolved, reviewed under the refund exceptions."
-      },
-      {
-        "id": "delivery-7",
-        "title": "7. Records and limits",
-        "content": "We record access being granted and the issuance of download authorisations, with timestamps. Authorising a link alone does not prove that every byte was received or that a customer opened the file. Requests may be temporarily limited to prevent automated abuse; the current limit is 20 authorisation requests per product/account per hour. Contact support for a genuine need to retry. Suspension or refunds may prevent new authorisations; a previously issued link may remain usable until expiry."
-      },
-      {
-        "id": "delivery-8",
-        "title": "8. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "fraud",
-    "title": "Fraud Prevention & Transaction Security Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Suspicious activity is reviewed; a flag is not proof of fraud.",
-      "Proportionate controls protect customers and paid files."
-    ],
-    "sections": [
-      {
-        "id": "fraud-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "fraud-2",
-        "title": "2. Potentially suspicious activity",
-        "content": "We may review unauthorised payment attempts, stolen payment instruments, payment-credential abuse, use of another person’s account or payment instrument without permission, multiple failed attempts, abusive multiple accounts and unusual transaction patterns. Technical failures, travel, shared networks and honest mistakes can also produce unusual patterns. No flagged transaction is automatically treated as fraudulent."
-      },
-      {
-        "id": "fraud-3",
-        "title": "3. Payment and refund manipulation",
-        "content": "Prohibited conduct includes fake or edited payment confirmations, manipulating payment status or a client-side success screen, bypassing the server’s payment check, and exploiting website/API vulnerabilities to obtain unpaid products. Deliberately false non-delivery statements, repeated refund abuse or knowingly abusive chargebacks may be investigated. A good-faith complaint, unsuccessful payment or exercise of lawful dispute rights is not abuse by itself."
-      },
-      {
-        "id": "fraud-4",
-        "title": "4. Access and distribution abuse",
-        "content": "We may examine account sharing, paid-link sharing, unauthorised redistribution, bulk or automated downloads, attempts to bypass authentication or authorisation, and unauthorised access to another customer’s account. For example, posting an expiring paid link publicly or repeatedly calling the download API to harvest files may justify restriction while the facts are checked."
-      },
-      {
-        "id": "fraud-5",
-        "title": "5. Proportionate actions",
-        "content": "Where reasonably necessary and subject to applicable law, we may temporarily delay delivery, seek relevant clarification, decline or cancel a suspicious order, limit download requests, restrict an account, preserve relevant records or cooperate with the payment provider. Restrictions should match the concern and available evidence. If a legitimate paid order cannot be supplied, the refund policy and applicable law remain relevant; restrictions do not authorise keeping money without a lawful basis."
-      },
-      {
-        "id": "fraud-6",
-        "title": "6. Review and cooperation",
-        "content": "Contact support if you believe a restriction is mistaken. Provide the order reference and relevant explanation. We review available records, correct errors and communicate an appropriate resolution, except where disclosure would undermine security or violate law. We may cooperate with banks, processors or competent authorities where authorised or legally required. Never send OTPs, passwords, CVV or authentication secrets to prove a purchase."
-      },
-      {
-        "id": "fraud-7",
-        "title": "7. Security reporting",
-        "content": "Report suspected vulnerabilities privately to our support email with a concise description and non-sensitive reproduction steps. Do not access other customers’ data, disrupt the service or extract files beyond what is necessary to describe the issue. This policy does not promise a bounty or grant permission for intrusive testing."
-      },
-      {
-        "id": "fraud-8",
-        "title": "8. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "chargebacks",
-    "title": "Chargeback & Payment Dispute Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Bank disputes and merchant refunds are separate.",
-      "Only relevant, legitimately collected evidence is supplied."
-    ],
-    "sections": [
-      {
-        "id": "chargebacks-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "chargebacks-2",
-        "title": "2. What a chargeback means",
-        "content": "A chargeback is a payment reversal or dispute process raised through a bank, card issuer or payment network, distinct from a refund requested directly from us. Rights, deadlines and procedures may depend on the payment method, bank, network, provider and applicable law. Please contact us first for order, product, access or refund concerns so we can try to resolve them. This request does not limit lawful rights or require withdrawal of a dispute."
-      },
-      {
-        "id": "chargebacks-3",
-        "title": "3. Our response process",
-        "content": "We identify the transaction, compare payment and delivery records, review customer communications and respond through the relevant payment-provider process. Razorpay facilitates the payment relationship; it does not guarantee a transaction, refund, dispute decision or chargeback reversal. We cannot promise the outcome or decide every bank/card-network dispute ourselves. An open dispute does not automatically remove access. If the provider records a lost dispute against the payment funding the order, further download authorisations are restricted pending review; contact support about an error or a later reversal. This restriction does not remove mandatory rights."
-      },
-      {
-        "id": "chargebacks-4",
-        "title": "4. Evidence we may provide",
-        "content": "Necessary evidence may include order ID, payment ID/reference, date/time, amount and currency, product and listing snapshot, customer account/order information, verified payment status, access-grant timestamp, download-authorisation timestamp, relevant authorisation/security logs, relevant support messages, refund records and confirmation-email status where actually recorded. We minimise disclosure to information legitimately collected and needed for that dispute. We never submit passwords, full card numbers, CVV, OTPs, API secrets or payment-authentication secrets as evidence."
-      },
-      {
-        "id": "chargebacks-5",
-        "title": "5. Non-delivery claims",
-        "content": "We may distinguish captured payment, server verification, order creation, access being granted, a download being authorised and an email being sent. The store records authorisations, not a reliable record that a complete file was saved, opened or used on the customer’s device. We do not represent an issued link as conclusive proof of a completed download. If notification or actual access activity is not recorded, we do not invent it. A verified payment with no usable access is investigated for restoration or an appropriate refund."
-      },
-      {
-        "id": "chargebacks-6",
-        "title": "6. Unauthorised transaction claims",
-        "content": "We investigate available account, payment and security records without automatically accusing the customer of fraud. We cooperate with the provider, supply relevant evidence when requested, and may restrict access where credible evidence justifies it. Report suspected account compromise promptly. An allegation alone is not a finding of misconduct."
-      },
-      {
-        "id": "chargebacks-7",
-        "title": "7. Product not as described",
-        "content": "We compare the delivered product and version with the product listing captured at purchase, including included files, dependencies, limitations and license. We may request error details and offer genuine technical support, corrections or replacement files. Material differences that cannot appropriately be resolved are considered under the refund policy and applicable law."
-      },
-      {
-        "id": "chargebacks-8",
-        "title": "8. Refund interaction",
-        "content": "An existing refund request does not extinguish dispute rights. If we already issued a refund, we may provide the refund reference and amount to avoid duplicate recovery. If a chargeback is underway, we may coordinate through the provider before issuing another refund. We do not threaten customers or make a refund conditional on surrendering non-waivable rights. Contact support with the dispute reference where available so the cases can be matched."
-      },
-      {
-        "id": "chargebacks-9",
-        "title": "9. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "license",
-    "title": "Digital Product License & Usage Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Use purchased templates within their actual license.",
-      "Product-specific and third-party licenses take precedence."
-    ],
-    "sections": [
-      {
-        "id": "license-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "license-2",
-        "title": "2. Scope of rights",
-        "content": "Purchases provide the use/access rights stated in the product’s listing and included license. They do not transfer copyright or exclusive ownership of the underlying original product unless an express agreement says so. Product-specific license terms override this general policy for that product, and open-source or third-party licenses govern their respective components. Contact support before purchase if the listing does not state a right you need."
-      },
-      {
-        "id": "license-3",
-        "title": "3. Existing template collection",
-        "content": "The 20 static templates in the original collection include a Single Project Template License: the purchaser may edit and use the source for one personal or client website, including commercial use; a client may receive the resulting customised website; attribution is optional; separate projects require separate licenses. Consult the actual LICENSE.txt supplied with the purchased item. We do not extend these terms to an unrelated product with a different license."
-      },
-      {
-        "id": "license-4",
-        "title": "4. Permitted use",
-        "content": "You may install, customise and use a purchased template in your own website or an authorised client project where its license permits. Creating the permitted finished website is distinct from offering the original package as a competing download. Preserve notices required by included third-party licenses and obtain any separately required services, dependencies or rights."
-      },
-      {
-        "id": "license-5",
-        "title": "5. General restrictions",
-        "content": "Unless a specific applicable license permits it, do not resell or redistribute original files; sublicense the original package; share paid links; upload paid source packages to public hosting; publish the complete paid product for free; give the files to third parties for redistribution; claim the original product as your own creation; create a competing digital-download listing from those files; or circumvent access controls. These restrictions do not override an open-source license or prohibit a permitted finished project/client handover."
-      },
-      {
-        "id": "license-6",
-        "title": "6. Breach and questions",
-        "content": "We may seek clarification, request correction or restrict further access where there is credible evidence of a license breach, proportionately and subject to law. A restriction does not decide a legal dispute or remove statutory remedies. Ask support about multi-project, redistribution or broader rights before relying on them; no unpublished extended license is assumed."
-      },
-      {
-        "id": "license-7",
-        "title": "7. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "copyright",
-    "title": "Copyright & Intellectual Property Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Rights are claimed only where owned or authorised.",
-      "Third-party and open-source notices remain applicable."
-    ],
-    "sections": [
-      {
-        "id": "copyright-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "copyright-2",
-        "title": "2. Ownership",
-        "content": "We claim rights only in content, products and assets that we own or are legally authorised to distribute. Copyright, trademark and other intellectual-property rights remain with the applicable rights holder. A customer receives the stated license/access rights, not ownership of the original product’s intellectual property, unless an express product-specific agreement provides otherwise."
-      },
-      {
-        "id": "copyright-3",
-        "title": "3. Included components",
-        "content": "A package may contain original work alongside third-party or open-source components. We do not claim every component was created entirely from scratch. Applicable third-party licenses and notices continue to govern those components and must be preserved where required. Product files and listings should identify relevant dependencies and licensing information."
-      },
-      {
-        "id": "copyright-4",
-        "title": "4. Customer responsibilities",
-        "content": "Use only content, trademarks and additions for which you have rights. Do not remove required attribution or ownership notices, falsely claim authorship of the original product, or distribute paid original files beyond the applicable license. Customising a permitted website is allowed within the product license."
-      },
-      {
-        "id": "copyright-5",
-        "title": "5. Rights-holder reports",
-        "content": "Send the grievance contact your identity and contact details, a description of the protected work, the allegedly infringing listing/file or URL, the basis of your authority, and a clear explanation. Include only information necessary to review the report. We may request clarification, preserve relevant records, contact the affected party or restrict a disputed listing while reviewing credible information. We do not promise removal or a legal outcome solely because a report was made."
-      },
-      {
-        "id": "copyright-6",
-        "title": "6. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "acceptable-use",
-    "title": "Acceptable Use Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Use the store lawfully and respect access controls."
-    ],
-    "sections": [
-      {
-        "id": "acceptable-use-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "acceptable-use-2",
-        "title": "2. Lawful use",
-        "content": "Use the website and purchased products in accordance with applicable law and the relevant license. Do not use our services to impersonate others, mislead support, submit knowingly false information or facilitate infringement or unlawful activity."
-      },
-      {
-        "id": "acceptable-use-3",
-        "title": "3. Service integrity",
-        "content": "Do not introduce malicious code, disrupt availability, probe private customer records, bypass authentication, exploit APIs for unpaid access or perform bulk automated downloads. Do not share accounts or paid access links. Normal browsing, licensed use and good-faith requests for help are permitted."
-      },
-      {
-        "id": "acceptable-use-4",
-        "title": "4. Communications",
-        "content": "Provide relevant, accurate information in support requests. Avoid threats, harassment, unsolicited promotional messages or disclosure of other people’s confidential information. Report a problem without sending payment authentication secrets or unnecessary personal data."
-      },
-      {
-        "id": "acceptable-use-5",
-        "title": "5. Enforcement and review",
-        "content": "We may limit activity, restrict access or investigate credible misuse proportionately and subject to law. We consider context and allow customers to contact support about mistakes. Good-faith disputes, critical feedback and lawful remedies are not prohibited by this policy."
-      },
-      {
-        "id": "acceptable-use-6",
-        "title": "6. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "account-security",
-    "title": "Account Security & Access Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Supabase handles sign-in and email recovery.",
-      "Keep credentials and download links private."
-    ],
-    "sections": [
-      {
-        "id": "account-security-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "account-security-2",
-        "title": "2. Account creation",
-        "content": "Use an accurate name, email and mobile number. Email/password authentication and confirmation are handled through Supabase Auth. We maintain the account profile and order data in Supabase. Store administrative privileges are assigned separately by the owner; registration does not grant them."
-      },
-      {
-        "id": "account-security-3",
-        "title": "3. Protecting your account",
-        "content": "Keep passwords confidential, use a strong unique password, and sign out of shared devices. Do not share accounts or allow unauthorised use of payment instruments. Do not attempt to access another customer’s account or files. Keep your registered email secure because it controls recovery."
-      },
-      {
-        "id": "account-security-4",
-        "title": "4. Password recovery",
-        "content": "Request an email recovery link from the forgot-password page. A valid recovery token is required to set a new password; merely knowing a mobile number or email does not authorise a reset. Recovery links expire and must not be shared. Following a successful reset, store sessions are invalidated and you must sign in again."
-      },
-      {
-        "id": "account-security-5",
-        "title": "5. Sessions and suspected compromise",
-        "content": "The website uses a secure session cookie and server-side session records, including relevant IP/user-agent information. Report suspicious access through support promptly. We may invalidate sessions or temporarily restrict an account involved in suspected or confirmed abuse, subject to review and applicable law. A restriction is not an automatic accusation of fraud."
-      },
-      {
-        "id": "account-security-6",
-        "title": "6. Continuity and assistance",
-        "content": "Expired sessions and expired download links can normally be renewed by signing in and requesting access again. If you lose email access or cannot recover the account, contact support with relevant order information. We may request proportionate evidence of ownership and do not promise access without adequate verification."
-      },
-      {
-        "id": "account-security-7",
-        "title": "7. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "payments",
-    "title": "Order, Payment & Transaction Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Only verified captured payments enable fulfilment.",
-      "No customer-side price or success flag is authoritative."
-    ],
-    "sections": [
-      {
-        "id": "payments-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "payments-2",
-        "title": "2. Order formation",
-        "content": "Review the product, license, account email and final INR total. The server determines product prices and any valid advertised discount using the catalog. It stores product information, total, order ID and timestamps. Accept the purchase policies before initiating payment. A pending order is a request to purchase and does not establish successful payment."
-      },
-      {
-        "id": "payments-3",
-        "title": "3. Razorpay processing",
-        "content": "The integrated checkout uses Razorpay. Payment-method availability and transaction acceptance depend on the provider and financial institutions. Razorpay’s own applicable terms relate to payment processing and remain separate from our customer-facing product policies; not every provider rule becomes a merchant policy. Do not send card authentication details to us over support channels."
-      },
-      {
-        "id": "payments-4",
-        "title": "4. Trusted verification",
-        "content": "We create the payment-provider order on the server and bind it to the customer order. We verify the checkout signature and fetch provider payment state, or validate a provider webhook and fetch its current state. Amount, currency, order identity, environment and captured status must match before fulfilment. A frontend “payment successful” screen, a client request, a screenshot or a payment notification alone cannot unlock the files."
-      },
-      {
-        "id": "payments-5",
-        "title": "5. Pending, failed and duplicate events",
-        "content": "Failed, cancelled, pending, test and unverified transactions do not automatically grant paid access. A debit may require investigation even when the screen shows a failure. Repeated legitimate payment notifications are processed safely so one payment does not create repeated fulfilment. Avoid immediately paying again if you suspect a debit; check the account and contact support."
-      },
-      {
-        "id": "payments-6",
-        "title": "6. Receipts and refunds",
-        "content": "Order/payment confirmations and payment receipts may be provided through the account or email. A payment receipt is not represented as a GST tax invoice. Contact support for the legally required invoice or tax documentation applicable to your order. Refunds are reviewed under the Refund & Cancellation Policy and processed using the provider’s supported procedures. No gateway, bank or dispute outcome is guaranteed."
-      },
-      {
-        "id": "payments-7",
-        "title": "7. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "product-requirements",
-    "title": "Product Description & Technical Requirements Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Check included files and requirements before purchase.",
-      "No universal device or future-version guarantee."
-    ],
-    "sections": [
-      {
-        "id": "product-requirements-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "product-requirements-2",
-        "title": "2. Listing standards",
-        "content": "Each listing should accurately state, where relevant: product name, description, features, included files, framework/technology, version, browser/system requirements, installation instructions, dependencies, known limitations, license and demo/live preview where available. Material details must not be replaced by vague promotional claims. Contact support before purchase about any missing information needed for your intended use."
-      },
-      {
-        "id": "product-requirements-3",
-        "title": "3. Customer review",
-        "content": "Read the listing and preview to confirm that the product fits your needs and skills. Source packages may require a suitable editor, supported runtime, hosting, package installation or separately obtained API/service accounts as stated. A frontend demonstration does not imply that a live backend, payments, hosting, subscriptions or third-party approvals are included."
-      },
-      {
-        "id": "product-requirements-4",
-        "title": "4. Compatibility and modifications",
-        "content": "Compatibility is limited to the product’s stated requirements. Browsers, devices, server environments and libraries change. We do not promise operation on every device, browser or future version. Customer modifications and external services can affect operation. These limitations do not excuse a material inconsistency with the description at purchase."
-      },
-      {
-        "id": "product-requirements-5",
-        "title": "5. Support, updates and errors",
-        "content": "Contact support for genuine installation, access or product problems with your order reference and relevant error details. We may troubleshoot, supply replacement files or correct a defect. Support does not automatically mean a refund. Unlimited future updates, lifetime support, custom development or continuing compatibility are included only when expressly offered. Genuine material defects or description mismatches remain subject to the refund policy."
-      },
-      {
-        "id": "product-requirements-6",
-        "title": "6. Version records",
-        "content": "The order retains the purchased listing information and version where provided. We use that snapshot when assessing a description dispute, rather than assuming a later edited listing was what the customer saw. Report inaccurate descriptions so we can investigate and correct them."
-      },
-      {
-        "id": "product-requirements-7",
-        "title": "7. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "download-records",
-    "title": "Download, Access & Delivery Record Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Authorisation is recorded; completed receipt is not assumed."
-    ],
-    "sections": [
-      {
-        "id": "download-records-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "download-records-2",
-        "title": "2. Records actually maintained",
-        "content": "The store keeps order IDs, account association, product information, payment references/status, verification timestamps, access-grant timestamps and download-authorisation records. Authorisation records include product/order/account identifiers, time, expiry, and relevant IP/user-agent information. Support requests and confirmation-email status may also be retained when those operations occur."
-      },
-      {
-        "id": "download-records-3",
-        "title": "3. What records mean",
-        "content": "An access-grant timestamp means the account was entitled to request a file. An authorisation timestamp means a protected link was issued. Neither alone proves that the customer saved, opened or used a complete file. This store does not independently record a reliable completed-download or file-open event. We will not claim that unrecorded activity occurred or treat a sent email as proof it was read."
-      },
-      {
-        "id": "download-records-4",
-        "title": "4. Uses and lawful sharing",
-        "content": "Records support fulfilment, troubleshooting, fraud prevention, refund review and dispute responses. Relevant necessary records may be shared with payment processors, hosting/storage/email providers, advisers or competent authorities as described in the Privacy Policy. Payment authentication secrets are excluded from dispute evidence."
-      },
-      {
-        "id": "download-records-5",
-        "title": "5. Retention and customer requests",
-        "content": "We retain necessary transaction records for applicable accounting, tax, security, dispute and legal requirements, and review other records for deletion when no longer needed. A deletion request does not necessarily remove records that must lawfully be retained. Ask support to review an inaccurate record or an access problem; we assess requests and correct verified errors where appropriate."
-      },
-      {
-        "id": "download-records-6",
-        "title": "6. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "duplicate-payments",
-    "title": "Duplicate Payment & Payment Error Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Report suspected double charges before making another payment."
-    ],
-    "sections": [
-      {
-        "id": "duplicate-payments-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "duplicate-payments-2",
-        "title": "2. What to send",
-        "content": "If you believe you were charged twice, contact support with each order ID, payment reference, date/time and amount. You may attach a redacted bank entry that shows the relevant transaction. Do not include full card details, CVV, OTPs, passwords or unrelated financial information."
-      },
-      {
-        "id": "duplicate-payments-3",
-        "title": "3. Investigation",
-        "content": "We compare order IDs, references, timestamps, amounts and the payment provider’s status. A repeated webhook or a temporary bank authorisation is not necessarily a second captured payment. We distinguish duplicate charges for one order from separate purchases and explain the available findings."
-      },
-      {
-        "id": "duplicate-payments-4",
-        "title": "4. Confirmed duplicates",
-        "content": "If a genuine duplicate payment is confirmed, the duplicate amount is handled through the applicable refund process, subject to provider procedures and law. We supply the available reference after initiation and help investigate pending or failed refund processing. We do not promise a fixed bank credit date."
-      },
-      {
-        "id": "duplicate-payments-5",
-        "title": "5. Debited but pending or failed",
-        "content": "A payment can require reconciliation when the browser closes, connectivity fails or provider confirmation is delayed. Do not treat a screen message alone as final proof. We verify provider state and either restore valid access, explain the unresolved status or review an appropriate refund. Existing chargebacks or refunds are coordinated to avoid duplicate reimbursement without removing lawful rights."
-      },
-      {
-        "id": "duplicate-payments-6",
-        "title": "6. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
+        "id": "chargeback-interaction",
+        "title": "9. Interaction with Chargebacks & Payment Disputes",
+        "content": "We encourage customers to contact our support team directly to resolve payment errors quickly. If a chargeback or payment dispute is raised with a bank while a refund request is open, the payment processor handles the dispute, and refund processing through our portal may be paused until the bank dispute is concluded."
       }
     ]
   },
   {
     "slug": "privacy",
-    "title": "Privacy & Data Handling Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
+    "title": "Privacy Policy",
+    "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
+    "lastUpdated": "2026-10-05",
     "quickSummary": [
-      "Data practices match account, order, support and download flows.",
-      "Necessary data may be shared with service and payment providers."
+      "Explains how Booyahstudio collects, uses, stores, and protects your personal data.",
+      "Covers account details, order history, payment verification info, download logs, and email communications.",
+      "We do not store full credit card numbers, UPI PINs, or banking passwords.",
+      "Data is never sold to third parties; shared only with essential service providers (e.g. payment processors).",
+      "Outlines data retention, security measures, cookies, and your choices and rights."
     ],
     "sections": [
       {
-        "id": "privacy-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
+        "id": "business-identity",
+        "title": "1. Business & Contact Information",
+        "content": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.\n\nThis Privacy Policy explains how Booyahstudio (operated by MANISH KUMAR SONKAR) collects, uses, discloses, and safeguards your personal data when you visit our website, register an account, or purchase digital templates."
       },
       {
-        "id": "privacy-2",
-        "title": "2. Who handles your information",
-        "content": "Booyahstudio is operated by the merchant identified above. Contact the same grievance channel about privacy requests. This policy describes this website’s account, purchase, delivery, support and security data; third-party payment and communication services also have their own applicable privacy terms."
+        "id": "info-collected",
+        "title": "2. Information We Collect",
+        "content": "We collect information necessary to fulfill digital orders, provide customer support, and maintain account security:\n• Account & Contact Information: Name, email address, mobile number, and password hash.\n• Order & Transaction Details: Purchased items, order IDs, payment reference IDs, amounts paid, and transaction timestamps.\n• Download & Access Records: Server access logs, IP addresses, user-agent strings, and download timestamps for security and license enforcement.\n• Support Communications: Emails, WhatsApp messages, and support tickets sent to us."
       },
       {
-        "id": "privacy-3",
-        "title": "3. Information collected",
-        "content": "Registration supplies name, email and mobile number to Supabase Auth and the account profile; Supabase handles the password authentication data. We store account identifiers, profile information, optional company/country details, cart and wishlist selections, order items, product-listing snapshots, amounts, payment references/status, accepted policy version/timestamp, delivery/access records and download-authorisation records. Support forms collect name, email, message, reference and time; emails or WhatsApp conversations contain what you choose to send. Newsletter signup records email, consent times and subscription status. Session, rate-limit and authorisation records include relevant IP/user-agent or derived security identifiers and timestamps."
+        "id": "cookies-storage",
+        "title": "3. Cookies & Local Browser Storage",
+        "content": "We use essential session cookies and local browser storage to keep you logged in, save items in your shopping cart/wishlist, and maintain secure navigation. We do not use intrusive cross-site tracking cookies."
       },
       {
-        "id": "privacy-4",
-        "title": "4. Cookies and browser storage",
-        "content": "The website uses a session cookie for authentication and local browser storage for cached account display, cart, wishlist and navigation preferences. These are used for store functions. The current store does not add its own advertising or analytics tracker. Embedded payment checkout and third-party previews/assets may make requests to their providers and use their own necessary browser mechanisms; the providers’ notices apply to those services. Clearing storage or blocking required cookies can affect sign-in and saved selections."
+        "id": "payment-providers",
+        "title": "4. Payment Processing & Service Providers",
+        "content": "Online payment details (such as UPI IDs, card numbers, or net banking credentials) are collected directly by PCI-DSS compliant payment gateway partners (such as Razorpay). We NEVER receive, process, or store sensitive financial secrets like card security codes (CVV) or UPI PINs on our servers.\n\nWe share necessary data only with trusted infrastructure providers (e.g., hosting, email delivery) strictly for operating the store."
       },
       {
-        "id": "privacy-5",
-        "title": "5. Payment information",
-        "content": "Payment authentication is handled through Razorpay and the relevant payment institutions. Our application stores order/payment identifiers, amount, currency and verified status; it does not persist full card numbers, CVV or OTPs in its store records. We do not request those secrets for support or disputes. Passwords and recovery/payment credentials are never used as dispute evidence. Do not send them through support channels."
+        "id": "data-use",
+        "title": "5. Purposes of Data Processing & Email Communications",
+        "content": "We use your personal data to:\n• Verify payments and deliver digital template downloads to your account vault.\n• Send order receipts, download notifications, and critical security alerts.\n• Respond to customer support and grievance requests.\n• Prevent fraud, unauthorized sharing, and system abuse.\n\nWe do not sell, rent, or trade your personal information to third parties for marketing purposes."
       },
       {
-        "id": "privacy-6",
-        "title": "6. Purposes and recipients",
-        "content": "We use information to authenticate customers, provide purchased access, send transaction/recovery emails, maintain order records, answer requests, investigate security issues, handle refunds/disputes and meet legal obligations. Supabase provides authentication/database/storage; Vercel hosts the application; Razorpay processes payments; Resend sends configured emails. Relevant information may also be provided to other necessary service/security providers, professional advisers and government/law-enforcement or competent authorities where legally required or otherwise lawfully justified. Contacting us through WhatsApp involves that service. We do not claim information is never shared. We limit sharing to the purpose and relevant information."
+        "id": "security-retention",
+        "title": "6. Data Security, Safeguards & Retention",
+        "content": "We implement industry-standard administrative, technical, and physical safeguards—including SSL/TLS encryption, hashed passwords, and restricted server access—to protect your personal information against unauthorized access, loss, or disclosure.\n\nWe retain order records and transaction logs for as long as required to fulfill legal, tax, accounting, and dispute resolution requirements."
       },
       {
-        "id": "privacy-7",
-        "title": "7. Dispute minimisation",
-        "content": "For payment disputes we may provide the order/payment reference, amount, purchased listing, verification/access/authorisation timestamps, relevant support communications, refund history and security records actually collected. We do not invent device fingerprints, file-open events, completed downloads or read receipts. Irrelevant personal information and authentication secrets must be excluded."
+        "id": "dispute-minimisation",
+        "title": "7. Record Sharing for Dispute Minimisation",
+        "content": "In the event of a payment dispute, fraud investigation, or legal inquiry, relevant transaction records (such as IP logs, order confirmations, and download timestamps) may be shared with payment processors, banks, or law enforcement agencies as required by applicable law."
       },
       {
-        "id": "privacy-8",
-        "title": "8. Retention and safeguards",
-        "content": "Records are kept as needed for the transaction, customer service, tax/accounting obligations, fraud/security review, disputes and legal requirements. We review unnecessary records for removal and do not promise immediate deletion where retention is legally necessary. We use access controls, server-only credentials, private file storage and expiring links; no online system can promise absolute security. Providers may process data in their configured service locations, including outside your location, subject to applicable safeguards and law."
-      },
-      {
-        "id": "privacy-9",
-        "title": "9. Your choices and requests",
-        "content": "Contact support to request access, correction, deletion or other privacy rights available under applicable law, to report a concern, or to withdraw optional newsletter consent. You can stop newsletter messages by emailing support with “unsubscribe”; transaction and security communications may still be needed. We may verify identity proportionately before acting. We explain when a request cannot be completed because of a lawful retention or other requirement. Do not submit information about a child or another person without the required authority. Policy updates are published with a revised date."
-      },
-      {
-        "id": "privacy-10",
-        "title": "10. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "grievance",
-    "title": "Customer Support & Grievance Redressal Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "One published contact for support and grievances.",
-      "Provide references, not payment secrets."
-    ],
-    "sections": [
-      {
-        "id": "grievance-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "grievance-2",
-        "title": "2. Responsible contact",
-        "content": "MANISH KUMAR SONKAR, FF ONLINE SHOP, operating Booyahstudio, is the named support and grievance contact. Email connectbooyahstudio@gmail.com or WhatsApp +91 7393845435. Written grievances may also be addressed to the business address above. These are the same channels for order, delivery, product, privacy, intellectual-property and payment-related complaints."
-      },
-      {
-        "id": "grievance-3",
-        "title": "3. Submit your concern",
-        "content": "Describe the issue and provide the order ID, payment reference, purchase date and product where relevant. For installation issues, include the environment and error message with secrets removed. If you already contacted us, include the earlier reference. The website contact form returns a support reference when the request is successfully saved."
-      },
-      {
-        "id": "grievance-4",
-        "title": "4. Review and resolution",
-        "content": "We review the request and relevant records and may ask for necessary clarification. The outcome may be restored access, technical troubleshooting, replacement files, a correction, explanation, refund decision or other appropriate action. Support does not automatically entitle a refund, and a refusal must remain reasonable and legally compliant. If a payment-provider dispute exists, we may coordinate through that process."
-      },
-      {
-        "id": "grievance-5",
-        "title": "5. Escalation and statutory duties",
-        "content": "If unresolved, send the same contact a message marked “Grievance” with the earlier reference and the resolution sought. We handle acknowledgment and redress within any applicable statutory requirements; this policy does not invent a separate guaranteed support or refund-credit SLA. You retain access to competent consumer forums, regulators, courts and payment-provider/bank remedies under applicable law. Contacting us is encouraged and does not remove those rights."
-      },
-      {
-        "id": "grievance-6",
-        "title": "6. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
+        "id": "user-rights",
+        "title": "8. Your Choices, Rights & Grievance Support",
+        "content": "You have the right to access, update, or correct your personal account details by logging into your account or emailing connectbooyahstudio@gmail.com. You may also request deletion of your account, subject to non-deletable statutory transaction records.\n\nFor privacy inquiries or grievance concerns, contact MANISH KUMAR SONKAR at connectbooyahstudio@gmail.com."
       }
     ]
   },
   {
     "slug": "disclaimer",
     "title": "Disclaimer & Limitation of Liability",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
+    "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
+    "lastUpdated": "2026-10-05",
     "quickSummary": [
-      "Reasonable limitations subject to mandatory rights."
+      "Sets out general disclaimers regarding website availability, digital product compatibility, and third-party tools.",
+      "Clarifies that digital templates are provided \"as-is\" and require appropriate developer skills and environment setup.",
+      "Defines limits on financial liability while preserving statutory consumer rights under Indian law."
     ],
     "sections": [
       {
-        "id": "disclaimer-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
+        "id": "business-identity",
+        "title": "1. Business & Contact Information",
+        "content": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.\n\nThis Disclaimer & Limitation of Liability document establishes the operational boundaries, technical disclaimers, and liability limits for Booyahstudio."
       },
       {
-        "id": "disclaimer-2",
-        "title": "2. Product scope",
-        "content": "Products are supplied within the features and requirements described at purchase. A template or source package is not automatically a hosted service, business result or guarantee of revenue. Demos illustrate stated features; sample content is illustrative. Any specific commitment in a listing and any legally required product standard remains applicable."
+        "id": "product-scope",
+        "title": "2. Scope of Digital Products & Templates",
+        "content": "Booyahstudio provides digital website templates, user interface source code, and design assets intended for web developers, creators, and businesses. While we design code to high modern standards, digital templates are provided on an “as-is” and “as-available” basis without warranties of fitness for a specific custom application."
       },
       {
-        "id": "disclaimer-3",
-        "title": "3. Technical dependencies",
-        "content": "Operation may depend on browser/device capabilities, hosting/server configuration, external APIs, framework/library versions and third-party services. Customer modifications can introduce errors. We do not promise universal current or future compatibility, uninterrupted availability or continued operation of an external API outside our control. We remain responsible for addressing genuine material defects or misdescription as required by our policies and law."
+        "id": "technical-dependencies",
+        "title": "3. Technical Dependencies, Compatibility & Modifications",
+        "content": "Our templates depend on standard web technologies, frameworks (such as React, Vite, Tailwind CSS, Node.js), and third-party libraries specified in the product descriptions.\n\nYou are responsible for reviewing technical prerequisites before purchase and ensuring your server or hosting environment is compatible. We are not liable for breaking changes caused by unannounced third-party library updates, modified hosting configurations, or user code customizations."
       },
       {
-        "id": "disclaimer-4",
-        "title": "4. Availability and external events",
-        "content": "Maintenance, network failures, security incidents and events outside reasonable control may temporarily affect the store or delivery. We take reasonable steps to investigate and restore service. A temporary interruption does not remove a customer’s right to support, delivery or an applicable remedy for a paid order."
+        "id": "service-availability",
+        "title": "4. Service Availability, External Networks & Third Parties",
+        "content": "While we maintain reliable cloud hosting, we do not guarantee uninterrupted, error-free website access 100% of the time. Temporary downtime may occur due to scheduled maintenance, server updates, telecom outages, or external network issues beyond our control."
       },
       {
-        "id": "disclaimer-5",
-        "title": "5. Liability",
-        "content": "To the extent permitted by applicable law, liability for ordinary contractual losses relating to a particular product is limited to reasonably foreseeable direct losses and, where lawful and fair, the amount paid for that affected product. Indirect or consequential losses, lost profits and losses caused by unauthorised modifications or unrelated third-party failures are excluded only to the extent such exclusion is lawful. This does not eliminate responsibility for a breach merely by calling a loss indirect."
+        "id": "general-disclaimers",
+        "title": "5. General Disclaimers & Warranty Exclusions",
+        "content": "To the fullest extent permitted by law, Booyahstudio disclaims all express or implied warranties, including implied warranties of merchantability, fitness for a particular purpose, or non-infringement.\n\nWe do not warrant that template usage will yield specific financial profits, business success, or search engine rankings for your application."
       },
       {
-        "id": "disclaimer-6",
-        "title": "6. Rights that remain",
-        "content": "No term excludes or limits fraud, wilful misconduct, liability that cannot lawfully be excluded, mandatory consumer remedies or other non-waivable statutory rights. Any limitation applies only to the extent enforceable in the circumstances. Refund, correction and other remedies required by law take precedence over a conflicting disclaimer. Nothing offers “complete legal protection” to the merchant or guarantees the result of a dispute."
-      },
-      {
-        "id": "disclaimer-7",
-        "title": "7. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "updates",
-    "title": "Policy Updates & Modifications",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Published changes include a date and preserve accrued rights."
-    ],
-    "sections": [
-      {
-        "id": "updates-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "updates-2",
-        "title": "2. Reasons for updates",
-        "content": "We may revise policies when product delivery, services, payment processes, security practices or applicable law change. We publish the updated text and date on the relevant page. Material operational changes should be reflected in the privacy and delivery descriptions before they are relied on."
-      },
-      {
-        "id": "updates-3",
-        "title": "3. Which version applies",
-        "content": "The checkout records the accepted policy version. Purchased product and license information is retained with the order. Unless a lawful requirement or valid agreement provides otherwise, later revisions do not retrospectively remove rights that arose from an earlier purchase or rewrite the license supplied with it."
-      },
-      {
-        "id": "updates-4",
-        "title": "4. Notification and questions",
-        "content": "Review current policies before a new purchase. Where legally required or appropriate for a material change affecting an existing relationship, we provide additional notice using the website or available contact information. Continued browsing does not waive mandatory rights. Contact support for clarification or a copy of the policy relevant to your order."
-      },
-      {
-        "id": "updates-5",
-        "title": "5. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "purchase",
-    "title": "Digital Goods Purchase Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Read → pay → verify → access your account → download."
-    ],
-    "sections": [
-      {
-        "id": "purchase-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "purchase-2",
-        "title": "2. Purchase checklist",
-        "content": "Review the product’s features, included files, technology, requirements, version, limitations and license. Ask about uncertainty before paying. Use your own accurate account details and an authorised payment method. Check the final INR total and accept the purchase policies."
-      },
-      {
-        "id": "purchase-3",
-        "title": "3. Payment and delivery",
-        "content": "Razorpay processes the payment. Our server verifies a captured payment matching the stored order before enabling access. The account then provides authorised expiring links to private digital ZIPs. Confirmation email may also be sent. A pending/failed/unverified/test payment does not unlock files, and a browser success message alone does not establish final fulfilment."
-      },
-      {
-        "id": "purchase-4",
-        "title": "4. Using the product",
-        "content": "Download and keep a backup within the license. Customise the template for the permitted project; do not redistribute the original package or share paid links unless its applicable license allows it. Product-specific and third-party licenses govern their respective rights."
-      },
-      {
-        "id": "purchase-5",
-        "title": "5. Problems, refunds and disputes",
-        "content": "Contact support with references for access problems, corruption, wrong files, material misdescription or duplicate payments. Purchases are generally non-refundable once successfully delivered, accessed or downloaded, with legally required and legitimate exceptions under the Refund & Cancellation Policy. Merchant refunds and bank/network disputes remain separate; no lawful rights must be withdrawn. Relevant actual transaction/delivery evidence may be provided through the provider’s process, without authentication secrets."
-      },
-      {
-        "id": "purchase-6",
-        "title": "6. Related policies",
-        "content": "Read Terms & Conditions, Refund & Cancellation, Digital Delivery, License, Product Requirements, Privacy, Fraud Prevention and Chargeback policies for the full terms. This summary does not override them or any mandatory law. All support and grievances use the business contacts on this page."
-      },
-      {
-        "id": "purchase-7",
-        "title": "7. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
-      }
-    ]
-  },
-  {
-    "slug": "cancellation",
-    "title": "Cancellation Policy",
-    "subtitle": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio",
-    "lastUpdated": "October 5, 2026",
-    "quickSummary": [
-      "Cancellation requests follow the digital-goods refund rules."
-    ],
-    "sections": [
-      {
-        "id": "cancellation-1",
-        "title": "1. Business identity",
-        "content": "MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio\nGSTIN: 09JALPS3433P1ZP\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address."
-      },
-      {
-        "id": "cancellation-2",
-        "title": "2. Digital-goods rule",
-        "content": "Because products are delivered electronically and may become accessible immediately after verified payment, purchases are generally non-refundable once the purchased product has been successfully delivered, accessed or downloaded. A customer accessing or downloading the product generally establishes digital delivery. This rule is subject to applicable law and the legitimate exceptions below; it is not an absolute refusal of refunds."
-      },
-      {
-        "id": "cancellation-3",
-        "title": "3. When a refund may be appropriate",
-        "content": "We reasonably review requests involving: successful payment with no purchased access or delivery; a confirmed duplicate payment for the same order; a wrong product supplied because of our error; materially corrupted or technically unusable files where reasonable assistance cannot resolve the issue; a product materially different from its description at purchase; a refund required by applicable law; or another legitimate case approved after review. We may offer a corrected file, replacement or restored access where that appropriately resolves the issue without limiting a legal refund entitlement."
-      },
-      {
-        "id": "cancellation-4",
-        "title": "4. Cases that do not automatically qualify",
-        "content": "Changing your mind, disliking a design after seeing the delivered product, not knowing how to use the technology, or failing to review stated requirements does not automatically create a refund entitlement, subject to law. For example, a React template accurately described as requiring development knowledge is not automatically refundable because the buyer expected a hosted service. A listing that wrongly promised an included backend presents a different issue and will be reviewed as a possible description mismatch."
-      },
-      {
-        "id": "cancellation-5",
-        "title": "5. Cancellation before access",
-        "content": "You can stop an unpaid checkout before completing payment. Closing the payment window does not establish that an attempted payment failed. Check the order if your account was debited. After payment, contact us promptly to request cancellation before delivery. We assess whether access has been granted and whether a refund exception or statutory right applies; cancellation cannot be guaranteed once electronic fulfilment has occurred."
-      },
-      {
-        "id": "cancellation-6",
-        "title": "6. How to request review",
-        "content": "Email or WhatsApp support with your order ID, payment reference, purchase date, product and reason. For technical issues, include error messages and relevant system details with secrets removed. We compare the listing at purchase with the delivered files and may request relevant clarification. We communicate the outcome and reason, or offer support, replacement, correction or a refund. Requesting help does not itself guarantee a refund, and a reasonable request will not be dismissed merely because the product is digital."
-      },
-      {
-        "id": "cancellation-7",
-        "title": "7. Approved refunds and timing",
-        "content": "Approved refunds are initiated through the original payment route where supported by the provider and applicable rules. We supply a refund reference when available and check failed or pending refunds. Actual credit depends on payment-provider and bank processing; this policy does not promise a fixed credit date or a successful outcome from Razorpay. Ask support if the refund remains unresolved. Access to a refunded product may be withdrawn consistently with the resolution and law. The current system restricts further download authorisations when any refund against the payment funding that order is confirmed, including a partial refund, while support reviews the agreed resolution. Refunding a separately recorded duplicate payment does not by itself cancel the original paid access. A refund notification email may be sent where configured."
-      },
-      {
-        "id": "cancellation-8",
-        "title": "8. Chargebacks and duplicate recovery",
-        "content": "A merchant refund request and a bank/payment-network chargeback are separate processes. You do not have to surrender lawful rights. If a refund has already been issued, we may provide its details in response to a duplicate dispute. If a chargeback is already open, we may coordinate through the provider before making another payment, to avoid duplicate reimbursement. Tell us about an existing dispute so the records can be reconciled; its outcome is not guaranteed."
-      },
-      {
-        "id": "cancellation-9",
-        "title": "9. Contact and resolution",
-        "content": "Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected."
+        "id": "limitation-liability",
+        "title": "6. Limitation of Liability & Statutory Rights",
+        "content": "Under no circumstances shall Booyahstudio, its owner MANISH KUMAR SONKAR, or its operators be liable for any indirect, incidental, consequential, special, or punitive damages (including loss of data, loss of profits, or business interruption) arising out of or related to the use or inability to use our digital products or website.\n\nOur total cumulative financial liability for any direct claim shall not exceed the exact amount paid by you for the specific product in question. Nothing in this disclaimer excludes or limits consumer rights that cannot be excluded under applicable Indian consumer protection laws."
       }
     ]
   }

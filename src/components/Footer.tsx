@@ -64,7 +64,11 @@ export const Footer: React.FC = () => {
               For the things you haven’t built yet.
             </p>
             <address className="not-italic text-xs leading-6 mt-4 text-slate-600">
-              {BUSINESS.owner} · {BUSINESS.legalName} · {BUSINESS.name}<br />GSTIN: {BUSINESS.gstin}<br />{BUSINESS.address}
+              {BUSINESS.owner} · {BUSINESS.name}
+              {BUSINESS.legalName ? ` · ${BUSINESS.legalName}` : ''}
+              {BUSINESS.gstin ? <><br />GSTIN: {BUSINESS.gstin}</> : null}
+              <br />
+              {BUSINESS.address}
               <br />
               <a href={`mailto:${BUSINESS.email}`} className="hover:underline">
                 {BUSINESS.email}

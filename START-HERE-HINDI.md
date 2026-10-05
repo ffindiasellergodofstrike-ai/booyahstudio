@@ -1,7 +1,6 @@
 # Pehle yeh padhein — Booyahstudio final setup
 
-**MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio**  
-GSTIN: 09JALPS3433P1ZP
+**MANISH KUMAR SONKAR | Booyahstudio**  
 
 ## Kahan kya milega
 

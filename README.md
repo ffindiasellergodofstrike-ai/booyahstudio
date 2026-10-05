@@ -1,7 +1,6 @@
 # Booyahstudio
 
-MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio
-GSTIN: 09JALPS3433P1ZP
+MANISH KUMAR SONKAR | Booyahstudio
 
 Single-seller digital-products store. React/Vite frontend, Express API on Vercel, Supabase Auth/PostgreSQL/private Storage, Razorpay checkout and Resend email.
 
