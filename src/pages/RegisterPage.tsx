@@ -64,8 +64,8 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (!password || password.length < 6) {
-      setErrorMessage('Password must be at least 6 characters long.');
+    if (!password || password.length < 8) {
+      setErrorMessage('Password must be at least 8 characters long.');
       return;
     }
 
@@ -85,8 +85,8 @@ export const RegisterPage: React.FC = () => {
       });
 
       if (res.success) {
-        showToast('success', 'Registration Complete', `Welcome to the store!`);
-        navigate('/account');
+        showToast('success', 'Check your email', res.message || 'Confirm your email, then sign in.');
+        navigate('/login');
       } else {
         setErrorMessage(res.message || 'Registration failed. Please check your details.');
         showToast('error', 'Registration Failed', res.message || 'Registration failed.');
@@ -132,7 +132,7 @@ export const RegisterPage: React.FC = () => {
 
             {/* 0. Full Name */}
             <div className="space-y-2">
-              <label className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
+              <label htmlFor="reg-name" className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
                 Full Name *
               </label>
               <div className="relative min-w-0">
@@ -154,7 +154,7 @@ export const RegisterPage: React.FC = () => {
 
             {/* 1. Mobile Number */}
             <div className="space-y-2">
-              <label className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
+              <label htmlFor="reg-mobile" className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
                 Mobile Number *
               </label>
               <div className="relative min-w-0">
@@ -177,7 +177,7 @@ export const RegisterPage: React.FC = () => {
 
             {/* 2. Email Address */}
             <div className="space-y-2">
-              <label className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
+              <label htmlFor="reg-email" className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
                 Email Address *
               </label>
               <div className="relative min-w-0">
@@ -201,10 +201,10 @@ export const RegisterPage: React.FC = () => {
             {/* 3. Password */}
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-4">
-                <label className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500 truncate">
+                <label htmlFor="reg-password" className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500 truncate">
                   Password *
                 </label>
-                <span className="text-[10px] text-slate-400 shrink-0">Min 6 chars</span>
+                <span className="text-[10px] text-slate-400 shrink-0">Min 8 chars</span>
               </div>
               <div className="relative min-w-0">
                 <Lock className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 shrink-0" />
@@ -234,7 +234,7 @@ export const RegisterPage: React.FC = () => {
 
             {/* 4. Confirm Password */}
             <div className="space-y-2">
-              <label className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
+              <label htmlFor="reg-confirm-password" className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
                 Confirm Password *
               </label>
               <div className="relative min-w-0">

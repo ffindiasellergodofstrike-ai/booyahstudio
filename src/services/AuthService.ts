@@ -12,12 +12,7 @@ export interface RegisterPayload {
   name?: string;
 }
 
-export interface ResetPasswordPayload {
-  email: string;
-  mobile: string;
-  newPassword: string;
-  confirmNewPassword: string;
-}
+export interface ResetPasswordPayload { email: string; }
 
 type AuthListener = (user: User | null) => void;
 
@@ -173,8 +168,8 @@ class AuthServiceImpl {
     }
   }
 
-  /** Reset password with the registered email and mobile number. */
-  public async resetPasswordWithEmailAndMobile(
+  /** Request an email recovery link. */
+  public async requestPasswordReset(
     payload: ResetPasswordPayload
   ): Promise<{ success: boolean; message: string }> {
     try {
@@ -190,18 +185,18 @@ class AuthServiceImpl {
       if (!res.ok || !data.success) {
         return {
           success: false,
-          message: data.message || 'The email and mobile number could not be verified.',
+          message: data.message || 'Could not request password recovery.',
         };
       }
 
       return {
         success: true,
-        message: data.message || 'Password reset successfully. You can now log in with your new password.',
+        message: data.message || 'Check your email for a recovery link.',
       };
     } catch (err) {
       return {
         success: false,
-        message: 'The email and mobile number could not be verified.',
+        message: 'Could not request password recovery.',
       };
     }
   }
@@ -246,13 +241,13 @@ class AuthServiceImpl {
   /**
    * Sign out: Destroy session and clear private state
    */
-  public signOut(): void {
-    fetch('/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    }).catch(() => {});
-
-    this.signOutLocal();
+  public async signOut(): Promise<boolean> {
+    try {
+      const response = await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      if (!response.ok || !(await response.json()).success) return false;
+      this.signOutLocal();
+      return true;
+    } catch { return false; }
   }
 }
 

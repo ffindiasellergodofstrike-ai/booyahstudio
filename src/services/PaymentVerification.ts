@@ -5,7 +5,7 @@ export const isConfirmedPaidOrder = (order: Order | null): order is Order => {
   const provider = String(order?.paymentProvider || '').toLowerCase();
   return Boolean(
     order && order.paymentStatus?.toUpperCase() === 'PAID' &&
-    (provider === 'easebuzz' || provider === 'paddle' || provider === 'payu') && order.transactionId &&
+    provider === 'razorpay' && order.transactionId && order.deliveryStatus !== 'REVOKED' &&
     !['REFUNDED', 'PARTIALLY_REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED'].includes(String(order.status).toUpperCase())
   );
 };
@@ -34,6 +34,7 @@ export async function verifyReturnedPayment(
   reconcile: () => Promise<ReconciliationResult>,
 ): Promise<PaymentVerificationResult> {
   let order = await getOrder();
+  if (order && (order.deliveryStatus === 'REVOKED' || ['REFUNDED','PARTIALLY_REFUNDED'].includes(String(order.paymentStatus)))) return { kind: 'failed', message: 'Further access is restricted. Contact support with this order reference.' };
   if (isConfirmedPaidOrder(order)) return { kind: 'paid', order };
 
   const result = await reconcile();

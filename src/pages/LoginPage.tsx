@@ -40,7 +40,7 @@ export const LoginPage: React.FC = () => {
     setErrorMessage(null);
 
     if (!identifier.trim()) {
-      setErrorMessage('Please enter your email or username.');
+      setErrorMessage('Please enter your email.');
       return;
     }
     if (!password) {
@@ -99,7 +99,7 @@ export const LoginPage: React.FC = () => {
             )}
 
             <div className="space-y-2">
-              <label className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
+              <label htmlFor="login-identifier" className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
                 Email, Mobile, or Username
               </label>
               <div className="relative min-w-0">
@@ -122,7 +122,7 @@ export const LoginPage: React.FC = () => {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-4">
-                <label className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500 truncate">
+                <label htmlFor="login-password" className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500 truncate">
                   Password
                 </label>
                 <button
@@ -188,7 +188,7 @@ export const LoginPage: React.FC = () => {
 
             {/* Register Link */}
             <div className="pt-4 text-center text-sm text-slate-600 border-t border-slate-100">
-              New to BOOYAH STUDIO?{' '}
+              New to Booyahstudio?{' '}
               <button
                 type="button"
                 onClick={() => navigate('/register', undefined, searchParams?.redirect ? { redirect: searchParams.redirect } : undefined)}

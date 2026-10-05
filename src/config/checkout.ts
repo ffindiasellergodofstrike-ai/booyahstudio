@@ -1,9 +1,5 @@
-export type CheckoutProvider = 'easebuzz' | 'payu' | 'paddle';
+export type CheckoutProvider = 'razorpay';
 export type GatewayAvailability = Partial<Record<CheckoutProvider, { configured: boolean; environment: string }>>;
-
-/** Customer checkout only offers a configured production payment flow. */
-export function selectCustomerCheckout(gateways: GatewayAvailability, allowPaddle = true): CheckoutProvider | null {
-  return (['easebuzz', 'payu', 'paddle'] as const).find(provider =>
-    (provider !== 'paddle' || allowPaddle) && gateways[provider]?.configured === true && gateways[provider]?.environment === 'live'
-  ) || null;
+export function selectCustomerCheckout(gateways: GatewayAvailability, _singleItem = true): CheckoutProvider | null {
+ return gateways.razorpay?.configured && ['live', 'test'].includes(gateways.razorpay.environment) ? 'razorpay' : null;
 }

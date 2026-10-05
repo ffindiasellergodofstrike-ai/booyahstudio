@@ -76,7 +76,7 @@ export class AdminService {
   }
 
   public static async reconcileOrderPayment(orderId: string): Promise<any> {
-    const res = await fetch(`/api/payments/easebuzz/reconcile/${encodeURIComponent(orderId)}`, {
+    const res = await fetch(`/api/payments/razorpay/reconcile/${encodeURIComponent(orderId)}`, {
       method: 'POST',
       credentials: 'include',
     });

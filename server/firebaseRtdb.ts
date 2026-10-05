@@ -1,3 +1,4 @@
+import { SupabaseStore, usesSupabase } from './supabaseStore';
 /**
  * Firebase Realtime Database REST Client with Resilient Fallback Persistence
  * Communicates with configured FIREBASE_DATABASE_URL
@@ -27,6 +28,7 @@ function requiresRemoteAuthority(_path: string): boolean {
 }
 
 function assertRemoteAuthority(path: string): void {
+  if (usesSupabase()) return;
   if (requiresRemoteAuthority(path) && (!process.env.FIREBASE_DATABASE_URL || !getRtdbAuth())) {
     throw new Error('Authenticated Firebase database access is required for account and payment data.');
   }
@@ -138,6 +140,10 @@ export class FirebaseRtdb {
    * Check connection to Firebase Realtime Database
    */
   public static async testConnection(): Promise<{ connected: boolean; url: string; error?: string; mode: string }> {
+    if (usesSupabase()) {
+      try { await SupabaseStore.get('settings'); return { connected: true, url: 'Supabase', mode: 'SUPABASE' }; }
+      catch { return { connected: false, url: 'Supabase', mode: 'SUPABASE', error: 'Database unavailable' }; }
+    }
     const configuredUrl = process.env.FIREBASE_DATABASE_URL || '(not configured)';
     const fallbackMode = isDev ? 'LOCAL_DEVELOPMENT_FALLBACK' : 'REMOTE_REQUIRED';
     try {
@@ -174,6 +180,7 @@ export class FirebaseRtdb {
    * Generic GET from RTDB with local store fallback
    */
   public static async get<T>(path: string): Promise<T | null> {
+    if (usesSupabase()) return SupabaseStore.get<T>(path);
     assertRemoteAuthority(path);
     try {
       const url = this.getUrl(path);
@@ -205,6 +212,7 @@ export class FirebaseRtdb {
    * Generic PUT to RTDB with local store backup
    */
   public static async set<T>(path: string, data: T): Promise<T | null> {
+    if (usesSupabase()) return SupabaseStore.set(path, data);
     assertRemoteAuthority(path);
     try {
       const url = this.getUrl(path);
@@ -259,6 +267,7 @@ export class FirebaseRtdb {
    * Generic PATCH to RTDB
    */
   public static async update<T>(path: string, data: Partial<T>): Promise<T | null> {
+    if (usesSupabase()) return SupabaseStore.update(path, data) as Promise<T>;
     assertRemoteAuthority(path);
     try {
       const url = this.getUrl(path);
@@ -281,6 +290,7 @@ export class FirebaseRtdb {
    * Generic DELETE from RTDB
    */
   public static async delete(path: string): Promise<boolean> {
+    if (usesSupabase()) { await SupabaseStore.delete(path); return true; }
     assertRemoteAuthority(path);
     try {
       const url = this.getUrl(path);
@@ -563,6 +573,7 @@ export class FirebaseRtdb {
 
   /** Atomically update mirrored records with one Firebase root PATCH. */
   public static async setMultiple(records: Record<string, unknown>): Promise<void> {
+    if (usesSupabase()) { await SupabaseStore.multiple(records); return; }
     assertRemoteAuthority('orders');
     const entries = Object.entries(records);
     if (!entries.length || entries.some(([key]) => !key || key.startsWith('/') || key.endsWith('/') || key.includes('..'))) {

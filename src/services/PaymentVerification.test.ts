@@ -5,7 +5,7 @@ import { verifyReturnedPayment } from './PaymentVerification';
 
 const pendingOrder = { paymentStatus: 'PENDING', status: 'PENDING' } as Order;
 const paidOrder = {
-  paymentStatus: 'PAID', paymentEnvironment: 'live', status: 'PAID', paymentProvider: 'Easebuzz',
+  paymentStatus: 'PAID', paymentEnvironment: 'live', status: 'PAID', paymentProvider: 'Razorpay',
   transactionId: 'verified-gateway-id', deliveryStatus: 'DELIVERED', downloadStatus: 'AVAILABLE',
 } as Order;
 
@@ -59,11 +59,11 @@ test('customer payment results never expose provider diagnostics', async () => {
   for (const status of ['PENDING', 'FAILED', 'REVOKED']) {
     const outcome = await verifyReturnedPayment(
       async () => pendingOrder,
-      async () => ({ httpStatus: 503, status, message: 'Easebuzz TEST MODE: merchant key not configured' }),
+      async () => ({ httpStatus: 503, status, message: 'Razorpay TEST MODE: merchant key not configured' }),
     );
     assert.notEqual(outcome.kind, 'paid');
     assert.ok('message' in outcome);
-    assert.doesNotMatch(outcome.message || '', /Easebuzz|TEST|configured|merchant/i);
+    assert.doesNotMatch(outcome.message || '', /Razorpay|TEST|configured|merchant/i);
     assert.match(outcome.message || '', /order|account/);
   }
 });

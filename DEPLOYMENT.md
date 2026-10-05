@@ -1,145 +1,152 @@
-# Deploy BOOYAH STUDIO
+# Booyahstudio: GitHub + Vercel deployment
 
-## Prepare
+MANISH KUMAR SONKAR | FF ONLINE SHOP | Booyahstudio
+GSTIN 09JALPS3433P1ZP · connectbooyahstudio@gmail.com · WhatsApp +91 7393845435
 
-Use Node 24 and pnpm 10.34.5. Run `pnpm install --frozen-lockfile`,
-`pnpm typecheck`, `pnpm test`, and `pnpm build`. `pnpm dev` serves local development
-on port 3000. `pnpm start` serves the production build and requires production
-Firebase configuration. Vercel uses the included `vercel.json` and committed `api/index.ts` function entrypoint.
+## 1. Project files and GitHub
 
-Copy `.env.example` to `.env` for local configuration; never commit it. Set the
-same required values in the hosting environment. Source business information is
-centralized in `src/config/business.ts`. Do not reuse previous-owner database
-credentials or archived customer/session data. Use your own authenticated Firebase
-project with the supplied deny-public-access database rules.
+1. Extract the final ZIP. Use its `booyahstudio/` folder as the GitHub repository root (where `package.json` lives).
+2. Use a PRIVATE GitHub repository because this complete owner project includes paid product source/archive files. Create it in your GitHub account, or copy the files into your existing private project. Never publish the owner ZIP or product sources as public repository assets. Keep the provided lockfile.
+3. Never upload `.env`, secret keys, customer exports or `node_modules`. `.env.example` contains names only.
+4. The ZIP includes `demofiles/`, `templates/` and `owner-files/` for preservation. These are not public Vercel output. Customer ZIPs prepared for private upload are also supplied separately in the final ZIP.
+5. Use Node 24 and pnpm 10.34.5. Run `pnpm install --frozen-lockfile`, then `pnpm typecheck`, `pnpm test`, `pnpm build`.
 
-## Domain and merchant verification
+## 2. Supabase database
 
-Set `APP_URL=https://www.booyahstudio.shop`. Configure DNS and HTTPS for this hostname
-and redirect HTTP to HTTPS. Verify the www and apex hostnames in your hosting
-provider. The site must be publicly reachable before gateway callbacks can work.
+1. Create a Supabase project under your account and save its database password privately.
+2. For a new installation, open SQL Editor and run `supabase/schema.sql` completely. For an existing installation, back up first and run `supabase/migrations/20261005_payment_security.sql`; it is idempotent and preserves stored records. It creates or upgrades the server-only store table/function, forces the products bucket private, and restricts browser roles from directly reading/writing paid objects even if an older permissive object policy exists. It also creates the public thumbnail bucket.
+3. Under project API settings, copy the project URL, anon key and service-role key into Vercel environment settings (next section). The service-role key must never go in browser code, a `VITE_` variable or GitHub.
+4. The `store_state` table has RLS enabled. Anonymous/authenticated browser roles have no direct access to store rows or the store function. Only the backend service role executes the function.
+5. This is a new Supabase store. Existing accounts/orders are not silently imported. Preserve historical transaction records privately; plan any migration separately rather than copying old password hashes or sessions.
+6. Enable database backups appropriate for your account and test recovery. The JSON store uses one locked row for atomic writes; it suits a small store. Monitor growth and move to indexed per-entity tables before high-volume operation.
 
-Confirm that the business name and address match the documents submitted to your
-payment providers. Supply any legally required proprietor/company and grievance
-officer details after confirming them; the source does not invent a legal owner.
-Confirm rights to distribute the products and accuracy of their descriptions.
-Gateway approval is determined by each provider and is not guaranteed by this code.
+## 3. Supabase login and password recovery
 
-## Easebuzz
+1. Enable email/password sign-in and **email confirmation** in Supabase Auth. Keep password strength at least 8 characters.
+2. Set Auth **Site URL** to your final HTTPS domain, provisionally `https://www.booyahstudio.shop` from the existing repository.
+3. Add allowed redirect URLs `https://www.booyahstudio.shop/login` and `https://www.booyahstudio.shop/forgot-password`. Add your exact development URLs separately if needed.
+4. Configure custom SMTP using your **Resend SMTP** settings shown in the Resend dashboard. Verify its sending domain and sender. The Vercel Resend API key alone does not configure Supabase email.
+5. In the **Reset Password** email template, use this link (replace the domain if yours differs):
 
-Set private `EASEBUZZ_KEY`, `EASEBUZZ_SALT`, and `EASEBUZZ_ENV=test`.
-Use sandbox merchant credentials. The integration uses signed initiation,
-reverse-hash validation, order/amount matching, and reconciliation.
+```html
+<a href="https://www.booyahstudio.shop/forgot-password?token_hash={{ .TokenHash }}">Reset your Booyahstudio password</a>
+```
 
-- Return/callback URL: `https://www.booyahstudio.shop/api/payments/easebuzz/callback`
-- Webhook URL: `https://www.booyahstudio.shop/api/payments/easebuzz/webhook`
+6. Keep Supabase's supported confirmation link in the **Confirm signup** template, and brand its text as Booyahstudio. After confirming, the customer signs in on `/login`.
+7. Test a new signup, confirmation, login, logout and password-reset email. Opening recovery does not change the password: the customer submits the new password, then the backend verifies the one-time Supabase recovery token. Used/expired links must fail. Earlier store sessions become invalid after reset.
 
-After merchant approval and successful sandbox validation, use your live merchant
-credentials with `EASEBUZZ_ENV=prod`. Restart/redeploy when changing credentials.
+## 4. Private product ZIPs
 
-## PayU Hosted Checkout
+1. In Supabase Storage, verify `products` is **private**. Do not add public download policies.
+2. Upload each sellable product as exactly `<catalog-product-id>.zip` at the bucket root. Examples: `linknest-pro.zip`, `neura-ai.zip`, `finora.zip`, `learnify.zip`, `velora.zip`, `margin-portfolio.zip`.
+3. The final ZIP's `private-product-uploads/` contains prepared copies and a checksum manifest. The 20 static packages can be regenerated with `python3 scripts/package-template-collection.py`.
+4. Keep all paid ZIPs out of `public/` and the public `product-images` bucket. The latter is only for catalog thumbnails.
+5. Checkout refuses to initiate when an ordered file is missing. After a verified **live captured payment**, the customer's account can request a 60-second signed URL. Test transactions never unlock paid files. Links are expiring, not single-use.
+6. Test large actual ZIP downloads from deployed Supabase Storage; the API returns a URL rather than streaming file bytes through a Vercel function.
 
-Set private `PAYU_KEY`, `PAYU_SALT`, and `PAYU_ENV=test`.
-The server hashes an order-priced checkout request; the browser posts it to PayU.
-Responses must pass reverse-hash validation and match the recorded order.
-The server additionally calls PayU's Verify Payment API and requires the exact
-transaction, amount, `success` status, and `captured` state before confirmation.
+## 5. Razorpay
 
-- Success/failure URL: `https://www.booyahstudio.shop/api/payments/payu/callback`
-- Payment webhook URL: `https://www.booyahstudio.shop/api/payments/payu/webhook`
+1. Create/activate your Razorpay merchant account with your actual business details and approved digital-product activity. Provider activation and website approval are separate from this code.
+2. Use **Test Mode** keys first. Configure automatic capture according to your Razorpay account settings. Authorised but uncaptured payments do not fulfil orders.
+3. Add a webhook: `https://www.booyahstudio.shop/api/payments/razorpay/webhook`.
+4. Subscribe to `payment.captured`, `payment.authorized`, `payment.failed`, `order.paid`, `refund.processed`, `payment.dispute.created`, `payment.dispute.won`, `payment.dispute.lost`, `payment.dispute.closed`, `payment.dispute.under_review`, and `payment.dispute.action_required`. Create a strong webhook secret and put the same value in Vercel's `RAZORPAY_WEBHOOK_SECRET`.
+5. `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` must belong to the same mode/account. The key ID determines `test` versus `live`. The server creates Razorpay orders and calculates totals; the client cannot choose a payment amount.
+6. Test checkout success/cancellation/failure, repeated webhook deliveries and returning after closing the browser. Test orders must display test status and no real downloads.
+7. For production, replace Test keys with Live keys in **Production** only, configure the matching live webhook and redeploy. Keep Preview on separate test credentials/database, not live production data.
+8. Make a controlled genuine purchase after approval. Confirm captured status, account access, correct ZIP, notification email and payment receipt. Do not claim production launch passed before this check.
+9. Approve refunds through your Razorpay Dashboard after reviewing the request. This application does not automatically decide or submit refunds. `refund.processed` causes the app to fetch current payment state and restrict further downloads for refunded/partially refunded orders. If webhook delivery fails, use Admin → Verify with Razorpay to reconcile. Monitor failed webhooks and refund status.
+10. Disputes are handled in Razorpay's dispute interface within the deadline shown there. Use necessary order, listing, access-authorisation and support records. Admin → Orders → Download dispute evidence exports necessary stored references, listing/policy snapshots, payment/refund/dispute history and download authorisations. Review/redact it and add relevant support correspondence before submission. The app does not automatically submit evidence or treat an issued link as proof of completed receipt. Open disputes do not automatically revoke access; a provider-confirmed lost dispute on the order payment restricts further downloads. After a won/closed resolution, reconcile and use Restore access after review with a reason. Refunds/unpaid orders cannot be restored with that control.
 
-Enable payment events in the PayU dashboard and validate actual callback payloads
-using your sandbox merchant account. Set `PAYU_ENV=prod` with live credentials
-only after approval. Salt must never use a `VITE_` prefix or appear in client code.
+## 6. Resend transaction emails
 
-## Test payments never deliver products
+1. Verify a sending domain in Resend and add its required DNS records.
+2. Create a suitably scoped API key. Set `RESEND_API_KEY` and `RESEND_FROM_EMAIL` in Vercel.
+3. Sender example: `Booyahstudio <orders@your-verified-domain>`; replace with your actual authorised address. Do not assume a Gmail address is an approved sender.
+4. Customer support remains `connectbooyahstudio@gmail.com` and WhatsApp `7393845435`.
+5. Order mail links to `/account`; it does not expose persistent private download URLs. Delivery failures do not remove paid access. Reconcile a paid order to retry failed notification sending. Provider acceptance is recorded, not actual inbox receipt or reading. Verified refunds can also send a notification. Atomic notification claims and Resend idempotency prevent concurrent duplicates. If the first attempt is more than 23 hours old, automatic retry stops for manual review of the provider delivery record; do not delete the record and blindly resend.
 
-Each order records its gateway environment at initiation. Test payments send a
-plainly labeled confirmation email only: no real product files, purchase records,
-download tokens, or purchase invoice. The server denies access even if a stale
-purchase/token exists. Changing the gateway to live later does not upgrade a test
-order. Legacy orders missing a recorded environment also cannot authorize files;
-only migrate legitimate old orders after independently verifying their provenance.
-The checkout and account pages label test payments explicitly.
+## 7. Vercel
 
-Optional existing Paddle checkout follows the same test/live rules. Enable it only
-with a matching INR catalog and webhook secret. Multi-item or discounted orders
-must use Easebuzz or PayU. Sandbox amounts never authorize live fulfillment.
+1. Import the GitHub repository into Vercel.
+2. Root directory: the folder containing `package.json`. Framework preset: Vite (the included `vercel.json` supplies routes).
+3. Node version: **24.x**. Install command: `pnpm install --frozen-lockfile`. Build: `pnpm build`. Output: `dist`.
+4. Add these **server-side** environment variables:
 
-## Resend
+| Variable | Value source |
+| --- | --- |
+| APP_URL | Exact final HTTPS origin, no trailing path |
+| SUPABASE_URL | Supabase project URL |
+| SUPABASE_ANON_KEY | Supabase anon key, used by the server Auth client |
+| SUPABASE_SERVICE_ROLE_KEY | Private Supabase service-role key |
+| RAZORPAY_KEY_ID | Matching Razorpay mode key ID |
+| RAZORPAY_KEY_SECRET | Matching private API secret |
+| RAZORPAY_WEBHOOK_SECRET | Secret entered for that webhook |
+| RESEND_API_KEY | Private Resend key |
+| RESEND_FROM_EMAIL | Verified sender |
 
-Verify the sending domain `booyahstudio.shop` in Resend and publish its required DNS
-records. Configure private `RESEND_API_KEY` and
-`RESEND_FROM_EMAIL="BOOYAH STUDIO <orders@booyahstudio.shop>"`.
-Replies go to `connectbooyahstudio@gmail.com`. Gmail is the contact address; do not
-use it as an unverified Resend sender. Real inbox delivery requires a verified
-domain and a valid Resend account. Local tests use a Resend emulator and send no
-real email. Never set `RESEND_BASE_URL` to the local emulator in production.
+5. Redeploy after setting variables. `api/index.ts` is the API entrypoint; `api/page.ts` renders current product metadata (including admin-added products) and includes the built HTML shell; `/api/*` routes must reach it. Paid archives are never inside `dist`.
+6. Add your domain and configure the DNS records Vercel shows. Confirm HTTPS. If the domain differs, update `src/config/business.ts`, `src/seo/seoMetadata.ts`, `index.html`, Auth redirect/template URLs, APP_URL and the webhook; rebuild the sitemap and canonical metadata.
+7. Verify `/api/health`, `/api/products`, every policy route, direct product links and `/sitemap.xml` on the deployed domain. Check browser console/network failures and 404 pages.
 
-Failed emails do not change the verified payment result. The reconciliation cron
-retries email delivery, using provider-specific verification and idempotency keys.
-Set a private `CRON_SECRET`. The configured Vercel cron runs daily; use an appropriate
-supported schedule on your hosting plan if faster retries are required.
+## 8. Owner admin account
 
-## Live files and support
+1. Register and confirm your own account, then sign in once to create its store profile.
+2. In Supabase Auth, copy your account UUID.
+3. In the SQL Editor, run the following after replacing the placeholder with that exact UUID. Never use a customer's UUID:
 
-Configure each `PRODUCT_DOWNLOAD_URL_<PRODUCT_ID>` with a private HTTPS ZIP source
-or complete MEGA file link. Keep files out of `public/`. Validate each real product
-archive before accepting live payments. A template demo is not a paid ZIP delivery.
+```sql
+select public.store_operation('update', 'users/YOUR_AUTH_UUID/profile', '{"role":"admin"}'::jsonb);
+```
 
-Contact submissions are saved under `supportRequests` and can be read by an
-authenticated administrator at `/api/admin/support-requests`; they are not falsely
-reported as emailed. Monitor this inbox and the published contact email. Assign
-admin roles only through trusted database administration; knowing the contact email
-does not grant admin privileges.
+4. Sign out/in and visit `/admin`. Registering publicly cannot choose an admin role.
+5. Built-in products remain source-controlled in `src/data/products.ts` and `src/data/newProducts.ts`. Admin catalog overrides are stored in Supabase; use matching IDs. New product ZIPs must use the same ID and be uploaded privately.
+6. Support-form messages are stored under `supportRequests` in the server-only database. Review them in Supabase SQL Editor with `select public.store_operation('get','supportRequests',null);`. Newsletter opt-outs must be processed manually in the stored subscriber records and any actual mailing list.
 
-## Final provider checks
+## 9. Content and GST before launch
 
-1. Confirm legal merchant identity, KYC and settlement account with each provider.
-2. Confirm public HTTPS pages: About, Contact, Terms, Privacy, Refunds, Cancellation,
-   and Shipping & Delivery; all must match the merchant application.
-3. Configure your Firebase, gateway, Resend and private file-source settings.
-4. Perform sandbox success, failure, cancellation and duplicate-callback checks.
-   Confirm test emails contain no real file links and account downloads stay locked.
-5. After approval, deploy live credentials and perform an authorized live acceptance
-   test, including file delivery and refund handling. No live transaction was performed
-   during this development task.
+The supplied name, owner, GSTIN, address and support contacts are displayed as provided; this work does not independently verify the registration.
 
-Official references:
-- [Easebuzz merchant website requirements](https://easebuzz.in/terms/)
-- [PayU Hosted Checkout](https://docs.payu.in/reference/_payment_payu_hosted_checkout)
-- [PayU request and response hashes](https://docs.payu.in/docs/hashing-request-and-response)
-- [PayU Verify Payment API](https://docs.payu.in/reference/verify_payment_api)
+The app issues **payment receipts**, not GST tax invoices. Confirm tax-inclusive/exclusive prices, GST rate, SAC/classification, place-of-supply handling and invoice process with your accountant before live selling; none are invented. Current checkout charges the displayed product total without an added computed GST line. Issue legally required tax documents through your confirmed accounting process.
 
-## Original 20-product collection
+The 20 static products retain their actual included single-project licenses. Other imported products must have their actual permitted use and included files reviewed. Do not invent rights for third-party material. Policies preserve mandatory consumer rights and should be checked against the way you operate the launched business.
 
-The store now includes 26 built-in products. The 20 new source projects live under
-`templates/`; those folders are never copied to the public build. Their public,
-watermarked demos live under `public/demos/<product-id>/` and screenshots under
-`public/product-images/`. Every new template has four actual static HTML pages.
+## 10. Launch and recovery checklist
 
-`api/index.ts` is the committed Vercel function entrypoint. The build also creates
-26 static product share pages with per-product Open Graph/Twitter image, title and
-description plus a sitemap. `vercel.json` routes APIs, demo directories and product
-pages before the general SPA fallback. The standalone server is built under
-`build/`, outside the public `dist/` output. Do not upload `build/` as static assets.
+- Confirm email delivery to a real inbox, not just API acceptance.
+- Test account recovery and old-session invalidation.
+- Test uncaptured, failed, wrong-account and test orders cannot download.
+- Test a captured live order gets only its purchased files.
+- Replay webhook; verify no duplicate entitlement. Process refund and check no new download links.
+- Try phone/tablet/desktop layouts and Chrome, Edge, Firefox and Safari on your supported devices. Current local browser evidence is in VALIDATION.md; universal compatibility is not claimed.
+- Keep database and product-file backups. Monitor provider webhooks, API failures and support requests.
+- Roll back a bad Vercel deployment if necessary. Do not restore stale paid/refunded state blindly: reconcile provider transactions after a data restoration.
 
-To regenerate source/demos, run `python3 scripts/create-template-collection.py`.
-To package the source ZIPs, run `python3 scripts/package-template-collection.py`;
-this writes customer ZIPs, a master owner bundle and an upload manifest under
-`$WORKSPACE_ROOT/output/`. The package script requires Python 3 only. Re-capture
-product screenshots after visual edits, then build the store.
+## Official sources checked on 5 October 2026
 
-Use `booyah-products/upload-manifest.csv` to match every individual ZIP to its
-`PRODUCT_DOWNLOAD_URL_...` server environment variable. Upload those ZIPs to a
-protected source host first, set the URLs in Vercel and redeploy. No real paid
-product ZIP is bundled under `public/` or linked in the catalog. Live delivery
-requires the existing approved gateway/Firebase/Resend setup. Test payments
-continue to issue only a test notice.
+- [Razorpay Standard Checkout and server verification](https://razorpay.com/docs/payments/payment-gateway/web-integration/standard/integration-steps/)
+- [Webhook signatures, duplicate delivery and ordering](https://razorpay.com/docs/webhooks/validate-test/)
+- [Refunds](https://razorpay.com/docs/payments/refunds/)
+- [Disputes](https://razorpay.com/docs/payments/disputes/)
+- [Business website details](https://razorpay.com/docs/payments/dashboard/account-settings/business-website-details/)
+- [Razorpay terms](https://razorpay.com/terms/)
+- [Supabase email templates](https://supabase.com/docs/guides/auth/auth-email-templates)
+- [Supabase expiring Storage links](https://supabase.com/docs/reference/javascript/storage-from-createsignedurl)
 
-The new templates are static frontends with the browser features documented on
-each listing. They do not include real subscriptions, email delivery, bookings,
-shared data or authentication backends. Original geometric SVGs and sample copy
-are bundled, with no third-party photos, logos, fonts or audio. This source audit
-does not establish global trademark clearance or ownership of the six previously
-imported products. Verify rights for any future images, names or code you add.
+Provider documentation governs provider-specific setup. Merchant policies are independently drafted, not copies of provider contracts.
+
+## Upgrade audit and important operating details
+
+- `FINAL-AUDIT.md` compares every audited requirement before/after and distinguishes local simulated-provider tests from real provider checks.
+- Failed/authorised/created attempts remain recorded under the order payment history. The order stays pending until a captured payment verifies. Closing checkout records a browser-reported event, never a financial cancellation.
+- Different captured payment IDs for one order are retained and flagged for duplicate-payment review. Refund a confirmed duplicate through Razorpay after checking references. Refunding a duplicate does not revoke the primary paid purchase.
+- Partial or full refunds on the primary payment restrict further download links. Review the customer's agreed remedy; refunds do not require abandoning statutory rights.
+- Suspending/restoring a customer in Admin invalidates earlier store sessions. Supabase password authentication backs opaque store cookies; revoking Supabase tokens alone does not revoke an existing store cookie. For provider-dashboard password/ban actions, also suspend the store profile or set its `sessionValidAfter` cutoff via the protected store function.
+- Full policy documents are saved under the accepted content-derived version on new checkouts. Historical orders from before this upgrade may only have their original version label; retain backups and never invent an earlier policy snapshot.
+- New products stay draft until price, actual license, included files, version, description and technical requirements are complete. Upload the exact `<product-id>.zip` privately before sale. Admin-added products appear in dynamic metadata; the generated sitemap lists source-controlled products, so add permanent catalog entries to source and rebuild to include them in the sitemap.
+- The server-only JSON store preserves the existing architecture. All writes lock one row; monitor size and contention, and plan a separately tested data migration if growth requires it.
+- Clean install uses **pnpm**, as declared by the project. Do not mix npm and pnpm lockfiles. The validation report records the exact package-manager command used.
+
+Additional official references verified for this upgrade:
+- [Dispute webhook payloads/events](https://razorpay.com/docs/webhooks/payloads/disputes/)
+- [Fetch a dispute](https://razorpay.com/docs/api/disputes/fetch/)
+- [Vercel function files and configuration](https://vercel.com/docs/project-configuration/vercel-json)

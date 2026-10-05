@@ -38,6 +38,7 @@ export interface Product {
   videoDuration?: string;
   version?: string;
   requirements?: string[];
+  licenseTerms?: string;
   features: string[];
   whatsIncluded: string[];
   faqs?: ProductFaq[];
@@ -139,7 +140,6 @@ export interface OrderItem {
 
 export interface Order {
   paymentEnvironment?: 'test' | 'live';
-  payuTxnId?: string;
   id: string;
   userId: string;
   orderNumber: string;
@@ -169,9 +169,7 @@ export interface Order {
   total: number;
   paymentMethod: string;
   transactionId?: string;
-  easebuzzTxnId?: string;
   paymentProvider?: string;
-  easebuzzAccessKey?: string;
   invoiceNumber?: string;
   paymentVerifiedAt?: string;
   paymentInitiatedAt?: string;
@@ -180,7 +178,6 @@ export interface Order {
   termsAcceptedAt?: string;
   termsAcceptedPolicies?: string[];
   termsDocumentUrl?: string;
-  easebuzzProductInfo?: string;
   fulfilledAt?: string;
   deliveredAt?: string;
   emailDelivery?: {

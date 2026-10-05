@@ -14,6 +14,7 @@ export interface ProductFilters {
 
 export class ProductService {
   private static products: Product[] = PRODUCTS;
+  private static coupons: Coupon[] = COUPONS;
   private static listeners = new Set<() => void>();
   private static refreshPromise: Promise<Product[]> | null = null;
 
@@ -38,6 +39,7 @@ export class ProductService {
       }
 
       this.products = payload.products as Product[];
+      if (Array.isArray(payload.coupons)) this.coupons = payload.coupons;
       this.listeners.forEach((listener) => listener());
       return this.products;
     })();
@@ -182,6 +184,6 @@ export class ProductService {
   }
 
   static getCoupon(code: string): Coupon | undefined {
-    return COUPONS.find((c) => c.code.toUpperCase() === code.toUpperCase().trim());
+    return this.coupons.find((c) => c.code.toUpperCase() === code.toUpperCase().trim() && c.active !== false && (!c.expiresAt || Date.parse(c.expiresAt) > Date.now()));
   }
 }

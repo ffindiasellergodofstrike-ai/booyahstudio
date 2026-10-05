@@ -12,7 +12,7 @@ const collections = [
   { label: 'SaaS & AI', query: 'saas' },
   { label: 'E-commerce', query: 'e-commerce' },
   { label: 'Education', query: 'education' },
-  { label: 'Marketplaces', query: 'marketplace' },
+  { label: 'Digital resources', query: 'template' },
 ];
 
 export const HomePage: React.FC = () => {

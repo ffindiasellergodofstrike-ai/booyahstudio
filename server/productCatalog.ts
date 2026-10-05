@@ -59,7 +59,7 @@ export function normalizeProductAssets(product: any, fallback?: any): any {
   };
 
   delete normalized.licenseTypes;
-  delete normalized.licenseTerms;
+  normalized.licenseTerms = typeof product?.licenseTerms === 'string' ? product.licenseTerms : '';
   delete normalized.extendedPrice;
   return normalized;
 }

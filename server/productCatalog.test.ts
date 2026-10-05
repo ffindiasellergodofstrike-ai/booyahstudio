@@ -64,7 +64,7 @@ test('ships every built-in product with its own watermarked preview', () => {
   }
 });
 
-test('merges static and Firebase products without dropping either catalog', () => {
+test('merges static and Supabase products without dropping either catalog', () => {
   const staticProducts = [
     { id: 'static-one', slug: 'static-one', title: 'Static One', price: 100, status: 'active', image: '/product-images/static.png', gallery: ['/product-images/static.png'] },
     { id: 'static-two', slug: 'static-two', title: 'Static Two', price: 200, status: 'active', image: '/product-images/two.png' },
@@ -91,7 +91,7 @@ test('merges static and Firebase products without dropping either catalog', () =
   assert.equal(catalog[0].price, 125);
   assert.equal(catalog[0].image, '/product-images/static.png');
   assert.equal('licenseTypes' in catalog[0], false);
-  assert.equal('licenseTerms' in catalog[0], false);
+  assert.equal(typeof catalog[0].licenseTerms, 'string');
   assert.equal('extendedPrice' in catalog[0], false);
   assert.equal(catalog[2].image, 'https://cdn.example/admin.png');
 });
@@ -109,7 +109,7 @@ test('excludes draft, archived, and inactive products from the public catalog', 
   assert.deepEqual(catalog.map((product) => product.id), ['active']);
 });
 
-test('keeps all built-in products when Firebase contains only LinkNest', () => {
+test('keeps all built-in products when Supabase contains only LinkNest', () => {
   const firebaseProducts = [
     {
       ...PRODUCTS.find((product) => product.id === 'linknest-pro'),

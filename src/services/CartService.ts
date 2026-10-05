@@ -17,12 +17,18 @@ class CartServiceImpl {
 
   constructor() {
     this.loadFromStorage();
-    // Subscribe to auth changes to sync user-specific cart from Firebase RTDB
+    // Subscribe to auth changes to sync user-specific cart from Supabase
+    let previousUserId = localStorage.getItem('booyahstudio_cart_owner');
     AuthService.subscribe((user) => {
       if (user) {
-        this.fetchUserCart();
-      } else {
-        // Clear private cart on logout
+        const mergeGuest = !previousUserId;
+        if (previousUserId && previousUserId !== user.id) this.items = [];
+        previousUserId = user.id;
+        localStorage.setItem('booyahstudio_cart_owner', user.id);
+        void this.fetchUserCart(mergeGuest);
+      } else if (previousUserId) {
+        previousUserId = null;
+        localStorage.removeItem('booyahstudio_cart_owner');
         this.items = [];
         this.appliedCoupon = null;
         this.saveToStorage();
@@ -37,17 +43,17 @@ class CartServiceImpl {
       const fresh = ProductService.getProductById(item?.product?.id || item?.productId) || item?.product;
       if (!fresh?.id) continue;
 
-      const quantity = Math.max(1, Number.parseInt(item.quantity, 10) || 1);
+      const quantity = 1;
       const existing = byProductId.get(fresh.id);
       if (existing) {
-        existing.quantity += quantity;
+        existing.quantity = 1;
         continue;
       }
 
       byProductId.set(fresh.id, {
         product: fresh,
         price: fresh.price,
-        quantity,
+        quantity: 1,
         addedAt: item.addedAt || new Date().toISOString(),
       });
     }
@@ -86,7 +92,7 @@ class CartServiceImpl {
     this.syncWithBackend();
   }
 
-  public async fetchUserCart(): Promise<void> {
+  public async fetchUserCart(mergeGuest = false): Promise<void> {
     if (!AuthService.isAuthenticated() || this.isSyncing) return;
     try {
       this.isSyncing = true;
@@ -96,7 +102,7 @@ class CartServiceImpl {
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.items)) {
-          this.items = this.normalizeItems(data.items);
+          this.items = this.normalizeItems(mergeGuest ? [...this.items, ...data.items] : data.items);
           localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(this.items));
           this.notify();
         }
@@ -105,6 +111,7 @@ class CartServiceImpl {
       console.warn('Could not sync user cart from backend:', err);
     } finally {
       this.isSyncing = false;
+      if (mergeGuest) this.saveToStorage();
     }
   }
 
@@ -145,12 +152,12 @@ class CartServiceImpl {
     const existingIndex = this.items.findIndex((item) => item.product.id === product.id);
 
     if (existingIndex > -1) {
-      this.items[existingIndex].quantity += quantity;
+      this.items[existingIndex].quantity = 1;
     } else {
       this.items.push({
         product,
         price: product.price,
-        quantity,
+        quantity: 1,
         addedAt: new Date().toISOString(),
       });
     }
@@ -169,7 +176,7 @@ class CartServiceImpl {
     }
     const target = this.items.find((item) => item.product.id === productId);
     if (target) {
-      target.quantity = quantity;
+      target.quantity = 1;
       this.saveToStorage();
     }
   }
@@ -189,7 +196,7 @@ class CartServiceImpl {
     if (coupon.minSpend && subtotal < coupon.minSpend) {
       return {
         success: false,
-        message: `This coupon requires a minimum subtotal of $${coupon.minSpend}.00`,
+        message: `This coupon requires a minimum subtotal of INR ${coupon.minSpend}.00`,
       };
     }
     this.appliedCoupon = coupon;

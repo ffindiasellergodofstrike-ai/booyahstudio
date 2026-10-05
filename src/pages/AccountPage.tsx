@@ -98,7 +98,7 @@ export const AccountPage: React.FC = () => {
     }
   }, [currentUser]);
 
-  // Invoice Modal State
+  // Receipt Modal State
   const [viewingOrder, setViewingOrder] = useState<any | null>(null);
 
   const handleSecureDownload = async (productId: string, defaultName: string) => {
@@ -137,7 +137,7 @@ export const AccountPage: React.FC = () => {
     .filter((order) => hasLivePayment(order) && order.paymentStatus?.toUpperCase() === 'PAID' &&
       order.deliveryStatus === 'DELIVERED' && order.downloadStatus === 'AVAILABLE' &&
       !['REFUNDED', 'PARTIALLY_REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED'].includes(String(order.status).toUpperCase()) &&
-      ['Easebuzz', 'PayU', 'Paddle'].includes(order.paymentProvider || '') && Boolean(order.transactionId))
+      ['Razorpay'].includes(order.paymentProvider || '') && Boolean(order.transactionId))
     .flatMap((order) => order.items.map((item) => ({ ...item, orderId: order.id })));
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -179,12 +179,12 @@ export const AccountPage: React.FC = () => {
     }
   };
 
-  const handleInvoiceDownload = async (order: Order) => {
+  const handleReceiptDownload = async (order: Order) => {
     try {
       const response = await fetch(`/api/orders/${encodeURIComponent(order.id)}/invoice`, {
         credentials: 'include', cache: 'no-store',
       });
-      if (!response.ok) throw new Error('Invoice is unavailable.');
+      if (!response.ok) throw new Error('Receipt is unavailable.');
       const url = URL.createObjectURL(await response.blob());
       const link = document.createElement('a');
       link.href = url;
@@ -194,7 +194,7 @@ export const AccountPage: React.FC = () => {
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
     } catch {
-      showToast('error', 'Invoice Unavailable', 'Could not download your invoice. Please retry.');
+      showToast('error', 'Receipt Unavailable', 'Could not download your receipt. Please retry.');
     }
   };
 
@@ -598,9 +598,9 @@ export const AccountPage: React.FC = () => {
               <div className="p-3 bg-blue-50/60 border border-blue-100 rounded-xl flex items-start gap-2.5">
                 <KeyRound className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold text-blue-950">Email and Mobile Recovery</p>
+                  <p className="font-bold text-blue-950">Secure Email Recovery</p>
                   <p className="text-[11px] text-blue-800 mt-0.5">
-                    Reset your password with your registered email and mobile number.
+                    Reset your password with your secure email recovery link.
                   </p>
                 </div>
               </div>
@@ -610,14 +610,14 @@ export const AccountPage: React.FC = () => {
                 onClick={() => navigate('/forgot-password')}
                 className="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors"
               >
-                Reset Password with Email and Mobile
+                Request Password Recovery
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Invoice Modal */}
+      {/* Receipt Modal */}
       {viewingOrder && (() => {
         const isPaid = hasLivePayment(viewingOrder) && String(viewingOrder.paymentStatus || '').toUpperCase() === 'PAID';
         const isDelivered = viewingOrder.deliveryStatus === 'DELIVERED' && viewingOrder.downloadStatus === 'AVAILABLE';
@@ -672,11 +672,11 @@ export const AccountPage: React.FC = () => {
               {!isPaid && !isFailed && (
                 <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-center gap-3 text-xs text-amber-800">
                   <Clock className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span className="font-medium">{isTest ? 'This transaction did not create a purchase. No files or purchase invoice will be issued.' : 'Downloads and your receipt become available after payment confirmation.'}</span>
+                  <span className="font-medium">{isTest ? 'This transaction did not create a purchase. No files or payment receipt will be issued.' : 'Downloads and your receipt become available after payment confirmation.'}</span>
                 </div>
               )}
               {isPaid && <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-700 space-y-1">
-                <p>{hasLivePayment(viewingOrder) ? `Invoice: ${viewingOrder.invoiceNumber || `INV-${viewingOrder.orderNumber}`}` : 'No completed purchase — no files or invoice.'}</p>
+                <p>{hasLivePayment(viewingOrder) ? `Receipt: ${viewingOrder.invoiceNumber || `INV-${viewingOrder.orderNumber}`}` : 'No completed purchase — no files or receipt.'}</p>
                 <p>Payment verified: {formatISTDate(viewingOrder.paymentVerifiedAt)}</p>
                 <p>Digital access: {isDelivered ? `Delivered ${formatISTDate(viewingOrder.deliveredAt)}` : 'Preparing delivery'}</p>
                 <p>Email: {viewingOrder.emailDelivery?.status === 'sent' ? 'Sent' : ['failed', 'not_configured'].includes(viewingOrder.emailDelivery?.status || '') ? 'Delivery needs attention — contact support' : 'Being prepared'}</p>
@@ -720,8 +720,8 @@ export const AccountPage: React.FC = () => {
                   <span className="font-mono text-slate-900">₹{Number(viewingOrder.subtotal ?? viewingOrder.total).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-widest">
-                  <span>Tax (GST)</span>
-                  <span className="font-mono text-slate-900">₹{Number(viewingOrder.tax || 0).toFixed(2)}</span>
+                  <span>Tax documentation</span>
+                  <span className="text-slate-900">Contact support</span>
                 </div>
                 <div className="pt-3 border-t border-slate-200 flex justify-between items-center">
                   <span className="text-sm font-black text-slate-900">Total Amount</span>
@@ -731,7 +731,7 @@ export const AccountPage: React.FC = () => {
 
               {isPaid && (
                 <button
-                  onClick={() => { void handleInvoiceDownload(viewingOrder); }}
+                  onClick={() => { void handleReceiptDownload(viewingOrder); }}
                   className="w-full py-4 bg-slate-900 hover:bg-black text-white font-black rounded-2xl text-xs sm:text-sm transition-all shadow-xl active:scale-95 min-h-[44px]"
                 >
                   Print / Save PDF Receipt

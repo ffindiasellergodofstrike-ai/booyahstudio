@@ -28,7 +28,7 @@ export const PolicyDetailsPage: React.FC<PolicyDetailsPageProps> = ({ slug }) =>
 
   useEffect(() => {
     if (policy) {
-      document.title = `${policy.title} | BOOYAH STUDIO`;
+      document.title = `${policy.title} | Booyahstudio`;
     }
   }, [policy]);
 

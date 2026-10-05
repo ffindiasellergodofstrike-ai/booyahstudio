@@ -15,10 +15,17 @@ class WishlistServiceImpl {
 
   constructor() {
     this.loadFromStorage();
+    let previousUserId = localStorage.getItem('booyahstudio_wishlist_owner');
     AuthService.subscribe((user) => {
       if (user) {
-        this.fetchUserWishlist();
-      } else {
+        const mergeGuest = !previousUserId;
+        if (previousUserId && previousUserId !== user.id) this.items = [];
+        previousUserId = user.id;
+        localStorage.setItem('booyahstudio_wishlist_owner', user.id);
+        void this.fetchUserWishlist(mergeGuest);
+      } else if (previousUserId) {
+        previousUserId = null;
+        localStorage.removeItem('booyahstudio_wishlist_owner');
         this.items = [];
         this.saveToStorage();
       }
@@ -57,7 +64,7 @@ class WishlistServiceImpl {
     this.syncWithBackend();
   }
 
-  public async fetchUserWishlist(): Promise<void> {
+  public async fetchUserWishlist(mergeGuest = false): Promise<void> {
     if (!AuthService.isAuthenticated() || this.isSyncing) return;
     try {
       this.isSyncing = true;
@@ -67,7 +74,7 @@ class WishlistServiceImpl {
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.items)) {
-          this.items = data.items
+          this.items = (mergeGuest ? [...this.items, ...data.items] : data.items)
             .map((item: any) => {
               const fresh = ProductService.getProductById(item.productId || item.product?.id);
               if (!fresh) return null;
@@ -78,6 +85,7 @@ class WishlistServiceImpl {
               };
             })
             .filter(Boolean);
+          this.items = Array.from(new Map(this.items.map(item => [item.product.id, item])).values());
           localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(this.items));
           this.notify();
         }
@@ -86,6 +94,7 @@ class WishlistServiceImpl {
       console.warn('Could not sync user wishlist:', err);
     } finally {
       this.isSyncing = false;
+      if (mergeGuest) this.saveToStorage();
     }
   }
 

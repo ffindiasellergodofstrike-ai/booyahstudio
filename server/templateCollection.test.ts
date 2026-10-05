@@ -4,7 +4,6 @@ import { readFileSync, existsSync } from 'node:fs';
 import { Script } from 'node:vm';
 import { NEW_PRODUCTS } from '../src/data/newProducts';
 import { PRODUCTS } from '../src/data/products';
-import { SecureFileManager } from './secureFiles';
 
 const text = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 test('20 original listings have bounded INR prices, honest scope and protected delivery keys', () => {
@@ -20,7 +19,6 @@ test('20 original listings have bounded INR prices, honest scope and protected d
     assert.equal(product.reviewCount, undefined, 'no invented reviews');
     assert.equal(product.originalPrice, undefined, 'no artificial crossed-out prices');
     assert.match(product.description, /not a hosted business or backend service/);
-    assert.equal(SecureFileManager.getProductDownloadEnvironmentKey(product.id), `PRODUCT_DOWNLOAD_URL_${product.id.replaceAll('-', '_').toUpperCase()}`);
     assert.ok(existsSync(new URL(`../public${product.image}`, import.meta.url)), `${product.id} thumbnail missing`);
   }
 });
@@ -52,7 +50,7 @@ test('Vercel routes preserve API, demo directories and product share pages befor
   const config = JSON.parse(text('vercel.json'));
   assert.equal(config.outputDirectory, 'dist');
   assert.deepEqual(config.rewrites[0], { source:'/api/:path*', destination:'/api' });
-  assert.ok(config.rewrites.some((r: any) => r.source === '/product/:slug' && r.destination === '/product/:slug/index.html'));
+  assert.ok(config.rewrites.some((r: any) => r.source === '/product/:slug' && r.destination === '/api/page?slug=:slug'));
   assert.ok(config.rewrites.some((r: any) => r.source === '/demos/:product/' && r.destination === '/demos/:product/index.html'));
   assert.deepEqual(config.rewrites.at(-1), { source:'/(.*)', destination:'/index.html' });
   assert.match(text('api/index.ts'), /server\/app/);

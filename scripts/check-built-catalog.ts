@@ -1,3 +1,4 @@
+import { SUPPORTED_POLICY_SLUGS } from '../src/data/policyData';
 import assert from 'node:assert/strict';
 import { readFile, stat, readdir } from 'node:fs/promises';
 import { PRODUCTS } from '../src/data/products';
@@ -25,5 +26,12 @@ const root = await readdir('dist');
 assert.ok(!root.some(f => f.endsWith('.mjs') || f.endsWith('.zip')), 'private server/archives must not be static output');
 assert.ok(!root.includes('templates'));
 const sitemap=await readFile('dist/sitemap.xml','utf8');
-assert.equal((sitemap.match(/<loc>/g)||[]).length,37);
-console.log('26 product share pages, screenshots, bundles, 80 new demo pages and private-source boundaries passed.');
+assert.equal((sitemap.match(/<loc>/g)||[]).length,51);
+console.log('25 product share pages, screenshots, bundles, 80 new demo pages and private-source boundaries passed.');
+
+for (const slug of SUPPORTED_POLICY_SLUGS) {
+ const html = await readFile(`dist/policies/${slug}/index.html`, 'utf8');
+ assert.ok(html.includes('MANISH KUMAR SONKAR') && html.includes('09JALPS3433P1ZP'));
+ assert.ok(html.includes('<section>'), 'policy must contain crawlable text');
+}
+console.log('19 static policy pages contain supplied identity and readable text.');

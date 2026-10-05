@@ -37,7 +37,7 @@ export const LegalContent: React.FC<LegalContentProps> = ({
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-3">
             <ShieldCheck className="w-3.5 h-3.5" />
-            Official BOOYAH STUDIO Policy
+            Official Booyahstudio Policy
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">{title}</h1>
           <p className="text-slate-600 text-base mt-2 max-w-2xl">{subtitle}</p>

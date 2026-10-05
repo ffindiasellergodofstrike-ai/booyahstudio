@@ -1,4 +1,4 @@
-# Field Journal — BOOYAH STUDIO
+# Field Journal — Booyahstudio
 
 An editorial space for small observations, walking notes and stories worth returning to.
 
@@ -22,9 +22,9 @@ Import this folder as its own project. Framework preset: Other. Build command: l
 - Local workspace data is stored with key `booyah-template:field-journal`. It is not synced between users or devices. Export it where the tool offers export. Clearing browser storage deletes local state.
 
 ## Scope and launch checklist
-This is a static frontend, not a backend service. It includes no authentication, merchant account, database, stock management, real bookings, payment processing or email delivery. Sample storefront prices are separate from this template's BOOYAH STUDIO sale price. Connect your own backend when needed, validate requests server-side and never expose secret keys in browser code.
+This is a static frontend, not a backend service. It includes no authentication, merchant account, database, stock management, real bookings, payment processing or email delivery. Sample storefront prices are separate from this template's Booyahstudio sale price. Connect your own backend when needed, validate requests server-side and never expose secret keys in browser code.
 
 Before accepting payments, publish your true merchant/contact identity and accurate product descriptions, delivery, refund, cancellation and privacy policies; complete provider approval and your own integration tests. Buying this template does not confer gateway approval. Review local requirements for your actual business. Replace illustrative content before claiming it as real trading activity.
 
 ## Provenance
-Code, copy and SVG shapes in this package were authored for the BOOYAH STUDIO collection. No third-party photographs, fonts, logos, audio recordings, celebrity identities or copied website layouts are bundled. This provenance statement is not a global trademark or legal clearance opinion. See LICENSE.txt.
+Code, copy and SVG shapes in this package were authored for the Booyahstudio collection. No third-party photographs, fonts, logos, audio recordings, celebrity identities or copied website layouts are bundled. This provenance statement is not a global trademark or legal clearance opinion. See LICENSE.txt.

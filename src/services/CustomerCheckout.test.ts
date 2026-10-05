@@ -3,15 +3,11 @@ import assert from 'node:assert/strict';
 import { selectCustomerCheckout } from '../config/checkout';
 import { normalizeProductAssets } from '../../server/productCatalog';
 
-test('public checkout requires a configured live payment option', () => {
-  assert.equal(selectCustomerCheckout({}), null);
-  for (const environment of ['test', 'sandbox', '', 'unknown']) {
-    assert.equal(selectCustomerCheckout({ easebuzz: { configured: true, environment } }), null);
-  }
-  assert.equal(selectCustomerCheckout({ easebuzz: { configured: false, environment: 'live' } }), null);
-  assert.equal(selectCustomerCheckout({ easebuzz: { configured: true, environment: 'live' } }), 'easebuzz');
-  assert.equal(selectCustomerCheckout({ easebuzz: { configured: true, environment: 'test' }, payu: { configured: true, environment: 'live' } }), 'payu');
-  assert.equal(selectCustomerCheckout({ paddle: { configured: true, environment: 'live' } }, false), null);
+test('Razorpay checkout requires configured keys and a known environment', () => {
+ assert.equal(selectCustomerCheckout({}), null);
+ assert.equal(selectCustomerCheckout({ razorpay: { configured: false, environment: 'live' } }), null);
+ assert.equal(selectCustomerCheckout({ razorpay: { configured: true, environment: 'unknown' } }), null);
+ for (const environment of ['test', 'live']) assert.equal(selectCustomerCheckout({ razorpay: { configured: true, environment } }), 'razorpay');
 });
 
 test('legacy database descriptions and FAQs cannot restore obsolete store messaging', () => {

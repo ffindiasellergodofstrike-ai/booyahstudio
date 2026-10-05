@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowRight, Check, ShieldCheck } from 'lucide-react';
+import { policyData, SUPPORTED_POLICY_SLUGS } from '../data/policyData';
 import { BUSINESS } from '../config/business';
 import { Brand } from './Brand';
 import { useApp } from '../context/AppContext';
@@ -42,16 +43,7 @@ export const Footer: React.FC = () => {
     { label: 'Contact & Support', path: '/contact' },
   ];
 
-  const policyLinks = [
-    { label: 'Terms & Conditions', path: '/policies/terms' },
-    { label: 'Privacy Policy', path: '/policies/privacy' },
-    { label: 'Refund & Return Policy', path: '/policies/refund' },
-    { label: 'Cancellation Policy', path: '/policies/cancellation' },
-    { label: 'Digital Delivery Policy', path: '/policies/delivery' },
-    { label: 'Chargeback & Dispute Policy', path: '/policies/chargebacks' },
-    { label: 'Complaints & Grievance Support', path: '/policies/grievance' },
-    { label: 'Product License', path: '/policies/license' },
-  ];
+  const policyLinks = SUPPORTED_POLICY_SLUGS.map(slug => ({ label: policyData[slug].title, path: `/policies/${slug}` }));
 
   return (
     <footer className="studio-footer" aria-label="Store Footer">
@@ -62,7 +54,7 @@ export const Footer: React.FC = () => {
             <button
               className="studio-brand"
               onClick={() => navigate('/')}
-              aria-label="BOOYAH STUDIO Home"
+              aria-label="Booyahstudio Home"
             >
               <Brand />
             </button>
@@ -72,7 +64,7 @@ export const Footer: React.FC = () => {
               For the things you haven’t built yet.
             </p>
             <address className="not-italic text-xs leading-6 mt-4 text-slate-600">
-              {BUSINESS.address}
+              {BUSINESS.owner} · {BUSINESS.legalName} · {BUSINESS.name}<br />GSTIN: {BUSINESS.gstin}<br />{BUSINESS.address}
               <br />
               <a href={`mailto:${BUSINESS.email}`} className="hover:underline">
                 {BUSINESS.email}
@@ -83,7 +75,7 @@ export const Footer: React.FC = () => {
               </a>
               <br />
               <span className="text-[11px] text-slate-500">
-                Hours: {BUSINESS.supportHours}
+                WhatsApp customer support & grievances
               </span>
             </address>
             <span className="footer-made">A little inspiration. A lot of possibility.</span>

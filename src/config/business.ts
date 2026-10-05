@@ -1,10 +1,8 @@
-/** Public business details. Never put gateway or email API secrets here. */
+/** Public merchant identity supplied by the owner. */
 export const BUSINESS = {
-  name: 'BOOYAH STUDIO',
-  email: 'connectbooyahstudio@gmail.com',
-  phone: '+91 9208661701',
-  phoneHref: 'tel:+919208661701',
-  url: 'https://www.booyahstudio.shop',
-  address: 'House No. 12, Thakur Niwas, C Block, Shantipuram, Phaphamau, Prayagraj, District Prayagraj, Uttar Pradesh 211013, India',
-  supportHours: 'Monday–Saturday, 10:00 AM–6:00 PM IST',
+ name: 'Booyahstudio', legalName: 'FF ONLINE SHOP', owner: 'MANISH KUMAR SONKAR', gstin: '09JALPS3433P1ZP',
+ email: 'connectbooyahstudio@gmail.com', phone: '+91 7393845435', phoneHref: 'https://wa.me/917393845435',
+ url: 'https://www.booyahstudio.shop',
+ address: 'S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003',
+ supportHours: 'Contact us by email or WhatsApp',
 } as const;

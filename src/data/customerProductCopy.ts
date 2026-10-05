@@ -1,6 +1,6 @@
 export const DELIVERY_FAQ = {
   question: 'How will I receive my purchase?',
-  answer: 'After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference.',
+  answer: 'After captured-payment verification, sign in to your account to request an expiring download link. A confirmation email may also be sent. If access is missing, contact connectbooyahstudio@gmail.com with your order reference.',
 };
 
 /** Older database records can override bundled listings; migrate only obsolete store copy. */

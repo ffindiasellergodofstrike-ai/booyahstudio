@@ -77,7 +77,7 @@ class DownloadServiceImpl {
 
     for (const order of orders) {
       const isAccessible = order.paymentStatus?.toUpperCase() === 'PAID' &&
-        order.paymentProvider === 'Easebuzz' && Boolean(order.transactionId) &&
+        order.paymentProvider === 'Razorpay' && Boolean(order.transactionId) &&
         !['REFUNDED', 'PARTIALLY_REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED'].includes(String(order.status).toUpperCase()) &&
         order.deliveryStatus === 'DELIVERED' && order.downloadStatus === 'AVAILABLE';
       for (const item of order.items) {

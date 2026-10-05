@@ -44,19 +44,6 @@ const AppContent: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   }, [currentPath, pathParams]);
 
-  // Maintain crawler instructions: noindex on private routes, index on public storefront
-  useEffect(() => {
-    const privateRoutes = ['/admin', '/account', '/checkout', '/cart', '/login', '/register', '/forgot-password'];
-    const isPrivate = privateRoutes.some((p) => currentPath === p || currentPath.startsWith(p + '/'));
-    let metaRobots = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
-    if (!metaRobots) {
-      metaRobots = document.createElement('meta');
-      metaRobots.name = 'robots';
-      document.head.appendChild(metaRobots);
-    }
-    metaRobots.content = isPrivate ? 'noindex, nofollow' : 'index, follow';
-  }, [currentPath]);
-
   // Route Resolver
   const renderCurrentPage = () => {
     if (currentPath.startsWith('/product/')) {
@@ -73,7 +60,7 @@ const AppContent: React.FC = () => {
       return <PolicyDetailsPage slug={slug} />;
     }
 
-    // Direct root paths for policies or retired policy redirects (e.g. /terms, /privacy, /refund, /delivery, /cancellation, /chargebacks, /grievance, /license, /shipping, /cookies, etc.)
+    // Direct root paths for policies or retired policy redirects (e.g. /terms, /privacy, /refund, /delivery, /cancellation, /chargebacks, /grievance, /license, /cookies, etc.)
     const rootSlug = currentPath.startsWith('/') ? currentPath.slice(1).replace(/\/$/, '') : '';
     if (
       SUPPORTED_POLICY_SLUGS.includes(rootSlug as SupportedPolicySlug) ||
@@ -125,7 +112,7 @@ const AppContent: React.FC = () => {
           </React.Suspense>
         );
       default:
-        return <HomePage />;
+        return <section className="max-w-3xl mx-auto p-10"><h1 className="text-3xl font-bold">Page not found</h1><p className="my-5">The requested page is unavailable.</p><a href="/products" className="underline">Browse digital products</a></section>;
     }
   };
 

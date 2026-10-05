@@ -11,20 +11,20 @@ interface AdminDashboardViewProps {
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ stats, recentOrders, recentAuditLogs, health }) => {
   const chartData = stats?.revenue?.daily || [];
-  const firebaseConnected = health?.firebase?.connected === true;
-  const easebuzzConfigured = health?.easebuzz?.status === 'configured';
+  const supabaseConnected = health?.supabase?.connected === true;
+  const razorpayConfigured = health?.razorpay?.status === 'configured';
 
   return (
     <div className="space-y-6">
       {/* Live Health Badges */}
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
         <div className="flex items-center space-x-3">
-          <div className={`w-3 h-3 rounded-full ${firebaseConnected ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Firebase: <strong>{firebaseConnected ? 'Reachable' : 'Check connection'}</strong></span>
+          <div className={`w-3 h-3 rounded-full ${supabaseConnected ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Supabase: <strong>{supabaseConnected ? 'Reachable' : 'Check connection'}</strong></span>
         </div>
         <div className="flex items-center space-x-4 text-xs font-medium text-slate-500">
-          <span className="flex items-center"><ShieldCheck className="w-4 h-4 mr-1" /> Firebase RTDB: {firebaseConnected ? 'Reachable' : 'Unavailable'}</span>
-          <span className="flex items-center"><CheckCircle2 className="w-4 h-4 mr-1" /> Easebuzz: {easebuzzConfigured ? 'Configured' : 'Not configured'} ({health?.easebuzz?.environment || 'unset'})</span>
+          <span className="flex items-center"><ShieldCheck className="w-4 h-4 mr-1" /> Supabase: {supabaseConnected ? 'Reachable' : 'Unavailable'}</span>
+          <span className="flex items-center"><CheckCircle2 className="w-4 h-4 mr-1" /> Razorpay: {razorpayConfigured ? 'Configured' : 'Not configured'} ({health?.razorpay?.environment || 'unset'})</span>
         </div>
       </div>
 

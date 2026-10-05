@@ -82,6 +82,7 @@ export function registerPayURoutes(app: Express, requireAuth: RequestHandler, he
       if(req.body.agreeTerms!==true) return res.status(400).json({success:false,message:'Accept the terms before paying.'});
       if(typeof req.body.orderId!=='string') return res.status(400).json({success:false,message:'Order ID is required.'});
       const order=await FirebaseRtdb.getUserOrderById(req.userId,req.body.orderId);
+      if(order?.marketplace) return res.status(409).json({success:false,message:'Use the marketplace checkout option for this order.'});
       if(!order) return res.status(404).json({success:false,message:'Order not found.'});
       if(order.paymentInitiatedAt || order.transactionId || ['PAID','REFUNDED','REVOKED','CANCELLED'].includes(order.status)) return res.status(409).json({success:false,message:'This order already has a payment attempt. Check its status or create a new order.'});
       const total=Number(order.total); const email=String(order.customer?.email||order.customerEmail||'');

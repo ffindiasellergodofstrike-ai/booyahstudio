@@ -68,7 +68,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
             id={`inc-qty-${product.id}`}
             onClick={() => updateCartQuantity(product.id, quantity + 1)}
             className="p-1.5 text-slate-500 hover:text-slate-900 rounded-lg hover:bg-white transition-colors"
-            aria-label="Increase quantity"
+            aria-label="One license per product per order" disabled
           >
             <Plus className="w-3.5 h-3.5" />
           </button>

@@ -41,7 +41,7 @@ export const AdminProductsView: React.FC<AdminProductsViewProps> = ({
       shortDescription: '',
       description: '',
       image: linknestCover,
-      status: 'published',
+      status: 'draft',
       stock: 999,
       previewUrl: '',
     });
@@ -320,6 +320,16 @@ export const AdminProductsView: React.FC<AdminProductsViewProps> = ({
                 />
               </div>
 
+              <label className="block text-sm">Version
+                <input value={editingProduct.version || ''} onChange={e => setEditingProduct({ ...editingProduct, version: e.target.value })} className="block w-full border rounded-xl p-3" />
+              </label>
+              {(['requirements', 'whatsIncluded', 'features'] as const).map(field => <label key={field} className="block text-sm">{field === 'whatsIncluded' ? 'Included files (one per line)' : field === 'requirements' ? 'Requirements, dependencies and limitations (one per line)' : 'Features (one per line)'}
+                <textarea rows={4} value={(editingProduct[field] || []).join('\n')} onChange={e => setEditingProduct({ ...editingProduct, [field]: e.target.value.split('\n') })} className="block w-full border rounded-xl p-3" />
+              </label>)}
+              <label className="block text-sm">Actual product license terms
+                <textarea rows={4} value={editingProduct.licenseTerms || ''} onChange={e => setEditingProduct({ ...editingProduct, licenseTerms: e.target.value })} className="block w-full border rounded-xl p-3" />
+              </label>
+              <p className="text-xs">Upload the corresponding product-ID.zip to the private products bucket before accepting payments. Source, license and thumbnail changes must describe the files actually supplied.</p>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Live Demo URL or Built-in Path</label>
                 <input

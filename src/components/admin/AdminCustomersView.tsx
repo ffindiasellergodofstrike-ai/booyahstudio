@@ -19,13 +19,15 @@ export const AdminCustomersView: React.FC<AdminCustomersViewProps> = ({ customer
   const handleToggleRole = async (userId: string, currentRole: string) => {
     const newRole = currentRole === 'admin' ? 'customer' : 'admin';
     if (confirm(`Change role to ${newRole}?`)) {
-      await AdminService.updateCustomerStatus(userId, { role: newRole });
+      const result = await AdminService.updateCustomerStatus(userId, { role: newRole });
+      if (!result.success) { alert(result.message || 'Role update failed.'); return; }
       onRefresh();
     }
   };
 
   const handleToggleBlock = async (userId: string, blocked: boolean) => {
-    await AdminService.updateCustomerStatus(userId, { blocked: !blocked });
+    const result = await AdminService.updateCustomerStatus(userId, { blocked: !blocked });
+    if (!result.success) { alert(result.message || 'Account update failed.'); return; }
     onRefresh();
   };
 
@@ -86,6 +88,7 @@ export const AdminCustomersView: React.FC<AdminCustomersViewProps> = ({ customer
                   <td className="py-4 px-6 font-bold text-slate-900 dark:text-white">₹{c.totalSpent || 0}</td>
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end space-x-2">
+                      <button onClick={() => handleToggleBlock(c.userId, c.blocked === true || c.status === 'suspended')} className="px-3 py-1.5 border rounded-xl text-xs">{c.blocked || c.status === 'suspended' ? 'Restore account' : 'Suspend account'}</button>
                       <button
                         onClick={() => handleToggleRole(c.userId, c.role)}
                         className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium transition"

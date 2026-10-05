@@ -1,3 +1,4 @@
+import { sellerSource } from './marketplace';
 import crypto from 'crypto';
 import { Readable } from 'node:stream';
 import { Response as ExpressResponse } from 'express';
@@ -163,7 +164,8 @@ export class SecureFileManager {
    */
   public static async openProductFile(productId: string): Promise<ProductFileSource> {
     const environmentKey = this.getProductDownloadEnvironmentKey(productId);
-    const configuredUrl = process.env[environmentKey] || process.env.PRODUCT_DOWNLOAD_URL;
+    const isSellerFile = productId.startsWith('seller_');
+    const configuredUrl = isSellerFile ? await sellerSource(productId) : process.env[environmentKey] || process.env.PRODUCT_DOWNLOAD_URL;
 
     if (!configuredUrl) {
       throw new Error(`Download source is not configured. Set ${environmentKey} in Vercel.`);
@@ -208,7 +210,7 @@ export class SecureFileManager {
     try {
       upstream = await fetch(sourceUrl, {
         method: 'GET',
-        redirect: 'follow',
+        redirect: isSellerFile ? 'error' : 'follow',
         signal: controller.signal,
       });
     } finally {

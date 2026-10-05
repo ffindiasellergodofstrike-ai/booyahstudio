@@ -24,58 +24,18 @@ import { Order } from '../types';
 
 import { AuthService } from '../services/AuthService';
 
-declare global {
-  interface Window {
-    EasebuzzCheckout: any;
-    Paddle: any;
-  }
+declare global { interface Window { Razorpay: any; } }
+let checkoutScript: Promise<void> | undefined;
+function loadRazorpayCheckout() {
+ if (window.Razorpay) return Promise.resolve();
+ if (!checkoutScript) checkoutScript = new Promise<void>((resolve, reject) => {
+  const script = document.createElement('script'); script.src = 'https://checkout.razorpay.com/v1/checkout.js'; script.async = true;
+  script.onload = () => window.Razorpay ? resolve() : reject(new Error('Checkout unavailable'));
+  script.onerror = () => { script.remove(); reject(new Error('Checkout unavailable')); };
+  document.head.appendChild(script);
+ }).catch(error => { checkoutScript = undefined; throw error; });
+ return checkoutScript;
 }
-
-const PADDLE_CHECKOUT_SCRIPT = 'https://cdn.paddle.com/paddle/v2/paddle.js';
-let paddleScriptPromise: Promise<void> | null = null;
-
-const loadPaddleCheckout = (): Promise<void> => {
-  if (window.Paddle) return Promise.resolve();
-  if (!paddleScriptPromise) {
-    paddleScriptPromise = new Promise<void>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = PADDLE_CHECKOUT_SCRIPT;
-      script.async = true;
-      script.onload = () => (window.Paddle ? resolve() : reject(new Error('Secure checkout failed to load.')));
-      script.onerror = () => reject(new Error('Secure checkout could not load. Please check your connection.'));
-      document.body.appendChild(script);
-    }).catch((error) => {
-      document.querySelector(`script[src="${PADDLE_CHECKOUT_SCRIPT}"]`)?.remove();
-      paddleScriptPromise = null;
-      throw error;
-    });
-  }
-  return paddleScriptPromise;
-};
-
-const EASEBUZZ_CHECKOUT_SCRIPT = 'https://ebz-static.s3.ap-south-1.amazonaws.com/easecheckout/v2.0.0/easebuzz-checkout-v2.min.js';
-let easebuzzScriptPromise: Promise<void> | null = null;
-
-const loadEasebuzzCheckout = (): Promise<void> => {
-  if (window.EasebuzzCheckout) return Promise.resolve();
-  if (!easebuzzScriptPromise) {
-    easebuzzScriptPromise = new Promise<void>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = EASEBUZZ_CHECKOUT_SCRIPT;
-      script.async = true;
-      script.onload = () => window.EasebuzzCheckout
-        ? resolve()
-        : reject(new Error('Secure checkout did not load. Please try again.'));
-      script.onerror = () => reject(new Error('Secure checkout could not load. Please check your connection and try again.'));
-      document.body.appendChild(script);
-    }).catch((error) => {
-      document.querySelector(`script[src="${EASEBUZZ_CHECKOUT_SCRIPT}"]`)?.remove();
-      easebuzzScriptPromise = null;
-      throw error;
-    });
-  }
-  return easebuzzScriptPromise;
-};
 
 export const CheckoutPage: React.FC = () => {
   const { cartItems, cartSummary, appliedCoupon, clearCart, currentUser, navigate, searchParams } = useApp();
@@ -92,6 +52,7 @@ export const CheckoutPage: React.FC = () => {
   }, []);
   const paymentMethod = selectCustomerCheckout(gatewayConfig, cartItems.length === 1 && cartItems[0].quantity === 1 && cartSummary.discount === 0);
   const canCheckout = paymentMethod !== null;
+  const testMode = gatewayConfig.razorpay?.environment === 'test';
 
   // Processing & Completed State
   const [isProcessing, setIsProcessing] = useState(false);
@@ -121,7 +82,7 @@ export const CheckoutPage: React.FC = () => {
             async () => {
               const order = await OrderService.fetchOrderById(orderId);
               const provider = String(order?.paymentProvider || '').toLowerCase();
-              if (!['easebuzz', 'payu', 'paddle'].includes(provider)) return { success: false, httpStatus: 409, status: 'PENDING', message: 'No payment has been initiated for this order.' };
+              if (!['razorpay'].includes(provider)) return { success: false, httpStatus: 409, status: 'PENDING', message: 'No payment has been initiated for this order.' };
               const response = await fetch(`/api/payments/${provider}/reconcile/${encodeURIComponent(orderId)}`, { method: 'POST', credentials: 'include', cache: 'no-store' });
               const result = await response.json();
               return { ...result, httpStatus: response.status };
@@ -219,137 +180,28 @@ export const CheckoutPage: React.FC = () => {
     try {
       const sanitizedPhone = (customerPhone || '').replace(/\D/g, '').slice(-10);
 
-      if (paymentMethod === 'payu') {
-        const pendingOrder = await OrderService.createPendingOrderAsync(cartItems, { fullName: customerName, email: customerEmail, country: 'India', phone: sanitizedPhone } as any, cartSummary.discount, appliedCoupon?.code, 'PayU');
-        const result = await PaymentService.initiatePayUPayment(pendingOrder.id, agreeTerms);
-        if (!result.success || !result.action || !result.fields) throw new Error(result.message || 'Could not start secure checkout.');
-        if (!['https://test.payu.in/_payment', 'https://secure.payu.in/_payment'].includes(result.action)) throw new Error('Unexpected payment destination.');
-        const form = document.createElement('form');
-        form.method = 'POST'; form.action = result.action;
-        for (const [name, value] of Object.entries(result.fields)) { const input = document.createElement('input'); input.type = 'hidden'; input.name = name; input.value = value; form.appendChild(input); }
-        document.body.appendChild(form); form.submit(); form.remove();
-      } else if (paymentMethod === 'paddle') {
-        // 1. Preload Paddle.js
-        await loadPaddleCheckout();
-
-        // 2. Create pending order via backend API
-        const pendingOrder = await OrderService.createPendingOrderAsync(
-          cartItems,
-          {
-            fullName: customerName,
-            email: customerEmail,
-            country: 'India',
-            phone: sanitizedPhone,
-          } as any,
-          cartSummary.discount,
-          appliedCoupon?.code,
-          'Paddle (Card / PayPal / Apple Pay)'
-        );
-
-        // 3. Initiate Paddle checkout on backend
-        const initResult = await PaymentService.initiatePaddlePayment(pendingOrder.id, agreeTerms);
-
-        if (initResult.success && initResult.priceId && initResult.clientToken) {
-          if (!window.Paddle) {
-            throw new Error('Secure checkout is not ready. Please refresh and retry.');
-          }
-
-          // Initialize Paddle with client token and environment
-          if (initResult.environment === 'sandbox') {
-            window.Paddle.Environment.set('sandbox');
-          }
-
-          window.Paddle.Initialize({
-            token: initResult.clientToken,
-            eventCallback: (data: any) => {
-              if (data?.name === 'checkout.completed') {
-                window.location.href = `/checkout?status=pending&orderId=${encodeURIComponent(pendingOrder.id)}`;
-              } else if (data?.name === 'checkout.closed') {
-                setIsProcessing(false);
-              }
-            },
-          });
-
-          const returnUrl = `${window.location.origin}/checkout?status=pending&orderId=${encodeURIComponent(pendingOrder.id)}`;
-
-          // 4. Open Paddle Overlay Checkout
-          window.Paddle.Checkout.open({
-            items: [{ priceId: initResult.priceId, quantity: 1 }],
-            customer: {
-              email: customerEmail,
-            },
-            customData: {
-              orderId: pendingOrder.id,
-              userId: currentUser?.id || '',
-              productId: (pendingOrder as any).productId || pendingOrder.items?.[0]?.productId || '',
-            },
-            settings: {
-              displayMode: 'overlay',
-              theme: 'light',
-              locale: 'en',
-              successUrl: returnUrl,
-            },
-          });
-        } else {
-          setIsProcessing(false);
-          showToast('error', 'Initiation Failed', 'We could not open checkout. Please try again or contact support.');
-        }
-      } else {
-        // Easebuzz checkout flow
-        await loadEasebuzzCheckout();
-        const pendingOrder = await OrderService.createPendingOrderAsync(
-          cartItems,
-          {
-            fullName: customerName,
-            email: customerEmail,
-            country: 'India',
-            phone: sanitizedPhone,
-          } as any,
-          cartSummary.discount,
-          appliedCoupon?.code,
-          'Easebuzz UPI/Cards/Netbanking'
-        );
-
-        const initResult = await PaymentService.initiateEasebuzzPayment(pendingOrder.id, agreeTerms);
-
-        if (initResult.success && initResult.accessKey && initResult.merchantKey) {
-          const easebuzzCheckout = new window.EasebuzzCheckout(
-            initResult.merchantKey,
-            initResult.environment || 'test'
-          );
-
-          const options = {
-            access_key: initResult.accessKey,
-            onResponse: async (response: any) => {
-              const failed = ['failure', 'failed', 'usercancelled', 'cancelled']
-                .includes(String(response?.status || '').toLowerCase());
-              let status = failed ? 'failed' : 'pending';
-
-              if (response?.hash && response?.txnid) {
-                try {
-                  const result = await fetch('/api/payments/easebuzz/popup-response', {
-                    method: 'POST', credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(response), signal: AbortSignal.timeout(8000),
-                  });
-                  const verified = await result.json();
-                  if (result.ok && verified.status === 'PAID') status = 'success';
-                  else if (result.ok && verified.status === 'FAILED') status = 'failed';
-                } catch {}
-              }
-              window.location.href = `/checkout?status=${status}&orderId=${encodeURIComponent(pendingOrder.id)}`;
-            },
-          };
-
-          easebuzzCheckout.initiatePayment(options);
-        } else {
-          setIsProcessing(false);
-          showToast('error', 'Initiation Failed', 'We could not open checkout. Please try again or contact support.');
-        }
-      }
+      await loadRazorpayCheckout();
+      const pendingOrder = await OrderService.createPendingOrderAsync(cartItems,
+        { fullName: customerName, email: customerEmail, country: 'India', phone: sanitizedPhone } as any,
+        cartSummary.discount, appliedCoupon?.code, 'Razorpay');
+      const init = await PaymentService.initiateRazorpayPayment(pendingOrder.id, agreeTerms);
+      if (!init.success) throw new Error(init.message || 'Could not open checkout.');
+      const checkout = new window.Razorpay({
+        key: init.key, order_id: init.razorpayOrderId, amount: init.amount, currency: init.currency,
+        name: 'Booyahstudio', description: `Digital products · ${pendingOrder.id}`,
+        prefill: { name: customerName, email: customerEmail, contact: sanitizedPhone },
+        modal: { ondismiss: () => { setIsProcessing(false); void fetch('/api/payments/razorpay/checkout-closed', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: pendingOrder.id }) }).catch(() => undefined); } },
+        handler: async (response: any) => {
+          try {
+            await fetch('/api/payments/razorpay/verify', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: pendingOrder.id, ...response }) });
+          } finally { window.location.href = `/checkout?status=pending&orderId=${encodeURIComponent(pendingOrder.id)}`; }
+        },
+      });
+      checkout.on('payment.failed', () => { setIsProcessing(false); showToast('error', 'Payment incomplete', 'Check your order before trying again if your account was debited.'); });
+      checkout.open();
     } catch (err: any) {
       setIsProcessing(false);
-      showToast('error', 'Checkout Error', 'We could not open checkout. Please try again or contact support.');
+      showToast('error', 'Checkout Error', err.message || 'We could not open checkout. Please contact support.');
     }
   };
 
@@ -358,7 +210,7 @@ export const CheckoutPage: React.FC = () => {
       showToast('info', 'Authorizing Download', 'Preparing your download link…');
       const res = await OrderService.requestDownloadToken(productId);
       if (res.success && res.downloadUrl) {
-        showToast('success', 'Download Initiated', `Streaming ${defaultName}...`);
+        showToast('success', 'Download link ready', `Your browser can now download ${defaultName}.`);
         const a = document.createElement('a');
         a.href = res.downloadUrl;
         a.download = defaultName;
@@ -374,7 +226,7 @@ export const CheckoutPage: React.FC = () => {
   };
 
   if (completedOrder && !hasLivePayment(completedOrder)) {
-    return <div className="max-w-2xl mx-auto px-6 py-16 text-center space-y-6"><p className="eyebrow justify-center">BOOYAH STUDIO</p><h1 className="text-3xl font-bold">Payment check complete</h1><p className="text-slate-600 leading-8">This transaction did not create a purchase. No product files, download access or purchase invoice will be issued. Contact us if you need help with a payment shown on your bank statement.</p><p className="text-sm">Reference: {completedOrder.orderNumber}</p><p role="status" className="text-sm">{completedOrder.emailDelivery?.status === 'sent' ? 'A confirmation email has been sent.' : completedOrder.emailDelivery?.status === 'failed' || completedOrder.emailDelivery?.status === 'not_configured' ? 'This transaction was recorded, but the email could not be sent. Please contact support.' : 'A confirmation email is being prepared.'}</p><button className="studio-button primary" onClick={()=>navigate('/account')}>View account</button></div>;
+    return <div className="max-w-2xl mx-auto px-6 py-16 text-center space-y-6"><p className="eyebrow justify-center">Booyahstudio</p><h1 className="text-3xl font-bold">Payment check complete</h1><p className="text-slate-600 leading-8">This transaction did not create a purchase. No product files, download access or purchase invoice will be issued. Contact us if you need help with a payment shown on your bank statement.</p><p className="text-sm">Reference: {completedOrder.orderNumber}</p><p role="status" className="text-sm">{completedOrder.emailDelivery?.status === 'sent' ? 'A confirmation email has been sent.' : completedOrder.emailDelivery?.status === 'failed' || completedOrder.emailDelivery?.status === 'not_configured' ? 'This transaction was recorded, but the email could not be sent. Please contact support.' : 'A confirmation email is being prepared.'}</p><button className="studio-button primary" onClick={()=>navigate('/account')}>View account</button></div>;
   }
 
   // SUCCESS CONFIRMATION VIEW
@@ -418,7 +270,7 @@ export const CheckoutPage: React.FC = () => {
 
       {!deliveryReady && (
         <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 sm:p-6 text-sm text-blue-900 leading-relaxed">
-          Payment is confirmed. Your files and email are being prepared. Check My Account in a moment for your downloads and invoice.
+          Payment is confirmed. Your files and email are being prepared. Check My Account in a moment for your downloads and payment receipt.
         </div>
       )}
 
@@ -431,7 +283,7 @@ export const CheckoutPage: React.FC = () => {
             <h2 className="text-lg sm:text-xl font-black text-slate-900 truncate">Your downloads</h2>
           </div>
           <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 uppercase tracking-widest self-start sm:self-center">
-            Instant Access
+            Account Access
           </span>
         </div>
 
@@ -534,7 +386,7 @@ export const CheckoutPage: React.FC = () => {
         <div className="space-y-3">
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Login Required</h1>
           <p className="text-slate-600 max-w-sm mx-auto text-sm leading-relaxed">
-            Please sign in to your BOOYAH STUDIO account or create a new one to place orders, manage billing, and access instant downloads.
+            Please sign in to your Booyahstudio account or create a new one to place orders, manage billing, and access purchased downloads.
           </p>
         </div>
 
@@ -569,6 +421,7 @@ export const CheckoutPage: React.FC = () => {
         {/* Checkout Form (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           <form onSubmit={handleProcessCheckout} className="space-y-6">
+        {testMode && <p role="status" className="p-4 bg-amber-50 text-amber-900 rounded-xl">Test checkout: no real payment or product access is created.</p>}
             {/* 1. Customer Digital Delivery Info */}
             <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 space-y-4">
               <h2 className="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 flex items-center gap-2">
@@ -648,10 +501,11 @@ export const CheckoutPage: React.FC = () => {
               <div className="rounded-xl border border-slate-200 p-4 space-y-2">
                 <p className="font-bold text-slate-900">Secure online payment</p>
                 <p className="text-sm text-slate-600">Choose from the payment options available when you continue. Your order total is shown before you pay.</p>
-                <p className="text-sm text-slate-600">Delivery on email · Secure download links are sent after payment confirmation.</p>
+                <p className="text-sm text-slate-600">Account delivery · Protected download links are available after payment verification.</p>
               </div>
-              {!canCheckout && <p role="status" className="text-sm text-slate-600 leading-6">Online checkout is temporarily unavailable. <button type="button" onClick={() => navigate('/contact')} className="underline font-semibold">Contact us for help</button>.</p>}
-              <p className="text-xs leading-6 text-slate-600">India checkout · INR · Digital delivery only, no shipping fees. Review the <button type="button" onClick={()=>navigate('/policies/refund')} className="underline font-medium hover:text-blue-600">Refund & Return Policy</button>, <button type="button" onClick={()=>navigate('/policies/cancellation')} className="underline font-medium hover:text-blue-600">Cancellation Policy</button>, and <button type="button" onClick={()=>navigate('/policies/delivery')} className="underline font-medium hover:text-blue-600">Digital Delivery Policy</button> before paying. Change-of-mind refunds are generally unavailable after access is delivered; non-delivery, defects, and duplicate charges remain covered.</p>
+              {testMode && <p role="status" className="p-4 bg-amber-50 text-amber-900 rounded-xl">Test checkout: no real money is collected and paid product downloads will not unlock.</p>}
+          {!canCheckout && <p role="status" className="text-sm text-slate-600 leading-6">Online checkout is temporarily unavailable. <button type="button" onClick={() => navigate('/contact')} className="underline font-semibold">Contact us for help</button>.</p>}
+              <p className="text-xs leading-6 text-slate-600">India checkout · INR · Electronic delivery. Review the <button type="button" onClick={()=>navigate('/policies/refund')} className="underline font-medium hover:text-blue-600">Refund & Cancellation Policy</button>, <button type="button" onClick={()=>navigate('/policies/cancellation')} className="underline font-medium hover:text-blue-600">Cancellation Policy</button>, and <button type="button" onClick={()=>navigate('/policies/delivery')} className="underline font-medium hover:text-blue-600">Digital Delivery Policy</button> before paying. Change-of-mind refunds are generally unavailable after access is delivered; non-delivery, defects, and duplicate charges remain covered.</p>
 
               {/* Terms Checkbox */}
               <div className="pt-2 flex items-start gap-2.5">
@@ -663,7 +517,7 @@ export const CheckoutPage: React.FC = () => {
                   className="mt-1 rounded text-blue-600 accent-blue-600 w-4 h-4 cursor-pointer shrink-0"
                 />
                 <label htmlFor="agree-terms" className="text-xs text-slate-600 leading-relaxed cursor-pointer select-none">
-                  I explicitly acknowledge and agree to the BOOYAH STUDIO{' '}
+                  I explicitly acknowledge and agree to the Booyahstudio{' '}
                   <button
                     type="button"
                     onClick={() => navigate('/policies/terms')}
@@ -677,7 +531,7 @@ export const CheckoutPage: React.FC = () => {
                     onClick={() => navigate('/policies/refund')}
                     className="text-blue-600 font-bold hover:underline inline-block align-baseline"
                   >
-                    Refund & Return Policy
+                    Refund & Cancellation Policy
                   </button>
                   ,{' '}
                   <button
@@ -779,9 +633,9 @@ export const CheckoutPage: React.FC = () => {
             <div className="p-3.5 bg-blue-50/80 border border-blue-100 rounded-2xl text-[11px] text-blue-900 flex items-start gap-2.5">
               <ShieldCheck className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
               <div className="space-y-0.5">
-                <span className="font-bold block">BOOYAH STUDIO Digital Delivery</span>
+                <span className="font-bold block">Booyahstudio Digital Delivery</span>
                 <p className="text-blue-700/90 leading-relaxed">
-                  Secure download links are delivered by email and in your account after payment confirmation. We aim to acknowledge support complaints within 48 hours; see our policies for resolution and refund timelines.
+                  After server-side payment verification, request protected download links in your account. Email notifications link to your account. Contact support for access or payment problems.
                 </p>
               </div>
             </div>

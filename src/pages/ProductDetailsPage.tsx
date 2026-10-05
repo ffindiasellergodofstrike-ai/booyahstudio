@@ -204,7 +204,7 @@ export const ProductDetailsPage: React.FC = () => {
   const faqsList: FAQItem[] = product.faqs || [
     {
       question: 'How is this digital product delivered after payment?',
-      answer: 'After payment confirmation, secure download links are delivered by email and in your account, normally within 5 minutes. Contact support if access is missing after 24 hours.',
+      answer: 'After captured-payment verification, your account provides protected download links. Confirmation emails link to your account. Contact support if purchased access is missing.',
     },
     {
       question: 'Are future version updates and security fixes included?',
@@ -338,11 +338,11 @@ export const ProductDetailsPage: React.FC = () => {
             <div className="pt-2 border-t border-slate-100 space-y-2 text-xs text-slate-600">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Delivery on email after payment confirmation</span>
+                <span>Account access after payment verification</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Direct secure access token & lifetime updates included</span>
+                <span>Protected download links; updates only where offered</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -437,7 +437,8 @@ export const ProductDetailsPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Related Products Carousel */}
+      <section className="rounded-xl border border-slate-200 p-5 my-5"><h2 className="font-bold mb-2">License & usage</h2><p className="text-sm leading-6">{product.licenseTerms || 'Use and customise this product for your project as described in the listing and included documentation. Do not redistribute the original package. Contact support before purchase if you need additional rights.'}</p><a href="/policies/license" className="text-sm underline">Read the Digital Product License & Usage Policy</a></section>
+            {/* Related Products Carousel */}
       {relatedProducts.length > 0 && (
         <div className="space-y-6 pt-4">
           <div className="flex items-center justify-between">
@@ -569,7 +570,7 @@ export const ProductDetailsPage: React.FC = () => {
               <div className="space-y-3">
                 <h4 className="font-bold text-slate-900 text-base">Digital Delivery & Verification</h4>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  This digital product is delivered electronically upon verified payment. Access includes complete files, technical documentation, and lifetime version updates.
+                  This digital product is delivered electronically upon verified payment. Access includes the files and documentation stated in the listing; future updates are included only if expressly offered.
                 </p>
               </div>
 

@@ -33,7 +33,6 @@ const neuraAiCover = '/product-images/neura-ai.png';
 const finoraCover = '/product-images/finora.png';
 const learnifyCover = '/product-images/learnify.png';
 const veloraCover = '/product-images/velora.png';
-const workhubCover = '/product-images/workhub.png';
 
 export const PRODUCTS: Product[] = [
   ...NEW_PRODUCTS,
@@ -49,16 +48,12 @@ export const PRODUCTS: Product[] = [
     categoryLabel: 'Website Templates',
     productType: 'DOWNLOAD',
     price: 550,
-    originalPrice: 999,
-    rating: 4.9,
-    reviewCount: 42,
     image: linknestCover,
     gallery: [
       linknestCover
     ],
     fileFormat: 'HTML, CSS, JS (ZIP Archive)',
     fileSize: '6.7 KB',
-    downloadUrl: '/downloads/linknest-pro-template.zip',
     previewUrl: '/demos/linknest-pro/',
     version: '',
     features: [
@@ -96,7 +91,7 @@ export const PRODUCTS: Product[] = [
     faqs: [
       {
         question: 'Do I need a monthly subscription to use LinkNest Pro?',
-        answer: 'No! There are zero monthly fees or hidden charges. You purchase once and get full lifetime usage rights and source code.'
+        answer: 'The purchase covers the listed files and their stated license. Third-party hosting, services and future updates are not included unless stated.'
       },
       {
         question: 'How do customers buy my products?',
@@ -108,7 +103,7 @@ export const PRODUCTS: Product[] = [
       },
       {
         question: 'What happens if I lose my download link?',
-        answer: 'No worries! You can access all your purchased products anytime by logging into your account dashboard on BOOYAH STUDIO. Your digital library is permanently stored in your account.'
+        answer: 'No worries! You can access all your purchased products anytime by logging into your account dashboard on Booyahstudio. Your digital library is permanently stored in your account.'
       },
       {
         question: 'Do I need to know coding to use this template?',
@@ -120,7 +115,7 @@ export const PRODUCTS: Product[] = [
       },
       {
         question: 'Is there a refund policy?',
-        answer: 'As this is a digital downloadable product, we generally do not offer refunds once the file has been accessed. However, if you face any technical issues with the source code, our support team is here to help.'
+        answer: 'Purchases are generally non-refundable after delivery or access, subject to law and legitimate exceptions including non-delivery, duplicate charges, wrong files, unresolved material defects and material misdescription. See the Refund & Cancellation Policy.'
       }
     ],
     status: 'active',
@@ -142,16 +137,12 @@ export const PRODUCTS: Product[] = [
     categoryLabel: 'Website Templates',
     productType: 'DOWNLOAD',
     price: 750,
-    originalPrice: 1500,
-    rating: 5.0,
-    reviewCount: 18,
     image: neuraAiCover,
     gallery: [
       neuraAiCover
     ],
     fileFormat: 'React/Vite-ready (ZIP Archive)',
     fileSize: '1.2 MB',
-    downloadUrl: '/downloads/neura-ai-template.zip',
     previewUrl: '/demos/neura-ai/',
     version: '1.0.0',
     features: [
@@ -258,16 +249,12 @@ export const PRODUCTS: Product[] = [
     categoryLabel: 'Website Templates',
     productType: 'DOWNLOAD',
     price: 1100,
-    originalPrice: 1999,
-    rating: 4.9,
-    reviewCount: 34,
     image: finoraCover,
     gallery: [
       finoraCover
     ],
     fileFormat: 'React/Vite-ready (ZIP Archive)',
     fileSize: '1.4 MB',
-    downloadUrl: '/downloads/finora-template.zip',
     previewUrl: '/demos/finora/',
     version: '1.0.0',
     features: [
@@ -365,16 +352,12 @@ export const PRODUCTS: Product[] = [
     categoryLabel: 'Website Templates',
     productType: 'DOWNLOAD',
     price: 1400,
-    originalPrice: 2499,
-    rating: 4.9,
-    reviewCount: 26,
     image: learnifyCover,
     gallery: [
       learnifyCover
     ],
     fileFormat: 'React/Vite-ready (ZIP Archive)',
     fileSize: '1.6 MB',
-    downloadUrl: '/downloads/learnify-template.zip',
     previewUrl: '/demos/learnify/',
     version: '1.0.0',
     features: [
@@ -480,16 +463,12 @@ export const PRODUCTS: Product[] = [
     categoryLabel: 'Website Templates',
     productType: 'DOWNLOAD',
     price: 5500,
-    originalPrice: 9999,
-    rating: 5.0,
-    reviewCount: 42,
     image: veloraCover,
     gallery: [
       veloraCover
     ],
     fileFormat: 'React/Vite-ready (ZIP Archive)',
     fileSize: '2.1 MB',
-    downloadUrl: '/downloads/velora-template.zip',
     previewUrl: '/demos/velora/',
     version: '1.0.0',
     features: [
@@ -591,127 +570,14 @@ export const PRODUCTS: Product[] = [
     releasedAt: '2026-09-22',
     updatedAt: '2026-09-22'
   },
-  {
-    id: 'workhub',
-    slug: 'workhub',
-    title: 'WorkHub — Freelancer Marketplace Template',
-    shortDescription:
-      'Build a complete Fiverr-style freelance marketplace with WorkHub — a premium React frontend template featuring buyer accounts, seller profiles, service listings, packages, orders, messaging, reviews, analytics, earnings and admin dashboard.',
-    description:
-      'WorkHub is a premium freelancer marketplace website template designed for businesses that want to build their own online freelance platform.\n\nThe template provides a complete marketplace experience where users can register as buyers, sellers, or both. Buyers can discover freelancers and services, compare packages, place orders, communicate with sellers and manage their projects. Sellers can create professional profiles, publish services, manage orders, communicate with clients and monitor their earnings and performance.\n\nWorkHub includes the complete frontend experience for a modern freelance marketplace, from user registration and service discovery to checkout, order management, messaging, reviews, seller analytics and platform administration.',
-    category: 'templates',
-    categoryLabel: 'Website Templates',
-    productType: 'DOWNLOAD',
-    price: 7500,
-    originalPrice: 19999,
-    rating: 4.9,
-    reviewCount: 15,
-    image: workhubCover,
-    gallery: [
-      workhubCover
-    ],
-    fileFormat: 'React/Vite-ready (ZIP Archive)',
-    fileSize: '3.4 MB',
-    downloadUrl: '/downloads/workhub-template.zip',
-    previewUrl: '/demos/workhub/',
-    version: '1.0.0',
-    features: [
-      '👤 Dual Buyer & Seller accounts: Smooth seller onboarding with profile bio, custom skills, languages, education and certs.',
-      '🛍️ Professional Gig & Service Market: Categorized service explorer with basic, standard, and premium package comparison tables.',
-      '💬 Multi-mode Instant Chat UI: Elegant messaging layout for buyer-seller discussion with chat list, status cues and order linkages.',
-      '📦 Complete Order Workflow: Order lifecycle showing order timelines, active milestones, revision requests, and completion cues.',
-      '📈 Advanced Seller Analytics: Insight dashboards demonstrating clicks, conversions, gig impressions, and earnings charts.',
-      '🛠️ Full Platform Admin Panel: Complete backend-ready frontend management console for platform metrics, users, services, orders, and reports.'
-    ],
-    whatsIncluded: [
-      'Complete React & Vite marketplace structure',
-      'JavaScript fully responsive source pages',
-      'Highly flexible Tailwind CSS UI styles',
-      'Interactive buyer dashboard pages',
-      'Comprehensive seller dashboard and stats consoles',
-      'Advanced platform admin management UI console',
-      'Mock marketplace service datasets & assets',
-      'Comprehensive step-by-step launch & deployment guides'
-    ],
-    requirements: [
-      'Windows, macOS, or Linux computer',
-      'Node.js 18+ and npm 9+',
-      'Git installed (recommended)',
-      'VS Code or another modern text editor',
-      'Modern web browser (Chrome, Edge, Firefox, Safari)'
-    ],
-    faqs: [
-      {
-        question: 'Is this a complete Fiverr clone?',
-        answer: 'No. WorkHub is an original freelancer marketplace frontend template inspired by common marketplace workflows.'
-      },
-      {
-        question: 'Does it include real authentication?',
-        answer: 'No. Authentication UI and demo account flows are included. A real authentication backend must be connected.'
-      },
-      {
-        question: 'Does it include real payment gateway integration?',
-        answer: 'No. Checkout and payment screens are frontend/demo UI only.'
-      },
-      {
-        question: 'Can users become sellers?',
-        answer: 'Yes. The template includes seller onboarding and seller profile creation flows.'
-      },
-      {
-        question: 'Can sellers create services?',
-        answer: 'Yes. Sellers can create Basic, Standard and Premium service packages through the frontend UI.'
-      },
-      {
-        question: 'Is real-time chat included?',
-        answer: 'No. The complete chat interface is included, but a real-time messaging backend is required.'
-      },
-      {
-        question: 'Is an admin panel included?',
-        answer: 'Yes. WorkHub includes a complete admin dashboard frontend.'
-      },
-      {
-        question: 'Can I connect Firebase or another backend?',
-        answer: 'Yes. The frontend is structured so you can connect your own API, database and authentication system.'
-      },
-      {
-        question: 'Is it mobile responsive?',
-        answer: 'Yes. The marketplace, dashboards, service pages, checkout and messaging interfaces are designed for desktop, tablet and mobile.'
-      },
-      {
-        question: 'Can I deploy it on Vercel?',
-        answer: 'Yes. WorkHub is designed to be GitHub and Vercel compatible.'
-      },
-      {
-        question: 'Are the users and services real?',
-        answer: 'No. Demo users, sellers, services and orders are fictional sample data.'
-      },
-      {
-        question: 'Are seller payouts real?',
-        answer: 'No. Earnings and withdrawal pages are frontend UI demonstrations.'
-      },
-      {
-        question: 'Can I customize the branding?',
-        answer: 'Yes. You can change the logo, colors, typography, categories, services, content and branding.'
-      },
-      {
-        question: 'Is technical support included?',
-        answer: 'Basic setup/customization documentation is included. Backend development and custom integrations are not included unless separately provided.'
-      }
-    ],
-    status: 'active',
-    tags: ['Freelancer', 'Marketplace', 'SaaS platform', 'React Template', 'Tailwind CSS', 'Seller Dashboard', 'Buyer Dashboard'],
-    isFeatured: true,
-    isNew: true,
-    releasedAt: '2026-09-22',
-    updatedAt: '2026-09-22'
-  }
+
 ];
 
 export const COUPONS: Coupon[] = [
   {
     code: 'SAVE20',
     discountPercent: 20,
-    description: '20% off any digital product on BOOYAH STUDIO',
+    description: '20% off any digital product on Booyahstudio',
   },
   {
     code: 'LAUNCH50',

@@ -63,7 +63,7 @@ export const AdminPage: React.FC = () => {
   }
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    if (!await AuthService.signOut()) { alert('Sign out failed. Please retry.'); return; }
     window.location.href = '/login';
   };
 
@@ -106,12 +106,7 @@ export const AdminPage: React.FC = () => {
         <AdminCouponsView />
       )}
 
-      {activeTab === 'downloads' && (
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-          <h3 className="text-lg font-bold mb-4">Downloads & Purchase Access</h3>
-          <p className="text-sm text-slate-500">Manage user download limits and active product access.</p>
-        </div>
-      )}
+      {activeTab === 'downloads' && <AdminOrdersView orders={orders} onRefresh={loadAdminData} />}
 
       {activeTab === 'audit' && (
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
@@ -133,7 +128,7 @@ export const AdminPage: React.FC = () => {
       {activeTab === 'settings' && (
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
           <h3 className="text-lg font-bold">Store Settings</h3>
-          <p className="text-sm text-slate-500">Configure global store details, payment environment, and maintenance mode.</p>
+          <p className="text-sm text-slate-500">Payment credentials, email sender and trusted site URL are configured in Vercel environment settings. Database and private product files are managed in Supabase. Follow DEPLOYMENT.md; changing browser fields cannot change server secrets.</p>
         </div>
       )}
     </AdminLayout>

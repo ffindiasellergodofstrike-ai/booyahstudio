@@ -1,6 +1,8 @@
+import { paymentEnvironment } from './razorpay';
+import { supabaseAdmin } from './supabase';
 import { hasLivePayment } from '../src/services/PaymentEnvironment';
 import { Router, Response, Request } from 'express';
-import { FirebaseRtdb } from './firebaseRtdb';
+import { Store } from './store';
 import { AuditLogger, generateRequestId } from './audit';
 import { z } from 'zod';
 import crypto from 'crypto';
@@ -34,22 +36,24 @@ const previewUrlSchema = z.union([z.literal(''), z.string().trim().max(2048)])
   .transform((value) => value?.trim() || undefined);
 
 const productSchema = z.object({
-  id: z.string().min(1),
+  id: z.string().regex(/^[a-zA-Z0-9_-]{1,100}$/),
   title: z.string().min(2),
-  slug: z.string().min(2),
+  slug: z.string().regex(/^[a-z0-9][a-z0-9-]{1,120}$/),
   shortDescription: z.string().optional(),
   description: z.string().optional(),
   price: z.number().nonnegative(),
   compareAtPrice: z.number().nonnegative().optional(),
   category: z.string().min(1),
   categoryLabel: z.string().optional(),
-  productType: z.string().default('DOWNLOAD'),
+  productType: z.literal('DOWNLOAD').default('DOWNLOAD'),
+  whatsIncluded: z.array(z.string().max(1000)).max(100).optional(),
   version: z.string().optional(),
+  licenseTerms: z.string().max(10000).optional(),
   fileSize: z.string().optional(),
   fileFormat: z.string().optional(),
   image: z.string().url().or(z.string().min(1)),
   gallery: z.array(z.string()).optional(),
-  status: z.enum(['draft', 'published', 'archived']).default('published'),
+  status: z.enum(['draft', 'published', 'active', 'archived']).default('published'),
   isFeatured: z.boolean().optional(),
   stock: z.number().int().nonnegative().optional(),
   unlimitedStock: z.boolean().optional(),
@@ -58,6 +62,9 @@ const productSchema = z.object({
   faqs: z.array(z.any()).optional(),
   previewUrl: previewUrlSchema,
 }).superRefine((product, context) => {
+  if (['published','active'].includes(product.status) && (!product.licenseTerms?.trim() || !product.requirements?.length || !product.whatsIncluded?.length || !product.description?.trim() || !product.version || product.price <= 0)) {
+    context.addIssue({ code: 'custom', message: 'Published products need a positive price, description, version, included files, requirements and actual license terms.' });
+  }
   if (product.previewUrl?.startsWith('/') && product.previewUrl !== `/demos/${product.id}/`) {
     context.addIssue({
       code: 'custom',
@@ -68,16 +75,14 @@ const productSchema = z.object({
 });
 
 const couponSchema = z.object({
-  id: z.string().min(1),
+  id: z.string().regex(/^[a-zA-Z0-9_-]{1,100}$/),
   code: z.string().min(2),
-  discountPercent: z.number().min(0).max(100).optional(),
-  flatAmount: z.number().nonnegative().optional(),
+  discountPercent: z.number().gt(0).lt(100),
   description: z.string().optional(),
   minSpend: z.number().nonnegative().optional(),
   active: z.boolean().default(true),
-  usageCount: z.number().int().nonnegative().optional(),
-  usageLimit: z.number().int().nonnegative().optional(),
-  expiresAt: z.string().optional(),
+
+  expiresAt: z.string().refine(v => Number.isFinite(Date.parse(v)), 'Invalid expiry').optional(),
 });
 
 /**
@@ -88,14 +93,14 @@ const couponSchema = z.object({
 // 1. Admin Me & Dashboard Stats
 adminRouter.get('/me', async (req: any, res: Response) => {
   try {
-    const profile = await FirebaseRtdb.getUserProfile(req.userId);
-    const firebaseStatus = await FirebaseRtdb.testConnection();
+    const profile = await Store.getUserProfile(req.userId);
+    const supabaseStatus = await Store.testConnection();
     res.json({
       success: true,
       admin: profile,
       health: {
-        firebase: firebaseStatus,
-        easebuzz: { status: process.env.EASEBUZZ_KEY && process.env.EASEBUZZ_SALT ? 'configured' : 'not_configured', environment: process.env.EASEBUZZ_ENV || 'unset' },
+        supabase: supabaseStatus,
+        razorpay: { status: process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET ? 'configured' : 'not_configured', environment: paymentEnvironment() },
       },
     });
   } catch (err: any) {
@@ -105,9 +110,9 @@ adminRouter.get('/me', async (req: any, res: Response) => {
 
 adminRouter.get('/dashboard/stats', async (req: any, res: Response) => {
   try {
-    const orders = await FirebaseRtdb.getAllGlobalOrders();
-    const products = await FirebaseRtdb.getAllProducts();
-    const users = await FirebaseRtdb.getAllUsers();
+    const orders = await Store.getAllGlobalOrders();
+    const products = await Store.getAllProducts();
+    const users = await Store.getAllUsers();
     const auditLogs = await AuditLogger.getAllLogs(50);
 
     const now = Date.now();
@@ -174,7 +179,7 @@ adminRouter.get('/dashboard/stats', async (req: any, res: Response) => {
 // 2. Products Management CRUD & Actions
 adminRouter.get('/products', async (req: any, res: Response) => {
   try {
-    const products = await FirebaseRtdb.getAllProducts();
+    const products = await Store.getAllProducts();
     res.json({ success: true, products });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to fetch products.' });
@@ -185,7 +190,7 @@ adminRouter.post('/products', async (req: any, res: Response) => {
   try {
     const parsed = productSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ success: false, message: 'Validation error', errors: parsed.error.format() });
+      return res.status(400).json({ success: false, message: parsed.error.issues.map(issue => issue.message).join('; '), errors: parsed.error.format() });
     }
 
     const productData = {
@@ -195,12 +200,12 @@ adminRouter.post('/products', async (req: any, res: Response) => {
     };
 
     // Check slug uniqueness
-    const existing = await FirebaseRtdb.getAllProducts();
+    const existing = await Store.getAllProducts();
     if (existing.some((p: any) => p.slug === productData.slug && p.id !== productData.id)) {
       return res.status(400).json({ success: false, message: 'Product slug must be unique.' });
     }
 
-    await FirebaseRtdb.saveProduct(productData);
+    await Store.saveProduct(productData);
 
     await AuditLogger.log({
       requestId: generateRequestId(),
@@ -223,14 +228,14 @@ adminRouter.post('/products', async (req: any, res: Response) => {
 adminRouter.put('/products/:id', async (req: any, res: Response) => {
   try {
     const productId = req.params.id;
-    const existing = await FirebaseRtdb.getProductById(productId);
+    const existing = await Store.getProductById(productId);
     if (!existing) {
       return res.status(404).json({ success: false, message: 'Product not found.' });
     }
 
     const parsed = productSchema.safeParse({ ...existing, ...req.body, id: productId });
     if (!parsed.success) {
-      return res.status(400).json({ success: false, message: 'Validation error', errors: parsed.error.format() });
+      return res.status(400).json({ success: false, message: parsed.error.issues.map(issue => issue.message).join('; '), errors: parsed.error.format() });
     }
 
     const updated = {
@@ -238,7 +243,7 @@ adminRouter.put('/products/:id', async (req: any, res: Response) => {
       updatedAt: new Date().toISOString(),
     };
 
-    await FirebaseRtdb.saveProduct(updated);
+    await Store.saveProduct(updated);
 
     await AuditLogger.log({
       requestId: generateRequestId(),
@@ -261,7 +266,7 @@ adminRouter.put('/products/:id', async (req: any, res: Response) => {
 adminRouter.delete('/products/:id', async (req: any, res: Response) => {
   try {
     const productId = req.params.id;
-    const existing = await FirebaseRtdb.getProductById(productId);
+    const existing = await Store.getProductById(productId);
     if (!existing) {
       return res.status(404).json({ success: false, message: 'Product not found.' });
     }
@@ -269,7 +274,7 @@ adminRouter.delete('/products/:id', async (req: any, res: Response) => {
     // Soft delete via status archived
     existing.status = 'archived';
     existing.updatedAt = new Date().toISOString();
-    await FirebaseRtdb.saveProduct(existing);
+    await Store.saveProduct(existing);
 
     await AuditLogger.log({
       requestId: generateRequestId(),
@@ -292,7 +297,7 @@ adminRouter.delete('/products/:id', async (req: any, res: Response) => {
 adminRouter.post('/products/:id/clone', async (req: any, res: Response) => {
   try {
     const productId = req.params.id;
-    const existing = await FirebaseRtdb.getProductById(productId);
+    const existing = await Store.getProductById(productId);
     if (!existing) {
       return res.status(404).json({ success: false, message: 'Product not found.' });
     }
@@ -301,20 +306,21 @@ adminRouter.post('/products/:id/clone', async (req: any, res: Response) => {
     const cloned = {
       ...existing,
       id: newId,
+      status: 'draft',
       title: `${existing.title} (Copy)`,
       slug: `${existing.slug}-copy-${Math.random().toString(36).substring(2, 6)}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    await FirebaseRtdb.saveProduct(cloned);
+    await Store.saveProduct(cloned);
     res.json({ success: true, product: cloned, message: 'Product cloned successfully.' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to clone product.' });
   }
 });
 
-// 3. Image Upload Handler (Real Firebase Storage REST API)
+// 3. Image Upload Handler (Real Supabase Storage REST API)
 adminRouter.post('/uploads/direct', upload.single('image') as any, async (req: any, res: any) => {
   const requestId = generateRequestId();
   try {
@@ -323,48 +329,20 @@ adminRouter.post('/uploads/direct', upload.single('image') as any, async (req: a
       return res.status(400).json({ success: false, message: 'No image file provided.', requestId });
     }
 
-    const bucket = process.env.FIREBASE_STORAGE_BUCKET || 'booyah-studio-shop.appspot.com';
-    const filename = `products/${Date.now()}_${file.originalname.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-    const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?name=${encodeURIComponent(filename)}`;
+    if (!['image/png','image/jpeg','image/webp'].includes(file.mimetype)) return res.status(400).json({ message: 'Upload PNG, JPEG or WebP images.' });
+    const bucket = 'product-images';
+    const filename = `${crypto.randomUUID()}.${req.file.mimetype.split('/')[1].replace('jpeg', 'jpg')}`;
+    const { error } = await supabaseAdmin().storage.from(bucket).upload(filename, req.file.buffer, { contentType: req.file.mimetype });
+    if (error) throw new Error('Upload failed');
+    const { data } = supabaseAdmin().storage.from(bucket).getPublicUrl(filename);
+    res.json({ success: true, url: data.publicUrl });
 
-    const response = await fetch(uploadUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': file.mimetype,
-      },
-      body: file.buffer,
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Firebase Storage Error: ${errorText}`);
-    }
-
-    const data = await response.json();
-    const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(filename)}?alt=media&token=${data.downloadTokens || ''}`;
-
-    await AuditLogger.log({
-      requestId,
-      userId: req.userId,
-      eventType: 'PRODUCT_VIEWED',
-      eventStatus: 'SUCCESS',
-      source: 'ADMIN_UPLOAD',
-      metadata: { filename, size: file.size, mimetype: file.mimetype },
-      ip: req.ip,
-      userAgent: req.get('user-agent'),
-    });
-
-    res.json({ 
-      success: true, 
-      url: publicUrl, 
-      message: 'Image uploaded successfully to Firebase Storage.' 
-    });
   } catch (err: any) {
     console.error('[Admin Upload Error]', err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to upload image to storage. Ensure FIREBASE_STORAGE_BUCKET is configured.', 
-      requestId 
+    res.status(500).json({
+      success: false,
+      message: 'Failed to upload image to storage. Ensure Supabase product-images bucket is configured.',
+      requestId
     });
   }
 });
@@ -380,7 +358,7 @@ adminRouter.post('/uploads/sign', async (req: any, res: Response) => {
 // 4. Orders Management
 adminRouter.get('/orders', async (req: any, res: Response) => {
   try {
-    const orders = await FirebaseRtdb.getAllGlobalOrders();
+    const orders = await Store.getAllGlobalOrders();
     res.json({ success: true, orders });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to fetch orders.' });
@@ -390,8 +368,10 @@ adminRouter.get('/orders', async (req: any, res: Response) => {
 adminRouter.get('/orders/:id/timeline', async (req: any, res: Response) => {
   try {
     const orderId = req.params.id;
-    const auditLogs = await FirebaseRtdb.get<Record<string, any>>(`orderAuditIndex/${orderId}`) || {};
-    const timeline = Object.values(auditLogs).sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    const auditLogs = await Store.get<Record<string, any>>(`orderAuditIndex/${orderId}`) || {};
+    const order = await Store.getGlobalOrder(orderId);
+    const lifecycle = [['PAYMENT_INITIATED',order?.paymentInitiatedAt], ['PAYMENT_VERIFIED',order?.paymentVerifiedAt], ['PRODUCT_ACCESS_GRANTED',order?.deliveredAt], ['REFUND_VERIFIED',order?.refundVerifiedAt], ['CHECKOUT_CLOSED_BY_CUSTOMER',order?.checkoutClosedAt]].filter(([,time]) => time).map(([eventType,timestamp]) => ({ eventType, timestamp, source: 'STORED_ORDER' }));
+    const timeline = [...Object.values(auditLogs), ...lifecycle].sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     res.json({ success: true, timeline });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to fetch order timeline.' });
@@ -402,22 +382,17 @@ adminRouter.put('/orders/:id/status', async (req: any, res: Response) => {
   try {
     const orderId = req.params.id;
     const { status, paymentStatus, deliveryStatus } = req.body;
-    const order = await FirebaseRtdb.getGlobalOrder(orderId);
+    const order = await Store.getGlobalOrder(orderId);
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found.' });
     }
 
     if (status !== undefined || paymentStatus !== undefined || deliveryStatus !== 'REVOKED' ||
         String(order.paymentStatus).toUpperCase() !== 'PAID') {
-      return res.status(400).json({ success: false, message: 'Only paid-order download access can be revoked here. Payment status must be verified by Easebuzz.' });
+      return res.status(400).json({ success: false, message: 'Only paid-order download access can be revoked here. Payment status must be verified by Razorpay.' });
     }
 
-    order.deliveryStatus = 'REVOKED';
-    order.downloadStatus = 'REVOKED';
-    order.items = (order.items || []).map((item: any) => ({ ...item, downloadStatus: 'REVOKED' }));
-    order.updatedAt = new Date().toISOString();
-
-    await FirebaseRtdb.saveGlobalOrder(order);
+    const updatedOrder = await Store.rpc('revoke_order', `orders/${orderId}`);
 
     await AuditLogger.log({
       requestId: generateRequestId(),
@@ -431,7 +406,7 @@ adminRouter.put('/orders/:id/status', async (req: any, res: Response) => {
       userAgent: req.get('user-agent'),
     });
 
-    res.json({ success: true, order, message: 'Download access revoked. No refund was initiated.' });
+    res.json({ success: true, order: updatedOrder, message: 'Download access revoked. No refund was initiated.' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to update order status.' });
   }
@@ -440,8 +415,8 @@ adminRouter.put('/orders/:id/status', async (req: any, res: Response) => {
 // 5. Customers Management
 adminRouter.get('/customers', async (req: any, res: Response) => {
   try {
-    const users = await FirebaseRtdb.getAllUsers();
-    const orders = await FirebaseRtdb.getAllGlobalOrders();
+    const users = await Store.getAllUsers();
+    const orders = await Store.getAllGlobalOrders();
 
     const customersWithMetrics = users.map((u: any) => {
       const userOrders = orders.filter((o: any) => o.customerEmail?.toLowerCase() === u.email?.toLowerCase());
@@ -465,16 +440,20 @@ adminRouter.get('/customers', async (req: any, res: Response) => {
 adminRouter.put('/customers/:userId/status', async (req: any, res: Response) => {
   try {
     const targetUserId = req.params.userId;
-    const { role, blocked } = req.body;
-    const profile = await FirebaseRtdb.getUserProfile(targetUserId);
+    const parsed = z.object({ role: z.enum(['admin','customer']).optional(), blocked: z.boolean().optional() }).strict().safeParse(req.body);
+    if (!/^[A-Za-z0-9_-]{1,100}$/.test(targetUserId) || !parsed.success) return res.status(400).json({ success: false, message: 'Invalid account update.' });
+    const { role, blocked } = parsed.data;
+    if (targetUserId === req.userId && (blocked || role === 'customer')) return res.status(400).json({ success: false, message: 'Use another administrator to change your own access.' });
+    const profile = await Store.getUserProfile(targetUserId);
     if (!profile) {
       return res.status(404).json({ success: false, message: 'Customer not found.' });
     }
 
     if (role) profile.role = role;
-    if (blocked !== undefined) profile.blocked = blocked;
+    if (blocked !== undefined) { profile.blocked = blocked; profile.status = blocked ? 'suspended' : 'active'; profile.sessionValidAfter = Date.now(); }
 
-    await FirebaseRtdb.setUserProfile(targetUserId, profile);
+    await Store.setUserProfile(targetUserId, profile);
+    await AuditLogger.log({ requestId: generateRequestId(), userId: req.userId, eventType: 'ORDER_UPDATED', eventStatus: 'SUCCESS', source: 'ADMIN_PANEL', metadata: { action: 'ACCOUNT_ACCESS_REVIEW', targetUserId, role, blocked } });
     res.json({ success: true, profile, message: 'Customer status updated successfully.' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to update customer status.' });
@@ -484,7 +463,7 @@ adminRouter.put('/customers/:userId/status', async (req: any, res: Response) => 
 // 6. Coupons Management
 adminRouter.get('/coupons', async (req: any, res: Response) => {
   try {
-    const coupons = await FirebaseRtdb.getAllCoupons();
+    const coupons = await Store.getAllCoupons();
     res.json({ success: true, coupons });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to fetch coupons.' });
@@ -495,9 +474,11 @@ adminRouter.post('/coupons', async (req: any, res: Response) => {
   try {
     const parsed = couponSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ success: false, message: 'Validation error', errors: parsed.error.format() });
+      return res.status(400).json({ success: false, message: parsed.error.issues.map(issue => issue.message).join('; '), errors: parsed.error.format() });
     }
-    await FirebaseRtdb.saveCoupon(parsed.data);
+    const existing = await Store.getAllCoupons();
+    if (existing.some(c => c.id !== parsed.data.id && c.code.toUpperCase() === parsed.data.code.toUpperCase())) return res.status(400).json({ success: false, message: 'Coupon code already exists.' });
+    await Store.saveCoupon(parsed.data);
     res.json({ success: true, coupon: parsed.data, message: 'Coupon created successfully.' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to create coupon.' });
@@ -506,7 +487,7 @@ adminRouter.post('/coupons', async (req: any, res: Response) => {
 
 adminRouter.delete('/coupons/:id', async (req: any, res: Response) => {
   try {
-    await FirebaseRtdb.deleteCoupon(req.params.id);
+    await Store.deleteCoupon(req.params.id);
     res.json({ success: true, message: 'Coupon deleted successfully.' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to delete coupon.' });
@@ -516,7 +497,7 @@ adminRouter.delete('/coupons/:id', async (req: any, res: Response) => {
 // 7. Settings & CMS
 adminRouter.get('/settings', async (req: any, res: Response) => {
   try {
-    const settings = await FirebaseRtdb.getGlobalSettings();
+    const settings = await Store.getGlobalSettings();
     res.json({ success: true, settings });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to fetch settings.' });
@@ -525,7 +506,7 @@ adminRouter.get('/settings', async (req: any, res: Response) => {
 
 adminRouter.put('/settings', async (req: any, res: Response) => {
   try {
-    await FirebaseRtdb.saveGlobalSettings(req.body);
+    await Store.saveGlobalSettings(req.body);
     res.json({ success: true, message: 'Settings saved successfully.' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message || 'Failed to save settings.' });
@@ -535,7 +516,7 @@ adminRouter.put('/settings', async (req: any, res: Response) => {
 // 8. CSV Exports
 adminRouter.get('/export/orders', async (req: any, res: Response) => {
   try {
-    const orders = await FirebaseRtdb.getAllGlobalOrders();
+    const orders = await Store.getAllGlobalOrders();
     const csvRows = ['Order Number,Invoice Number,Date,Customer Name,Customer Email,Status,Payment Status,Total,Payment Verified At,Delivered At,Email Status'];
     orders.forEach((o: any) => {
       csvRows.push([
@@ -554,7 +535,7 @@ adminRouter.get('/export/orders', async (req: any, res: Response) => {
 
 adminRouter.get('/export/customers', async (req: any, res: Response) => {
   try {
-    const users = await FirebaseRtdb.getAllUsers();
+    const users = await Store.getAllUsers();
     const csvRows = ['Name,Email,Mobile,Role,Joined Date'];
     users.forEach((u: any) => {
       csvRows.push([u.name, u.email, u.mobile, u.role || 'customer', u.joinedDate].map(safeCsvCell).join(','));
@@ -568,6 +549,38 @@ adminRouter.get('/export/customers', async (req: any, res: Response) => {
 });
 
 adminRouter.get('/support-requests', async (_req, res) => {
-  try { res.json({ success: true, requests: await FirebaseRtdb.get('supportRequests') || {} }); }
+  try { res.json({ success: true, requests: await Store.get('supportRequests') || {} }); }
   catch { res.status(503).json({ success: false, message: 'Support inbox unavailable.' }); }
 });
+
+// Owner-only evidence export. Review necessity and redact before provider submission.
+adminRouter.get('/orders/:id/evidence', async (req, res) => {
+  const order = await Store.getGlobalOrder(req.params.id);
+  if (!order) return res.status(404).json({ success: false });
+  const downloads = Object.values(await Store.get<Record<string, any>>('downloadLogs') || {}).filter(row => row.orderId === order.id);
+  const events = Object.values(await Store.get<Record<string, any>>('paymentEvents') || {}).filter(row => row.orderId === order.id);
+  const evidence = {
+    order: { id: order.id, userId: order.userId, customerEmail: order.customerEmail, customerName: order.customerName,
+      total: order.total, currency: order.currency, createdAt: order.createdAt, items: order.items,
+      paymentStatus: order.paymentStatus, razorpayOrderId: order.razorpayOrderId, paymentId: order.paymentId,
+      paymentInitiatedAt: order.paymentInitiatedAt, paymentVerifiedAt: order.paymentVerifiedAt, deliveredAt: order.deliveredAt,
+      deliveryStatus: order.deliveryStatus, policyVersion: order.policyVersion, policyAcceptedAt: order.policyAcceptedAt,
+      payments: order.payments, paymentHistory: order.paymentHistory, disputes: order.disputes,
+      refundedAmount: order.refundedAmount, duplicatePaymentReview: order.duplicatePaymentReview,
+      emailDelivery: order.emailDelivery, refundEmailDelivery: order.refundEmailDelivery },
+    policiesAccepted: order.policyVersion ? await Store.get(`policyDocuments/${order.policyVersion}`) : null,
+    events, downloadAuthorizations: downloads,
+    limitations: 'A signed URL authorization does not prove completed download or receipt. Add only necessary, redacted support correspondence separately. This export is not automatically submitted.',
+  };
+  res.set('Content-Disposition', `attachment; filename="evidence-${order.id}.json"`).json(evidence);
+});
+adminRouter.post('/orders/:id/restore-access', async (req: any, res) => {
+  const parsed = z.object({ reason: z.string().trim().min(10).max(1000) }).safeParse(req.body);
+  if (!parsed.success || !await Store.getGlobalOrder(req.params.id)) return res.status(400).json({ success: false, message: 'Valid order and review reason required.' });
+  try {
+    const order = await Store.rpc('restore_order_access', `orders/${req.params.id}`);
+    await AuditLogger.log({ requestId: generateRequestId(), userId: req.userId, orderId: order.id, eventType: 'ORDER_UPDATED', eventStatus: 'SUCCESS', source: 'ADMIN_PANEL', metadata: { action: 'RESTORE_ACCESS_AFTER_REVIEW', reason: parsed.data.reason } });
+    res.json({ success: true, order });
+  } catch { res.status(409).json({ success: false, message: 'Reconcile first. Refunds, unpaid orders or unresolved disputes cannot be restored here.' }); }
+});
+adminRouter.get('/audit-logs', async (_req, res) => res.json({ success: true, logs: await AuditLogger.getAllLogs(200) }));

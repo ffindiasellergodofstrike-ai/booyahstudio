@@ -133,7 +133,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({ orders, onRefr
               <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl space-y-2">
                 <p className="font-semibold text-slate-900 dark:text-white">Customer Information</p>
                 <p className="text-slate-600 dark:text-slate-300">Email: {selectedOrder.customerEmail || selectedOrder.customer?.email}</p>
-                <p className="text-slate-600 dark:text-slate-300">Payment ID: {selectedOrder.easebuzzPaymentId || selectedOrder.paymentId || 'N/A'}</p>
+                <p className="text-slate-600 dark:text-slate-300">Payment ID: {selectedOrder.razorpayPaymentId || selectedOrder.paymentId || 'N/A'}</p>
                 <p className="text-slate-600 dark:text-slate-300">Total: <strong className="text-slate-900 dark:text-white">₹{selectedOrder.total}</strong></p>
               </div>
 
@@ -149,12 +149,21 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({ orders, onRefr
                 </div>
               </div>
 
-              <div className="flex space-x-2 pt-2">
+              <div className="flex flex-wrap gap-2 pt-2">
+                {selectedOrder.deliveryStatus === 'REVOKED' && <button className="border rounded-xl p-2 text-xs" onClick={async () => {
+                  const reason = window.prompt('Explain the resolution after verifying payment and disputes:');
+                  if (!reason) return;
+                  const response = await fetch(`/api/admin/orders/${encodeURIComponent(selectedOrder.id)}/restore-access`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason }) });
+                  const result = await response.json();
+                  if (!result.success) { alert(result.message); return; }
+                  setSelectedOrder(result.order); onRefresh();
+                }}>Restore access after review</button>}
+                <a href={`/api/admin/orders/${encodeURIComponent(selectedOrder.id)}/evidence`} className="block underline text-sm mb-3">Download dispute evidence for review</a>
                 <button
                   onClick={() => handleVerifyPayment(selectedOrder.id)}
                   className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition"
                 >
-                  Verify with Easebuzz
+                  Verify with Razorpay
                 </button>
                 <button
                   onClick={() => handleRevokeAccess(selectedOrder.id)}

@@ -1,3 +1,6 @@
+import { Store } from './store';
+import { mergeProductCatalog } from './productCatalog';
+import { PRODUCTS } from '../src/data/products';
 import { Request, Response, NextFunction } from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,13 +19,15 @@ function getIndexHtmlShell(): string {
   } else if (fs.existsSync(rootIndexPath)) {
     cachedIndexHtml = fs.readFileSync(rootIndexPath, 'utf8');
   } else {
-    cachedIndexHtml = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>BOOYAH STUDIO</title></head><body><div id="root"></div></body></html>`;
+    cachedIndexHtml = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>Booyahstudio</title></head><body><div id="root"></div></body></html>`;
   }
 
   return cachedIndexHtml;
 }
 
-export function seoMiddleware(req: Request, res: Response, next: NextFunction) {
+export async function seoMiddleware(req: Request, res: Response, next: NextFunction) {
+  // Vite must transform the development HTML and inject its module runtime.
+  if (process.env.NODE_ENV !== 'production') return next();
   // Only process GET / HEAD requests for non-API, non-asset paths
   if (req.method !== 'GET' && req.method !== 'HEAD') return next();
   if (req.path.startsWith('/api/') || req.path.startsWith('/demos/') || req.path.startsWith('/product-images/') || req.path.includes('.')) {
@@ -50,7 +55,8 @@ export function seoMiddleware(req: Request, res: Response, next: NextFunction) {
     return next();
   }
 
-  const pageSEOData = getSEOPageData(cleanPath, queryObj);
+  const products = cleanPath.startsWith('/product/') && process.env.SUPABASE_URL ? mergeProductCatalog(PRODUCTS, await Store.getAllProducts()) : PRODUCTS;
+  const pageSEOData = getSEOPageData(cleanPath, queryObj, products);
   const shell = getIndexHtmlShell();
   const renderedHtml = injectSEOMetadata(shell, pageSEOData);
 

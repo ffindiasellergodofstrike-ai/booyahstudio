@@ -1,4 +1,4 @@
-import { FirebaseRtdb } from './firebaseRtdb';
+import { Store } from './store';
 
 export type AuditEventType =
   | 'USER_REGISTERED'
@@ -19,16 +19,6 @@ export type AuditEventType =
   | 'PAYMENT_VERIFICATION_STARTED'
   | 'PAYMENT_VERIFICATION_SUCCESS'
   | 'PAYMENT_VERIFICATION_FAILED'
-  | 'EASEBUZZ_INITIATED'
-  | 'EASEBUZZ_CALLBACK_RECEIVED'
-  | 'EASEBUZZ_CALLBACK_FAILED'
-  | 'EASEBUZZ_VERIFICATION_SUCCESS'
-  | 'EASEBUZZ_VERIFICATION_FAILED'
-  | 'PADDLE_CHECKOUT_STARTED'
-  | 'PADDLE_WEBHOOK_RECEIVED'
-  | 'PADDLE_WEBHOOK_VERIFIED'
-  | 'PADDLE_WEBHOOK_REJECTED'
-  | 'PADDLE_WEBHOOK_DUPLICATE'
   | 'WEBHOOK_RECEIVED'
   | 'WEBHOOK_VERIFICATION_SUCCESS'
   | 'WEBHOOK_VERIFICATION_FAILED'
@@ -71,6 +61,8 @@ export interface AuditLogEntry {
 }
 
 const SENSITIVE_KEY_PATTERNS = [
+  'otp',
+  'upipin',
   'password',
   'passwordhash',
   'confirmpassword',
@@ -145,12 +137,12 @@ export class AuditLogger {
       userAgent: entry.userAgent || 'system',
     };
 
-    // 1. Save to central auditLogs/{logId} in Firebase
-    await FirebaseRtdb.set(`auditLogs/${logId}`, fullEntry);
+    // 1. Save to central auditLogs/{logId} in Supabase
+    await Store.set(`auditLogs/${logId}`, fullEntry);
 
     // 2. If orderId is present, also append to orderAuditIndex/{orderId}/{logId} for quick timeline reconstruction
     if (fullEntry.orderId) {
-      await FirebaseRtdb.set(`orderAuditIndex/${fullEntry.orderId}/${logId}`, fullEntry);
+      await Store.set(`orderAuditIndex/${fullEntry.orderId}/${logId}`, fullEntry);
     }
 
     // 3. Save to user activity log if logged-in user
@@ -166,17 +158,17 @@ export class AuditLogger {
         timestamp: fullEntry.timestamp,
         description: `${fullEntry.eventType.replace(/_/g, ' ')} (${fullEntry.eventStatus})`,
       };
-      await FirebaseRtdb.set(`users/${fullEntry.userId}/activity/${activityId}`, userActivity);
+      await Store.set(`users/${fullEntry.userId}/activity/${activityId}`, userActivity);
     }
 
     return fullEntry;
   }
 
   public static async getLogsForOrder(orderId: string): Promise<AuditLogEntry[]> {
-    const data = await FirebaseRtdb.get<Record<string, AuditLogEntry>>(`orderAuditIndex/${orderId}`);
+    const data = await Store.get<Record<string, AuditLogEntry>>(`orderAuditIndex/${orderId}`);
     if (!data) {
       // Fallback: query all audit logs
-      const all = await FirebaseRtdb.get<Record<string, AuditLogEntry>>('auditLogs');
+      const all = await Store.get<Record<string, AuditLogEntry>>('auditLogs');
       if (!all) return [];
       return Object.values(all)
         .filter((l) => l.orderId === orderId)
@@ -186,7 +178,7 @@ export class AuditLogger {
   }
 
   public static async getAllLogs(limit = 100): Promise<AuditLogEntry[]> {
-    const data = await FirebaseRtdb.get<Record<string, AuditLogEntry>>('auditLogs');
+    const data = await Store.get<Record<string, AuditLogEntry>>('auditLogs');
     if (!data) return [];
     const list = Object.values(data);
     return list.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, limit);

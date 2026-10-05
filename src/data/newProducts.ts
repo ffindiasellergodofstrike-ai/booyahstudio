@@ -1,6 +1,6 @@
 import type { Product } from '../types';
 
-// Original BOOYAH STUDIO collection. Generated from scripts/create-template-collection.py.
+// Original Booyahstudio collection. Generated from scripts/create-template-collection.py.
 export const NEW_PRODUCTS: Product[] = [
   {
     "id": "margin-portfolio",
@@ -11,6 +11,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 699,
     "image": "/product-images/margin-portfolio.png",
     "gallery": [
@@ -56,7 +57,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -82,6 +83,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 799,
     "image": "/product-images/clay-shelf.png",
     "gallery": [
@@ -127,7 +129,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -153,6 +155,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 1499,
     "image": "/product-images/line-and-space.png",
     "gallery": [
@@ -198,7 +201,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -224,6 +227,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 250,
     "image": "/product-images/first-light.png",
     "gallery": [
@@ -269,7 +273,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -294,6 +298,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 1800,
     "image": "/product-images/lesson-path.png",
     "gallery": [
@@ -339,7 +344,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -365,6 +370,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 6300,
     "image": "/product-images/orbit-board.png",
     "gallery": [
@@ -410,7 +416,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -435,6 +441,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 4300,
     "image": "/product-images/clear-quote.png",
     "gallery": [
@@ -480,7 +487,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -505,6 +512,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 199,
     "image": "/product-images/pocket-page.png",
     "gallery": [
@@ -550,7 +558,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -575,6 +583,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 299,
     "image": "/product-images/gather-agenda.png",
     "gallery": [
@@ -620,7 +629,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -646,6 +655,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 899,
     "image": "/product-images/leaf-counter.png",
     "gallery": [
@@ -691,7 +701,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -717,6 +727,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 599,
     "image": "/product-images/table-notes.png",
     "gallery": [
@@ -762,7 +773,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -788,6 +799,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 1299,
     "image": "/product-images/frame-study.png",
     "gallery": [
@@ -833,7 +845,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -859,6 +871,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 999,
     "image": "/product-images/field-journal.png",
     "gallery": [
@@ -904,7 +917,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -930,6 +943,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 2299,
     "image": "/product-images/scope-studio.png",
     "gallery": [
@@ -975,7 +989,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1000,6 +1014,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 1599,
     "image": "/product-images/room-palette.png",
     "gallery": [
@@ -1045,7 +1060,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1071,6 +1086,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 1199,
     "image": "/product-images/audio-notebook.png",
     "gallery": [
@@ -1116,7 +1132,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1142,6 +1158,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 499,
     "image": "/product-images/common-calendar.png",
     "gallery": [
@@ -1187,7 +1204,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1213,6 +1230,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 2499,
     "image": "/product-images/focus-week.png",
     "gallery": [
@@ -1258,7 +1276,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1283,6 +1301,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 3499,
     "image": "/product-images/plain-handbook.png",
     "gallery": [
@@ -1328,7 +1347,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",
@@ -1354,6 +1373,7 @@ export const NEW_PRODUCTS: Product[] = [
     "category": "templates",
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
+    "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
     "price": 7499,
     "image": "/product-images/signal-deck.png",
     "gallery": [
@@ -1399,7 +1419,7 @@ export const NEW_PRODUCTS: Product[] = [
       },
       {
         "question": "How will I receive my purchase?",
-        "answer": "After payment confirmation, we email a secure download link to your registered email address. Your purchased files are also available in your account. If you have not received access within 24 hours, contact connectbooyahstudio@gmail.com with your order reference."
+        "answer": "After captured-payment verification, your account provides protected download links. Confirmation emails link to the account. If access is missing, contact connectbooyahstudio@gmail.com with your order reference."
       }
     ],
     "status": "active",

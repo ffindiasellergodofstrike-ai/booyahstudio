@@ -56,7 +56,6 @@ export interface AppContextType {
   isAuthenticated: boolean;
   signIn: (identifier: string, password?: string) => Promise<{ success: boolean; user?: User; message?: string }>;
   register: (payload: RegisterPayload) => Promise<{ success: boolean; user?: User; message?: string }>;
-  signUp: (email: string, password?: string, name?: string) => Promise<{ success: boolean; user?: User; message?: string }>;
   resetPassword: (payload: ResetPasswordPayload) => Promise<{ success: boolean; message: string }>;
   updateProfile: (data: Partial<User>) => Promise<{ success: boolean; user?: User }>;
   signOut: () => void;
@@ -324,27 +323,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return AuthService.register(payload);
   };
 
-  const signUp = async (email: string, password?: string, mobile = '9876543210') => {
-    return AuthService.register({
-      mobile,
-      email,
-      password: password || '123456',
-      confirmPassword: password || '123456',
-      name: email.split('@')[0],
-    });
-  };
-
   const resetPassword = async (payload: ResetPasswordPayload) => {
-    return AuthService.resetPasswordWithEmailAndMobile(payload);
+    return AuthService.requestPasswordReset(payload);
   };
 
   const updateProfile = async (data: Partial<User>) => {
     return AuthService.updateProfile(data);
   };
 
-  const signOut = () => {
-    AuthService.signOut();
-    showToast('info', 'Signed Out', 'You have been signed out.');
+  const signOut = async () => {
+    if (await AuthService.signOut()) showToast('info', 'Signed Out', 'You have been signed out.');
+    else showToast('error', 'Sign out incomplete', 'Please retry while connected to the internet.');
   };
 
   return (
@@ -382,7 +371,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!currentUser,
         signIn,
         register,
-        signUp,
         resetPassword,
         updateProfile,
         signOut,

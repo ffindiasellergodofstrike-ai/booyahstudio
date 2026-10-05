@@ -1,8 +1,10 @@
+import { useProductCatalog } from '../hooks/useProductCatalog';
 import React, { useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { getSEOPageData, injectSEOMetadata } from '../seo/seoMetadata';
 
 export const SEOHead: React.FC = () => {
+  const products = useProductCatalog();
   const { currentPath, searchParams } = useApp();
 
   useEffect(() => {
@@ -11,7 +13,7 @@ export const SEOHead: React.FC = () => {
       if (typeof v === 'string') queryObj[k] = v;
     }
 
-    const pageData = getSEOPageData(currentPath, queryObj);
+    const pageData = getSEOPageData(currentPath, queryObj, products);
 
     // Update document.title
     document.title = pageData.title;
@@ -41,6 +43,7 @@ export const SEOHead: React.FC = () => {
 
     // Helper to update JSON-LD
     const updateJsonLd = (jsonData: object[]) => {
+      document.querySelectorAll('script[type="application/ld+json"]:not(#json-ld-data)').forEach(node => node.remove());
       let script = document.querySelector('script#json-ld-data') as HTMLScriptElement | null;
       if (!script) {
         script = document.createElement('script');
@@ -58,7 +61,7 @@ export const SEOHead: React.FC = () => {
 
     // OpenGraph
     updateMeta('meta[property="og:type"]', 'content', pageData.ogType, 'property');
-    updateMeta('meta[property="og:site_name"]', 'content', 'BOOYAH STUDIO', 'property');
+    updateMeta('meta[property="og:site_name"]', 'content', 'Booyahstudio', 'property');
     updateMeta('meta[property="og:title"]', 'content', pageData.title, 'property');
     updateMeta('meta[property="og:description"]', 'content', pageData.description, 'property');
     updateMeta('meta[property="og:url"]', 'content', pageData.canonicalUrl, 'property');
@@ -73,7 +76,7 @@ export const SEOHead: React.FC = () => {
 
     // JSON-LD
     updateJsonLd(pageData.jsonLd);
-  }, [currentPath, searchParams]);
+  }, [currentPath, searchParams, products]);
 
   return null;
 };

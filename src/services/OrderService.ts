@@ -2,7 +2,7 @@ import { Order, OrderItem, CartItem, Product } from '../types';
 import { AuthService } from './AuthService';
 
 const isDownloadableOrder = (order: Order): boolean =>
-  order.paymentStatus?.toUpperCase() === 'PAID' && order.paymentProvider === 'Easebuzz' &&
+  order.paymentStatus?.toUpperCase() === 'PAID' && order.paymentProvider === 'Razorpay' &&
   Boolean(order.transactionId) &&
   !['REFUNDED', 'PARTIALLY_REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED'].includes(String(order.status).toUpperCase()) &&
   order.deliveryStatus === 'DELIVERED' && order.downloadStatus === 'AVAILABLE';

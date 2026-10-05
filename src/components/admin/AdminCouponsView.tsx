@@ -35,7 +35,6 @@ export const AdminCouponsView: React.FC = () => {
           minSpend: Number(minSpend),
           description,
           active: true,
-          usageCount: 0,
         }),
       });
       const data = await res.json();

@@ -23,16 +23,18 @@ export const ORGANIZATION_JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   'name': BUSINESS.name,
+  'legalName': BUSINESS.legalName,
+  'taxID': BUSINESS.gstin,
   'url': BASE_URL,
   'logo': `${BASE_URL}/favicon.svg`,
   'email': BUSINESS.email,
   'telephone': BUSINESS.phone,
   'address': {
     '@type': 'PostalAddress',
-    'streetAddress': '364 Civil Lines',
-    'addressLocality': 'Prayagraj',
+    'streetAddress': 'S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR',
+    'addressLocality': 'Varanasi',
     'addressRegion': 'Uttar Pradesh',
-    'postalCode': '211001',
+    'postalCode': '221003',
     'addressCountry': 'IN',
   },
 };
@@ -42,7 +44,7 @@ export const WEBSITE_JSON_LD = {
   '@type': 'WebSite',
   'name': BUSINESS.name,
   'url': `${BASE_URL}/`,
-  'description': 'Official BOOYAH STUDIO store offering modern website templates, React source code packages, and developer tools with instant electronic delivery.',
+  'description': 'Official Booyahstudio store offering modern website templates, React source code packages, and developer tools with verified electronic delivery.',
   'potentialAction': {
     '@type': 'SearchAction',
     'target': `${BASE_URL}/search?q={search_term_string}`,
@@ -50,11 +52,11 @@ export const WEBSITE_JSON_LD = {
   },
 };
 
-export function getSEOPageData(pathname: string, searchParams: Record<string, string> = {}): SEOPageData {
+export function getSEOPageData(pathname: string, searchParams: Record<string, string> = {}, products: typeof PRODUCTS = PRODUCTS): SEOPageData {
   const cleanPath = pathname.split('?')[0].replace(/\/$/, '') || '/';
 
   // Private routes (noindex)
-  const privateRoutes = ['/admin', '/account', '/checkout', '/cart', '/login', '/register', '/forgot-password'];
+  const privateRoutes = ['/admin', '/account', '/checkout', '/cart', '/login', '/register', '/forgot-password', '/wishlist', '/search'];
   if (privateRoutes.some((p) => cleanPath === p || cleanPath.startsWith(`${p}/`))) {
     return {
       title: `Account & Checkout | ${BUSINESS.name}`,
@@ -71,8 +73,9 @@ export function getSEOPageData(pathname: string, searchParams: Record<string, st
   // Product routes
   if (cleanPath.startsWith('/product/')) {
     const rawSlug = cleanPath.replace('/product/', '');
-    const slug = decodeURIComponent(rawSlug);
-    const product = PRODUCTS.find((p) => p.slug.toLowerCase() === slug.toLowerCase() || p.id === slug);
+    let slug = rawSlug;
+    try { slug = decodeURIComponent(rawSlug); } catch { /* Invalid path stays unmatched. */ }
+    const product = products.find((p) => p.slug.toLowerCase() === slug.toLowerCase() || p.id === slug);
 
     if (!product) {
       return {
@@ -82,7 +85,7 @@ export function getSEOPageData(pathname: string, searchParams: Record<string, st
         ogImage: DEFAULT_OG_IMAGE,
         ogImageAlt: `${BUSINESS.name} Storefront`,
         ogType: 'website',
-        noindex: false,
+        noindex: true,
         statusCode: 404,
         jsonLd: [ORGANIZATION_JSON_LD],
       };
@@ -166,7 +169,7 @@ export function getSEOPageData(pathname: string, searchParams: Record<string, st
         ogImage: DEFAULT_OG_IMAGE,
         ogImageAlt: `${BUSINESS.name} Categories`,
         ogType: 'website',
-        noindex: false,
+        noindex: true,
         statusCode: 404,
         jsonLd: [ORGANIZATION_JSON_LD],
       };
@@ -257,7 +260,7 @@ export function getSEOPageData(pathname: string, searchParams: Record<string, st
     case '/products':
       return {
         title: `All Templates & Digital Assets | ${BUSINESS.name}`,
-        description: `Browse our entire collection of modern website templates, React codebases, and developer source packages with instant electronic delivery.`,
+        description: `Browse our entire collection of modern website templates, React codebases, and developer source packages with verified electronic delivery.`,
         canonicalUrl: `${BASE_URL}/products`,
         ogImage: DEFAULT_OG_IMAGE,
         ogImageAlt: `All Digital Products at ${BUSINESS.name}`,
@@ -279,7 +282,7 @@ export function getSEOPageData(pathname: string, searchParams: Record<string, st
     case '/about':
       return {
         title: `Our Story & Design Philosophy | ${BUSINESS.name}`,
-        description: `Learn about BOOYAH STUDIO, our design principles, and our commitment to clean, high-performance website templates and developer goods.`,
+        description: `Learn about Booyahstudio, our design principles, and our commitment to clean, high-performance website templates and developer goods.`,
         canonicalUrl: `${BASE_URL}/about`,
         ogImage: DEFAULT_OG_IMAGE,
         ogImageAlt: `About ${BUSINESS.name}`,
@@ -301,7 +304,7 @@ export function getSEOPageData(pathname: string, searchParams: Record<string, st
     case '/contact':
       return {
         title: `Contact & Customer Support | ${BUSINESS.name}`,
-        description: `Get in touch with the BOOYAH STUDIO support team in Prayagraj, India for help with orders, digital downloads, and template setup.`,
+        description: `Get in touch with the Booyahstudio support team in Varanasi, India for help with orders, digital downloads, and template setup.`,
         canonicalUrl: `${BASE_URL}/contact`,
         ogImage: DEFAULT_OG_IMAGE,
         ogImageAlt: `Contact ${BUSINESS.name} Support`,
@@ -323,7 +326,7 @@ export function getSEOPageData(pathname: string, searchParams: Record<string, st
     case '/faq':
       return {
         title: `Help & Frequently Asked Questions | ${BUSINESS.name}`,
-        description: `Find answers regarding payment verification, instant digital delivery, single-project licensing, and technical prerequisites.`,
+        description: `Find answers regarding payment verification, verified digital delivery, single-project licensing, and technical prerequisites.`,
         canonicalUrl: `${BASE_URL}/faq`,
         ogImage: DEFAULT_OG_IMAGE,
         ogImageAlt: `Help & FAQs at ${BUSINESS.name}`,
@@ -356,17 +359,18 @@ export function getSEOPageData(pathname: string, searchParams: Record<string, st
       };
 
     case '/':
-    default:
       return {
-        title: `BOOYAH STUDIO – Premium Website Templates, Source Code & Digital Assets`,
-        description: `Official BOOYAH STUDIO storefront offering modern website templates, React code packages, and digital developer goods with instant electronic delivery.`,
+        title: `Booyahstudio – Premium Website Templates, Source Code & Digital Assets`,
+        description: `Official Booyahstudio storefront offering modern website templates, React code packages, and digital developer goods with verified electronic delivery.`,
         canonicalUrl: `${BASE_URL}/`,
         ogImage: DEFAULT_OG_IMAGE,
-        ogImageAlt: `BOOYAH STUDIO Storefront`,
+        ogImageAlt: `Booyahstudio Storefront`,
         ogType: 'website',
         noindex: false,
         jsonLd: [ORGANIZATION_JSON_LD, WEBSITE_JSON_LD],
       };
+    default:
+      return { title: `Page not found | ${BUSINESS.name}`, description: 'This page is unavailable.', canonicalUrl: `${BASE_URL}${cleanPath}`, ogImage: DEFAULT_OG_IMAGE, ogImageAlt: BUSINESS.name, ogType: 'website', noindex: true, statusCode: 404, jsonLd: [] };
   }
 }
 
@@ -423,7 +427,7 @@ export function injectSEOMetadata(htmlShell: string, pageData: SEOPageData): str
     ${pageData.jsonLd
       .map(
         (data) =>
-          `<script type="application/ld+json">${JSON.stringify(data)}</script>`
+          `<script type="application/ld+json">${JSON.stringify(data).replaceAll('<', '\\u003c')}</script>`
       )
       .join('\n    ')}
   `;
