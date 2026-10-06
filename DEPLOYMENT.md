@@ -84,7 +84,7 @@ connectbooyahstudio@gmail.com · WhatsApp +91 7393845435
 | RESEND_API_KEY | Private Resend key |
 | RESEND_FROM_EMAIL | Verified sender |
 
-5. Redeploy after setting variables. `api/index.ts` is the API entrypoint; `api/page.ts` renders current product metadata (including admin-added products) and includes the built HTML shell; `/api/*` routes must reach it. Paid archives are never inside `dist`.
+5. Redeploy after setting variables. The full `pnpm build` command now generates `build/api-app.mjs` and runs a native Node startup/registration check. Keep the `vercel.json` function include rules: both API entrypoints import this private bundle. Do not override the build command with `vite build` or deploy `dist` alone. See `VERCEL-REGISTRATION-FIX.md` for this fix and its validation limits. `api/index.ts` is the API entrypoint; `api/page.ts` renders current product metadata (including admin-added products) and includes the built HTML shell; `/api/*` routes must reach it. Paid archives are never inside `dist`.
 6. Add your domain and configure the DNS records Vercel shows. Confirm HTTPS. If the domain differs, update `src/config/business.ts`, `src/seo/seoMetadata.ts`, `index.html`, Auth redirect/template URLs, APP_URL and the webhook; rebuild the sitemap and canonical metadata.
 7. Verify `/api/health`, `/api/products`, every policy route, direct product links and `/sitemap.xml` on the deployed domain. Check browser console/network failures and 404 pages.
 

@@ -239,7 +239,10 @@
   ],
   "functions": {
     "api/page.ts": {
-      "includeFiles": "dist/index.html"
+      "includeFiles": "{build/api-app.mjs,dist/index.html}"
+    },
+    "api/index.ts": {
+      "includeFiles": "build/api-app.mjs"
     }
   }
 }

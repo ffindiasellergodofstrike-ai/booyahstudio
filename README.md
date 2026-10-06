@@ -1,5 +1,7 @@
 # Booyahstudio
 
+**Vercel registration fix:** Read `VERCEL-REGISTRATION-FIX.md` before redeploying. Use Node 24.x and the full `pnpm build` command; it builds and checks the private API bundle.
+
 MANISH KUMAR SONKAR | Booyahstudio
 
 Single-seller digital-products store. React/Vite frontend, Express API on Vercel, Supabase Auth/PostgreSQL/private Storage, Razorpay checkout and Resend email.
