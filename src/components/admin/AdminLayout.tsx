@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { 
-  Command, Package, ShoppingCart, Users, Tag, FileText, 
-  ShieldAlert, Settings, LogOut, Menu, X, Sun, Moon, Search, Download 
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Command, Package, ShoppingCart, Users, Tag, FileText,
+  ShieldAlert, Settings, LogOut, Menu, X, Sun, Moon, Search, Download, MessageSquare, Mail, RefreshCw
 } from 'lucide-react';
 import { CommandPalette } from './CommandPalette';
 
@@ -12,6 +12,9 @@ interface AdminLayoutProps {
   onLogout: () => void;
   products: any[];
   children: React.ReactNode;
+  refreshing?: boolean;
+  onRefresh?: () => void | Promise<void>;
+  lastUpdated?: string | null;
 }
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({
@@ -21,10 +24,15 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   onLogout,
   products,
   children,
+  refreshing = false,
+  onRefresh,
+  lastUpdated,
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCmdOpen, setIsCmdOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const originalDark = useRef(document.documentElement.classList.contains('dark'));
+  const [isDark, setIsDark] = useState(originalDark.current);
+  useEffect(() => () => { document.documentElement.classList.toggle('dark', originalDark.current); }, []);
 
   const toggleDarkMode = () => {
     setIsDark(!isDark);
@@ -38,6 +46,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     { id: 'customers', label: 'Customers', icon: Users },
     { id: 'coupons', label: 'Coupons', icon: Tag },
     { id: 'downloads', label: 'Downloads & Access', icon: FileText },
+    { id: 'support', label: 'Support Requests', icon: MessageSquare },
+    { id: 'subscribers', label: 'Subscribers', icon: Mail },
     { id: 'audit', label: 'Audit Logs', icon: ShieldAlert },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -113,6 +123,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           </div>
 
           <div className="flex items-center space-x-3">
+            {onRefresh && <button type="button" disabled={refreshing} onClick={() => void onRefresh()} title={lastUpdated ? `Last refreshed ${new Date(lastUpdated).toLocaleTimeString()}` : 'Refresh store records'} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50 dark:bg-blue-950 disabled:opacity-50"><RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} /><span className="hidden sm:inline">{refreshing ? 'Refreshing…' : 'Refresh'}</span></button>}
             <button
               onClick={() => window.open('/api/admin/export/orders', '_blank')}
               className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium transition"
@@ -127,6 +138,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </header>
 
         <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
+          {onRefresh && <p role="status" className="mb-4 text-xs text-slate-500">{refreshing ? 'Refreshing store records…' : lastUpdated ? `Last refreshed ${new Date(lastUpdated).toLocaleTimeString()} · Updates every 30 seconds while visible` : 'Waiting for store records'}</p>}
           {children}
         </main>
       </div>

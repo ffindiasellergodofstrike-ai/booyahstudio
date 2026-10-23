@@ -1,6 +1,7 @@
 import { Order, OrderItem } from '../types';
 import { OrderService } from './OrderService';
 import { AuthService } from './AuthService';
+import { isVerifiedPaidOrder } from './PaymentVerification';
 
 export interface DownloadToken {
   token: string;
@@ -76,15 +77,12 @@ class DownloadServiceImpl {
     const downloads: Array<{ order: Order; item: OrderItem; isAccessible: boolean }> = [];
 
     for (const order of orders) {
-      const isAccessible = order.paymentStatus?.toUpperCase() === 'PAID' &&
-        order.paymentProvider === 'Razorpay' && Boolean(order.transactionId) &&
-        !['REFUNDED', 'PARTIALLY_REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED'].includes(String(order.status).toUpperCase()) &&
-        order.deliveryStatus === 'DELIVERED' && order.downloadStatus === 'AVAILABLE';
+      const orderHasAccess = isVerifiedPaidOrder(order);
       for (const item of order.items) {
         downloads.push({
           order,
           item,
-          isAccessible,
+          isAccessible: orderHasAccess && (item as any).refunded !== true && (item as any).accessStatus !== 'restricted' && item.downloadStatus !== 'REVOKED',
         });
       }
     }

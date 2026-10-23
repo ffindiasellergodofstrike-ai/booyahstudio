@@ -1,4 +1,5 @@
 import { paymentEnvironment } from './razorpay';
+import { cashfreeConfig } from './cashfree';
 import { supabaseAdmin } from './supabase';
 import { hasLivePayment } from '../src/services/PaymentEnvironment';
 import { Router, Response, Request } from 'express';
@@ -8,6 +9,8 @@ import { z } from 'zod';
 import crypto from 'crypto';
 import multer from 'multer';
 import { isAllowedProductPreviewUrl } from './productPreview';
+import { deliveryAggregates } from './adminOperations';
+import { PROXIED_UPLOAD_LIMIT_BYTES } from '../src/config/uploadLimits';
 
 export const adminRouter = Router();
 
@@ -22,7 +25,7 @@ export function safeCsvCell(value: unknown): string {
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: PROXIED_UPLOAD_LIMIT_BYTES,
   },
 });
 
@@ -101,10 +104,12 @@ adminRouter.get('/me', async (req: any, res: Response) => {
       health: {
         supabase: supabaseStatus,
         razorpay: { status: process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET ? 'configured' : 'not_configured', environment: paymentEnvironment() },
+        cashfree: { status: cashfreeConfig().configured ? 'configured' : 'not_configured', environment: cashfreeConfig().environment },
+        resend: { status: process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL ? 'configured' : 'not_configured' },
       },
     });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to fetch admin profile.' });
+    res.status(500).json({ success: false, message: 'Failed to fetch admin profile.' });
   }
 });
 
@@ -136,10 +141,10 @@ adminRouter.get('/dashboard/stats', async (req: any, res: Response) => {
 
     orders.forEach((o: any) => {
       if (o.paymentEnvironment !== 'live' && o.paymentStatus === 'PAID') return;
-      const amount = Number(o.total) || 0;
+      const amount = Math.max(0, (Number(o.total) || 0) - (Number(o.refundedAmount) || 0));
       const paidDate = o.paymentVerifiedAt || o.paidAt || o.createdAt || o.date;
       const orderTime = new Date(paidDate || 0).getTime();
-      const isPaid = hasLivePayment(o) && String(o.paymentStatus).toUpperCase() === 'PAID';
+      const isPaid = hasLivePayment(o) && ['PAID','PARTIALLY_REFUNDED'].includes(String(o.paymentStatus).toUpperCase());
 
       if (isPaid) {
         totalRevenue += amount;
@@ -167,12 +172,13 @@ adminRouter.get('/dashboard/stats', async (req: any, res: Response) => {
         productsCount: products.length,
         customersCount: users.length,
         conversionRate: orders.length ? (paidCount / orders.length) * 100 : 0,
+        ...deliveryAggregates(orders),
       },
       recentOrders: orders.slice(0, 10),
       recentAuditLogs: auditLogs.slice(0, 15),
     });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to fetch dashboard stats.' });
+    res.status(500).json({ success: false, message: 'Failed to fetch dashboard stats.' });
   }
 });
 
@@ -182,7 +188,7 @@ adminRouter.get('/products', async (req: any, res: Response) => {
     const products = await Store.getAllProducts();
     res.json({ success: true, products });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to fetch products.' });
+    res.status(500).json({ success: false, message: 'Failed to fetch products.' });
   }
 });
 
@@ -221,7 +227,7 @@ adminRouter.post('/products', async (req: any, res: Response) => {
 
     res.json({ success: true, product: productData, message: 'Product created successfully.' });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to create product.' });
+    res.status(500).json({ success: false, message: 'Failed to create product.' });
   }
 });
 
@@ -259,7 +265,7 @@ adminRouter.put('/products/:id', async (req: any, res: Response) => {
 
     res.json({ success: true, product: updated, message: 'Product updated successfully.' });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to update product.' });
+    res.status(500).json({ success: false, message: 'Failed to update product.' });
   }
 });
 
@@ -290,7 +296,7 @@ adminRouter.delete('/products/:id', async (req: any, res: Response) => {
 
     res.json({ success: true, message: 'Product archived successfully.' });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to archive product.' });
+    res.status(500).json({ success: false, message: 'Failed to archive product.' });
   }
 });
 
@@ -316,7 +322,7 @@ adminRouter.post('/products/:id/clone', async (req: any, res: Response) => {
     await Store.saveProduct(cloned);
     res.json({ success: true, product: cloned, message: 'Product cloned successfully.' });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to clone product.' });
+    res.status(500).json({ success: false, message: 'Failed to clone product.' });
   }
 });
 
@@ -361,7 +367,7 @@ adminRouter.get('/orders', async (req: any, res: Response) => {
     const orders = await Store.getAllGlobalOrders();
     res.json({ success: true, orders });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to fetch orders.' });
+    res.status(500).json({ success: false, message: 'Failed to fetch orders.' });
   }
 });
 
@@ -374,7 +380,7 @@ adminRouter.get('/orders/:id/timeline', async (req: any, res: Response) => {
     const timeline = [...Object.values(auditLogs), ...lifecycle].sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     res.json({ success: true, timeline });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to fetch order timeline.' });
+    res.status(500).json({ success: false, message: 'Failed to fetch order timeline.' });
   }
 });
 
@@ -388,8 +394,8 @@ adminRouter.put('/orders/:id/status', async (req: any, res: Response) => {
     }
 
     if (status !== undefined || paymentStatus !== undefined || deliveryStatus !== 'REVOKED' ||
-        String(order.paymentStatus).toUpperCase() !== 'PAID') {
-      return res.status(400).json({ success: false, message: 'Only paid-order download access can be revoked here. Payment status must be verified by Razorpay.' });
+        !['PAID','PARTIALLY_REFUNDED'].includes(String(order.paymentStatus).toUpperCase())) {
+      return res.status(400).json({ success: false, message: 'Only verified paid-order access can be revoked here. Payment status comes from the payment provider.' });
     }
 
     const updatedOrder = await Store.rpc('revoke_order', `orders/${orderId}`);
@@ -408,7 +414,7 @@ adminRouter.put('/orders/:id/status', async (req: any, res: Response) => {
 
     res.json({ success: true, order: updatedOrder, message: 'Download access revoked. No refund was initiated.' });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to update order status.' });
+    res.status(500).json({ success: false, message: 'Failed to update order status.' });
   }
 });
 
@@ -419,9 +425,9 @@ adminRouter.get('/customers', async (req: any, res: Response) => {
     const orders = await Store.getAllGlobalOrders();
 
     const customersWithMetrics = users.map((u: any) => {
-      const userOrders = orders.filter((o: any) => o.customerEmail?.toLowerCase() === u.email?.toLowerCase());
+      const userOrders = orders.filter((o: any) => o.userId === u.userId);
       const totalSpent = userOrders.reduce(
-        (sum: number, o: any) => sum + (String(o.paymentStatus).toUpperCase() === 'PAID' ? o.total : 0),
+        (sum: number, o: any) => sum + (hasLivePayment(o) && ['PAID','PARTIALLY_REFUNDED'].includes(String(o.paymentStatus).toUpperCase()) ? Math.max(0,Number(o.total || 0)-Number(o.refundedAmount || 0)) : 0),
         0
       );
       return {
@@ -433,7 +439,7 @@ adminRouter.get('/customers', async (req: any, res: Response) => {
 
     res.json({ success: true, customers: customersWithMetrics });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to fetch customers.' });
+    res.status(500).json({ success: false, message: 'Failed to fetch customers.' });
   }
 });
 
@@ -456,7 +462,7 @@ adminRouter.put('/customers/:userId/status', async (req: any, res: Response) => 
     await AuditLogger.log({ requestId: generateRequestId(), userId: req.userId, eventType: 'ORDER_UPDATED', eventStatus: 'SUCCESS', source: 'ADMIN_PANEL', metadata: { action: 'ACCOUNT_ACCESS_REVIEW', targetUserId, role, blocked } });
     res.json({ success: true, profile, message: 'Customer status updated successfully.' });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to update customer status.' });
+    res.status(500).json({ success: false, message: 'Failed to update customer status.' });
   }
 });
 
@@ -466,7 +472,7 @@ adminRouter.get('/coupons', async (req: any, res: Response) => {
     const coupons = await Store.getAllCoupons();
     res.json({ success: true, coupons });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to fetch coupons.' });
+    res.status(500).json({ success: false, message: 'Failed to fetch coupons.' });
   }
 });
 
@@ -481,7 +487,7 @@ adminRouter.post('/coupons', async (req: any, res: Response) => {
     await Store.saveCoupon(parsed.data);
     res.json({ success: true, coupon: parsed.data, message: 'Coupon created successfully.' });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to create coupon.' });
+    res.status(500).json({ success: false, message: 'Failed to create coupon.' });
   }
 });
 
@@ -490,7 +496,7 @@ adminRouter.delete('/coupons/:id', async (req: any, res: Response) => {
     await Store.deleteCoupon(req.params.id);
     res.json({ success: true, message: 'Coupon deleted successfully.' });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to delete coupon.' });
+    res.status(500).json({ success: false, message: 'Failed to delete coupon.' });
   }
 });
 
@@ -500,7 +506,7 @@ adminRouter.get('/settings', async (req: any, res: Response) => {
     const settings = await Store.getGlobalSettings();
     res.json({ success: true, settings });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to fetch settings.' });
+    res.status(500).json({ success: false, message: 'Failed to fetch settings.' });
   }
 });
 
@@ -509,7 +515,7 @@ adminRouter.put('/settings', async (req: any, res: Response) => {
     await Store.saveGlobalSettings(req.body);
     res.json({ success: true, message: 'Settings saved successfully.' });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Failed to save settings.' });
+    res.status(500).json({ success: false, message: 'Failed to save settings.' });
   }
 });
 
@@ -529,7 +535,7 @@ adminRouter.get('/export/orders', async (req: any, res: Response) => {
     res.setHeader('Content-Disposition', 'attachment; filename=orders_export.csv');
     res.send(csvRows.join('\n'));
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Export failed.' });
+    res.status(500).json({ success: false, message: 'Export failed.' });
   }
 });
 
@@ -544,7 +550,7 @@ adminRouter.get('/export/customers', async (req: any, res: Response) => {
     res.setHeader('Content-Disposition', 'attachment; filename=customers_export.csv');
     res.send(csvRows.join('\n'));
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message || 'Export failed.' });
+    res.status(500).json({ success: false, message: 'Export failed.' });
   }
 });
 
@@ -562,7 +568,7 @@ adminRouter.get('/orders/:id/evidence', async (req, res) => {
   const evidence = {
     order: { id: order.id, userId: order.userId, customerEmail: order.customerEmail, customerName: order.customerName,
       total: order.total, currency: order.currency, createdAt: order.createdAt, items: order.items,
-      paymentStatus: order.paymentStatus, razorpayOrderId: order.razorpayOrderId, paymentId: order.paymentId,
+      paymentStatus: order.paymentStatus, paymentProvider: order.paymentProvider, razorpayOrderId: order.razorpayOrderId, cashfreeOrderId: order.cashfreeOrderId, cfOrderId: order.cfOrderId, paymentId: order.paymentId,
       paymentInitiatedAt: order.paymentInitiatedAt, paymentVerifiedAt: order.paymentVerifiedAt, deliveredAt: order.deliveredAt,
       deliveryStatus: order.deliveryStatus, policyVersion: order.policyVersion, policyAcceptedAt: order.policyAcceptedAt,
       payments: order.payments, paymentHistory: order.paymentHistory, disputes: order.disputes,

@@ -134,6 +134,9 @@ export interface OrderItem {
   version?: string;
   fileFormat?: string;
   accessKey?: string;
+  refunded?: boolean;
+  paidAmountPaise?: number;
+  refundedAmountPaise?: number;
   downloadStatus?: DownloadStatus;
   product?: Product;
 }
@@ -187,6 +190,7 @@ export interface Order {
     sentAt?: string;
     emailId?: string;
     message?: string;
+    providerStatus?: 'accepted' | 'delayed' | 'delivered' | 'bounced' | 'failed' | 'complained' | 'suppressed';
   };
 }
 

@@ -5,6 +5,8 @@ import { Store } from './store';
 import { supabaseAuth } from './supabase';
 import type { Express, RequestHandler } from 'express';
 const hash = (v: string) => crypto.createHash('sha256').update(v).digest('hex');
+const normalizedEmail = z.string().trim().email().max(254).transform(value => value.toLowerCase());
+const emailFailure = (error: any) => error?.status === 429 ? 429 : 503;
 const cookie = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/' };
 export class AuthServiceServer {
   static async createOpaqueSession(userId: string, email: string, username: string, ip?: string, userAgent?: string, authenticatedAt = Date.now()) {
@@ -38,15 +40,28 @@ export class AuthServiceServer {
 }
 export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
   app.post('/api/auth/register', limiter, async (req, res) => {
-    const parsed = z.object({ email: z.string().email().max(254), password: z.string().min(8).max(128), confirmPassword: z.string(), name: z.string().trim().min(2).max(100), mobile: z.string().regex(/^[6-9][0-9]{9}$/) }).safeParse(req.body);
+    const parsed = z.object({ email: normalizedEmail, password: z.string().min(8).max(128), confirmPassword: z.string(), name: z.string().trim().min(2).max(100), mobile: z.string().regex(/^[6-9][0-9]{9}$/) }).safeParse(req.body);
     if (!parsed.success || parsed.data.password !== parsed.data.confirmPassword) return res.status(400).json({ success: false, message: 'Provide valid details and matching passwords of at least 8 characters.' });
     const { email, password, name, mobile } = parsed.data;
     const { error } = await supabaseAuth().auth.signUp({ email: email.toLowerCase(), password, options: { data: { name, mobile }, emailRedirectTo: `${appOrigin()}/login` } });
-    if (error) return res.status(400).json({ success: false, message: 'Could not register. Check your details or try password recovery.' });
+    if (error) { if (error.status === 429) res.set('Retry-After', '60'); return res.status(error.status === 429 ? 429 : 400).json({ success: false, message: error.status === 429 ? 'Please wait before requesting another email.' : 'Could not register. Check your details or try password recovery.' }); }
     res.status(201).json({ success: true, message: 'Check your email to confirm your account, then sign in.' });
   });
+  app.post('/api/auth/resend-confirmation', limiter, async (req, res) => {
+    const input = z.object({ email: normalizedEmail }).safeParse(req.body);
+    if (!input.success) return res.status(400).json({ success: false, message: 'Enter a valid email address.' });
+    const allowed = await Store.rpc('rate', `authEmailCooldowns/confirm_${hash(input.data.email)}`, { now: Date.now(), windowMs: 60000, maxAttempts: 1 });
+    if (!allowed) return res.set('Retry-After', '60').status(429).json({ success: false, message: 'Please wait one minute before requesting another confirmation email.', retryAfter: 60 });
+    const { error } = await supabaseAuth().auth.resend({ type: 'signup', email: input.data.email, options: { emailRedirectTo: `${appOrigin()}/login` } });
+    // Never reveal whether an address is registered or already confirmed.
+    if (error && !['user_not_found', 'email_already_confirmed'].includes(error.code || '')) {
+      if (error.status === 429) res.set('Retry-After', '60');
+      return res.status(emailFailure(error)).json({ success: false, message: 'Confirmation email could not be requested. Please retry later.', retryAfter: error.status === 429 ? 60 : undefined });
+    }
+    res.json({ success: true, message: 'If your account needs confirmation, check your email for a new link.', retryAfter: 60 });
+  });
   app.post('/api/auth/login', limiter, async (req, res) => {
-    const input = z.object({ identifier: z.string().email().max(254), password: z.string().min(1).max(128) }).safeParse(req.body);
+    const input = z.object({ identifier: normalizedEmail, password: z.string().min(1).max(128) }).safeParse(req.body);
     if (!input.success) return res.status(400).json({ success: false, message: 'Enter your email and password.' });
     const authenticatedAt = Date.now();
     const { data, error } = await supabaseAuth().auth.signInWithPassword({ email: input.data.identifier, password: input.data.password });
@@ -63,23 +78,23 @@ export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
     res.json({ success: true, user: profile });
   });
   app.post('/api/auth/forgot-password', limiter, async (req, res) => {
-    const input = z.object({ email: z.string().email().max(254) }).safeParse(req.body);
+    const input = z.object({ email: normalizedEmail }).safeParse(req.body);
     if (!input.success) return res.status(400).json({ success: false, message: 'Enter a valid email address.' });
     const { error } = await supabaseAuth().auth.resetPasswordForEmail(input.data.email, { redirectTo: `${appOrigin()}/forgot-password` });
-    if (error) return res.status(503).json({ success: false, message: 'Recovery email could not be requested. Please retry later.' });
+    if (error) { if (error.status === 429) res.set('Retry-After', '60'); return res.status(emailFailure(error)).json({ success: false, message: 'Recovery email could not be requested. Please retry later.', retryAfter: error.status === 429 ? 60 : undefined }); }
     res.json({ success: true, message: 'If the account exists, check its email for a recovery link.' });
   });
   // Token hash arrives from the Supabase recovery email template. POST prevents link scanners consuming it.
   app.post('/api/auth/reset-password', limiter, async (req, res) => {
-    const input = z.object({ tokenHash: z.string().min(10).max(256), password: z.string().min(8).max(128) }).safeParse(req.body);
+    const input = z.object({ tokenHash: z.string().min(10).max(256), password: z.string().min(8).max(128), confirmPassword: z.string().optional() }).refine(value => value.confirmPassword === undefined || value.password === value.confirmPassword).safeParse(req.body);
     if (!input.success) return res.status(400).json({ success: false, message: 'A recovery link and password of at least 8 characters are required.' });
     const client = supabaseAuth();
     const { data, error } = await client.auth.verifyOtp({ token_hash: input.data.tokenHash, type: 'recovery' });
-    if (error || !data.user || !data.session) return res.status(400).json({ success: false, message: 'Recovery link invalid or expired. Request a new email.' });
+    if (error || !data.user || !data.session) return res.status(400).json({ success: false, code: 'RECOVERY_INVALID', message: 'Recovery link is invalid, expired or already used. Request a new email.' });
     // Invalidate store sessions before changing the password, failing closed on database errors.
     await Store.updateUserProfile(data.user.id, { sessionValidAfter: Date.now() });
     const result = await client.auth.updateUser({ password: input.data.password });
-    if (result.error) return res.status(400).json({ success: false, message: 'Password update failed. Request a new recovery link.' });
+    if (result.error) return res.status(400).json({ success: false, code: 'RECOVERY_RESTART', message: 'Password update failed. Request a new recovery link.' });
     await Store.updateUserProfile(data.user.id, { sessionValidAfter: Date.now() });
     await client.auth.signOut({ scope: 'global' });
     res.clearCookie('sid', cookie);

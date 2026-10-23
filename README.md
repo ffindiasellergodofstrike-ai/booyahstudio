@@ -4,9 +4,13 @@
 
 MANISH KUMAR SONKAR | Booyahstudio
 
-Single-seller digital-products store. React/Vite frontend, Express API on Vercel, Supabase Auth/PostgreSQL/private Storage, Razorpay checkout and Resend email.
+Single-seller digital-products store. React/Vite frontend, Express API on Vercel, Supabase Auth/PostgreSQL/private Storage, Cashfree checkout (with historic Razorpay support) and Resend email.
 
 **Keep the GitHub repository private:** the complete owner source includes paid product files. Only `dist` is the public website output. Never publish the owner ZIP as a public site asset.
+
+Read **SETUP-HINDI.md** first for the final Cashfree, Auth recovery-template, Resend SMTP/API and private-upload setup. See **IMPLEMENTATION-NOTES.md** for verified changes and remaining external configuration.
+
+For the password-protected owner console, management controls and delivery statuses, read **ADMIN-GUIDE-HINDI.md**. GitHub/Vercel routing, runtime and upload checks are in **VERCEL-DEPLOYMENT-CHECK.md**.
 
 ## Start
 
@@ -28,15 +32,15 @@ pnpm build
 
 Read **START-HERE-HINDI.md** and **DEPLOYMENT.md** for the complete setup, private file upload, recovery emails, owner admin access and launch checks. Do not enable live payments before completing the live configuration checklist.
 
-See **FINAL-AUDIT.md** for the before/after matrix, exact validation results and remaining owner setup. This ZIP is source code with verified local checks; it does not contain your production provider credentials.
+See **IMPLEMENTATION-NOTES.md** for the current changes, validation results and remaining owner setup. **FINAL-AUDIT.md** preserves the earlier October 5 audit. This ZIP is source code with verified local checks; it does not contain your production provider credentials.
 
 ## Included
 
 - 25 active digital product listings and your original source archives.
 - 20 editable static template packages in `templates/`.
 - The retired WorkHub package remains in `demofiles/`; its preview is kept privately in `owner-files/`. It is excluded from the active catalog.
-- 19 consistent legal pages, including all 18 requested policy topics and the compatible old cancellation URL.
+- 4 canonical legal pages with compatible redirects for the consolidated policy topics.
 - Copy-ready policy Markdown in `docs/policies/`; source in `src/data/policies.json`.
 - Atomic server-only database operations in `supabase/schema.sql`.
 
-No production credentials, customer records or uploaded private product files are included in the project source. Supply your own provider settings. Payment receipts are provided; GST tax invoicing needs your confirmed classification/rate and accounting process.
+No production credentials or customer records are included. Prepared private product ZIPs belong to the owner release and are intentionally excluded from this public source update. Upload the owner copies to private Supabase Storage; the admin Products tab also supports reviewed private uploads. Supply your own provider settings. Payment receipts are provided; GST tax invoicing needs your confirmed classification/rate and accounting process.

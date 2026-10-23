@@ -60,8 +60,12 @@
       "destination": "/admin/index.html"
     },
     {
-      "source": "/category/:slug",
-      "destination": "/category/:slug/index.html"
+      "source": "/category/templates",
+      "destination": "/category/templates/index.html"
+    },
+    {
+      "source": "/category/scripts",
+      "destination": "/category/scripts/index.html"
     },
     {
       "source": "/account/:path*",
@@ -84,8 +88,20 @@
       "destination": "/api/page?slug=:slug"
     },
     {
-      "source": "/policies/:slug",
-      "destination": "/policies/:slug/index.html"
+      "source": "/policies/terms",
+      "destination": "/policies/terms/index.html"
+    },
+    {
+      "source": "/policies/privacy",
+      "destination": "/policies/privacy/index.html"
+    },
+    {
+      "source": "/policies/refund",
+      "destination": "/policies/refund/index.html"
+    },
+    {
+      "source": "/policies/disclaimer",
+      "destination": "/policies/disclaimer/index.html"
     },
     {
       "source": "/(.*)",
@@ -207,6 +223,10 @@
         {
           "key": "Cache-Control",
           "value": "private, no-store"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
         }
       ]
     },
@@ -233,16 +253,25 @@
         {
           "key": "Cache-Control",
           "value": "private, no-store"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
         }
       ]
     }
   ],
   "functions": {
     "api/page.ts": {
-      "includeFiles": "{build/api-app.mjs,dist/index.html}"
+      "includeFiles": "{build/api-app.mjs,dist/index.html}",
+      "maxDuration": 60
     },
     "api/index.ts": {
-      "includeFiles": "build/api-app.mjs"
+      "maxDuration": 300,
+      "includeFiles": "{build/api-app.mjs,dist/index.html}"
     }
-  }
+  },
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "pnpm install --frozen-lockfile"
 }

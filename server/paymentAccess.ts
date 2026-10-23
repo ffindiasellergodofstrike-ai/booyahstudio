@@ -4,13 +4,21 @@ import { Store } from './store';
 
 export function isPaidOrderForProduct(order: any, userId: string, productId: string): boolean {
   const provider = String(order?.paymentProvider || '').toLowerCase();
+  const paymentStatus = String(order?.paymentStatus || '').toUpperCase();
+  const item = Array.isArray(order?.items) ? order.items.find((entry: any) => entry.productId === productId) : null;
+  const cashfree = provider === 'cashfree';
+  const payment = cashfree && order?.payments?.[order.transactionId];
+  const providerVerified = cashfree
+    ? Boolean(order.cashfreeOrderId && payment?.status === 'SUCCESS' && payment.order_id === order.cashfreeOrderId &&
+        payment.environment === 'live' && payment.currency === 'INR' && payment.amount === Math.round(Number(order.total) * 100))
+    : provider === 'razorpay';
   return Boolean(
     order && hasLivePayment(order) && order.userId === userId &&
-    String(order.paymentStatus).toUpperCase() === 'PAID' &&
-    provider === 'razorpay' && Boolean(order.transactionId) &&
-    !['REFUNDED', 'PARTIALLY_REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED'].includes(String(order.status).toUpperCase()) &&
+    (paymentStatus === 'PAID' || (cashfree && paymentStatus === 'PARTIALLY_REFUNDED')) &&
+    providerVerified && Boolean(order.transactionId) &&
+    !['REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED', ...(cashfree ? [] : ['PARTIALLY_REFUNDED'])].includes(String(order.status).toUpperCase()) &&
     order.deliveryStatus === 'DELIVERED' && order.downloadStatus === 'AVAILABLE' &&
-    Array.isArray(order.items) && order.items.some((item: any) => item.productId === productId)
+    item && item.refunded !== true && item.downloadStatus !== 'REVOKED'
   );
 }
 

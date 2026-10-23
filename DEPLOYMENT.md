@@ -1,5 +1,9 @@
 # Booyahstudio: GitHub + Vercel deployment
 
+**Final integration update:** follow `SETUP-HINDI.md` for Cashfree, current email recovery template and Resend delivery tracking. Historic Razorpay instructions below apply only if retaining those credentials.
+
+**Admin/Vercel update, 23 October:** see `ADMIN-GUIDE-HINDI.md` for password access and operational management, and `VERCEL-DEPLOYMENT-CHECK.md` for current function budgets, routing and upload limits.
+
 MANISH KUMAR SONKAR | Booyahstudio
 connectbooyahstudio@gmail.com · WhatsApp +91 7393845435
 
@@ -14,7 +18,7 @@ connectbooyahstudio@gmail.com · WhatsApp +91 7393845435
 ## 2. Supabase database
 
 1. Create a Supabase project under your account and save its database password privately.
-2. For a new installation, open SQL Editor and run `supabase/schema.sql` completely. For an existing installation, back up first and run `supabase/migrations/20261005_payment_security.sql`; it is idempotent and preserves stored records. It creates or upgrades the server-only store table/function, forces the products bucket private, and restricts browser roles from directly reading/writing paid objects even if an older permissive object policy exists. It also creates the public thumbnail bucket.
+2. For a new installation, open SQL Editor and run `supabase/schema.sql` completely. For an existing installation, back up first, ensure `supabase/migrations/20261005_payment_security.sql` is applied, then run `supabase/migrations/202610220001_cashfree.sql`. The baseline creates or upgrades the server-only store, private products bucket and public thumbnail bucket; the second migration adds the required Cashfree payment/refund/dispute and email operations. Both preserve stored records. Browser roles cannot directly read/write paid objects.
 3. Under project API settings, copy the project URL, anon key and service-role key into Vercel environment settings (next section). The service-role key must never go in browser code, a `VITE_` variable or GitHub.
 4. The `store_state` table has RLS enabled. Anonymous/authenticated browser roles have no direct access to store rows or the store function. Only the backend service role executes the function.
 5. This is a new Supabase store. Existing accounts/orders are not silently imported. Preserve historical transaction records privately; plan any migration separately rather than copying old password hashes or sessions.
@@ -29,7 +33,7 @@ connectbooyahstudio@gmail.com · WhatsApp +91 7393845435
 5. In the **Reset Password** email template, use this link (replace the domain if yours differs):
 
 ```html
-<a href="https://www.booyahstudio.shop/forgot-password?token_hash={{ .TokenHash }}">Reset your Booyahstudio password</a>
+<a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}">Reset your Booyahstudio password</a>
 ```
 
 6. Keep Supabase's supported confirmation link in the **Confirm signup** template, and brand its text as Booyahstudio. After confirming, the customer signs in on `/login`.
@@ -78,11 +82,17 @@ connectbooyahstudio@gmail.com · WhatsApp +91 7393845435
 | SUPABASE_URL | Supabase project URL |
 | SUPABASE_ANON_KEY | Supabase anon key, used by the server Auth client |
 | SUPABASE_SERVICE_ROLE_KEY | Private Supabase service-role key |
+| CASHFREE_APP_ID | Matching sandbox or live Cashfree app ID |
+| CASHFREE_SECRET_KEY | Matching private Cashfree secret |
+| CASHFREE_ENV | sandbox or production |
+| CASHFREE_API_VERSION | 2026-01-01 |
 | RAZORPAY_KEY_ID | Matching Razorpay mode key ID |
 | RAZORPAY_KEY_SECRET | Matching private API secret |
 | RAZORPAY_WEBHOOK_SECRET | Secret entered for that webhook |
 | RESEND_API_KEY | Private Resend key |
 | RESEND_FROM_EMAIL | Verified sender |
+| RESEND_WEBHOOK_SECRET | Resend webhook endpoint signing secret |
+| CRON_SECRET | Strong secret for the external reconciliation scheduler |
 
 5. Redeploy after setting variables. The full `pnpm build` command now generates `build/api-app.mjs` and runs a native Node startup/registration check. Keep the `vercel.json` function include rules: both API entrypoints import this private bundle. Do not override the build command with `vite build` or deploy `dist` alone. See `VERCEL-REGISTRATION-FIX.md` for this fix and its validation limits. `api/index.ts` is the API entrypoint; `api/page.ts` renders current product metadata (including admin-added products) and includes the built HTML shell; `/api/*` routes must reach it. Paid archives are never inside `dist`.
 6. Add your domain and configure the DNS records Vercel shows. Confirm HTTPS. If the domain differs, update `src/config/business.ts`, `src/seo/seoMetadata.ts`, `index.html`, Auth redirect/template URLs, APP_URL and the webhook; rebuild the sitemap and canonical metadata.

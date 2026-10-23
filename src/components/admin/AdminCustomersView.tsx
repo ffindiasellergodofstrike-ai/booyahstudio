@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Search, Shield, UserX, UserCheck, Mail, Phone, ExternalLink } from 'lucide-react';
+import { Search, Shield, Mail, Phone, Loader2 } from 'lucide-react';
 import { AdminService } from '../../services/AdminService';
 
 interface AdminCustomersViewProps {
   customers: any[];
-  onRefresh: () => void;
+  onRefresh: () => void | Promise<void>;
 }
 
 export const AdminCustomersView: React.FC<AdminCustomersViewProps> = ({ customers, onRefresh }) => {
   const [search, setSearch] = useState('');
+  const [busyUser, setBusyUser] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   const filtered = customers.filter(c => 
     c.name?.toLowerCase().includes(search.toLowerCase()) || 
@@ -16,23 +19,31 @@ export const AdminCustomersView: React.FC<AdminCustomersViewProps> = ({ customer
     c.mobile?.includes(search)
   );
 
+  async function updateAccount(userId: string, payload: { role?: string; blocked?: boolean }, successMessage: string) {
+    if (busyUser) return;
+    setBusyUser(userId); setError(''); setMessage('');
+    try {
+      const result = await AdminService.updateCustomerStatus(userId, payload);
+      if (!result.success) throw new Error(result.message || 'Account update failed.');
+      setMessage(successMessage); await onRefresh();
+    } catch (err) { setError(err instanceof Error ? err.message : 'Account update failed. Please retry.'); }
+    finally { setBusyUser(null); }
+  }
   const handleToggleRole = async (userId: string, currentRole: string) => {
     const newRole = currentRole === 'admin' ? 'customer' : 'admin';
-    if (confirm(`Change role to ${newRole}?`)) {
-      const result = await AdminService.updateCustomerStatus(userId, { role: newRole });
-      if (!result.success) { alert(result.message || 'Role update failed.'); return; }
-      onRefresh();
+    if (confirm(`Change this account to ${newRole}? Administrator access permits managing orders, products and customer accounts.`)) {
+      await updateAccount(userId, { role: newRole }, `Account role updated to ${newRole}.`);
     }
   };
-
   const handleToggleBlock = async (userId: string, blocked: boolean) => {
-    const result = await AdminService.updateCustomerStatus(userId, { blocked: !blocked });
-    if (!result.success) { alert(result.message || 'Account update failed.'); return; }
-    onRefresh();
+    if (!confirm(blocked ? 'Restore this account?' : 'Suspend this account and invalidate its existing sessions?')) return;
+    await updateAccount(userId, { blocked: !blocked }, blocked ? 'Account restored. The customer can sign in again.' : 'Account suspended and earlier sessions invalidated.');
   };
 
   return (
     <div className="space-y-6">
+      {error && <p role="alert" className="p-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-sm">{error}</p>}
+      {message && <p role="status" className="p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm">{message}</p>}
       <div className="flex items-center justify-between">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
@@ -53,7 +64,7 @@ export const AdminCustomersView: React.FC<AdminCustomersViewProps> = ({ customer
               <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-xs font-semibold text-slate-500 uppercase">
                 <th className="py-4 px-6">Customer</th>
                 <th className="py-4 px-6">Contact</th>
-                <th className="py-4 px-6">Role</th>
+                <th className="py-4 px-6">Role / Status</th>
                 <th className="py-4 px-6">Orders</th>
                 <th className="py-4 px-6">Total Spent</th>
                 <th className="py-4 px-6 text-right">Actions</th>
@@ -83,23 +94,26 @@ export const AdminCustomersView: React.FC<AdminCustomersViewProps> = ({ customer
                     }`}>
                       {c.role || 'customer'}
                     </span>
+                    <span className={`mt-1 block w-fit px-2.5 py-1 rounded-full text-xs font-semibold ${c.blocked === true || c.status === 'suspended' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>{c.blocked === true || c.status === 'suspended' ? 'Suspended' : 'Active'}</span>
                   </td>
                   <td className="py-4 px-6 font-semibold">{c.ordersCount || 0}</td>
                   <td className="py-4 px-6 font-bold text-slate-900 dark:text-white">₹{c.totalSpent || 0}</td>
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <button onClick={() => handleToggleBlock(c.userId, c.blocked === true || c.status === 'suspended')} className="px-3 py-1.5 border rounded-xl text-xs">{c.blocked || c.status === 'suspended' ? 'Restore account' : 'Suspend account'}</button>
+                      <button disabled={busyUser !== null} onClick={() => handleToggleBlock(c.userId, c.blocked === true || c.status === 'suspended')} className="px-3 py-1.5 border rounded-xl text-xs disabled:opacity-50">{c.blocked || c.status === 'suspended' ? 'Restore account' : 'Suspend account'}</button>
                       <button
+                        disabled={busyUser !== null}
                         onClick={() => handleToggleRole(c.userId, c.role)}
                         className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium transition"
                         title="Toggle Admin Role"
                       >
-                        <Shield className="w-3.5 h-3.5 mr-1 inline" /> {c.role === 'admin' ? 'Demote' : 'Promote'}
+                        {busyUser === c.userId ? <Loader2 className="w-3.5 h-3.5 mr-1 inline animate-spin" /> : <Shield className="w-3.5 h-3.5 mr-1 inline" />} {c.role === 'admin' ? 'Demote' : 'Promote'}
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
+              {!filtered.length && <tr><td colSpan={6} className="py-8 px-6 text-center text-slate-500">No matching customer accounts.</td></tr>}
             </tbody>
           </table>
         </div>

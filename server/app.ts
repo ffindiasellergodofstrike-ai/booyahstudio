@@ -19,15 +19,18 @@ import { Store } from './store';
 import { AuditLogger, generateRequestId } from './audit';
 import { PRODUCTS, COUPONS } from '../src/data/products';
 import { adminRouter } from './adminRoutes';
+import { adminOperationsRouter } from './adminOperations';
+import { adminManagementRouter } from './adminManagement';
+import { apiErrorHandler } from './httpErrors';
 import { mergeProductCatalog } from './productCatalog';
 import { isPaidOrderForProduct } from './paymentAccess';
 import { buildInvoicePdf } from './purchaseEmail';
-import { registerRazorpayRoutes } from './razorpay';
+import { registerRazorpayRoutes, paymentEnvironment } from './razorpay';
+import { registerCashfreeRoutes, cashfreeConfig, syncCashfreeOrder } from './cashfree';
+import { registerCashfreeDisputeRoutes } from './cashfreeDisputes';
 import { registerDownloadRoutes } from './downloads';
-import { registerPayURoutes } from './payu';
-import { registerPaddleRoutes } from './paddle';
-import { sendOrderEmail } from './orderEmail';
-import { FirebaseRtdb } from './firebaseRtdb';
+import { retryOrderEmails } from './orderEmail';
+import { registerEmailWebhookRoutes } from './emailWebhook';
 const getConfiguredAppUrl = appOrigin;
 
 const getPaymentRequestIp = (req: Request): string => {
@@ -112,10 +115,17 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
+app.use(['/login', '/forgot-password'], (_req, res, next) => {
+  res.set('Cache-Control', 'private, no-store');
+  res.set('Referrer-Policy', 'no-referrer');
+  res.set('X-Robots-Tag', 'noindex, nofollow');
+  next();
+});
 app.use('/api', (req, res, next) => {
   res.set('X-Robots-Tag', 'noindex, nofollow');
     res.set('Cache-Control', 'private, no-store');
-  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && req.path !== '/payments/razorpay/webhook') {
+  const signedWebhook = ['/payments/razorpay/webhook', '/payments/cashfree/webhook', '/payments/cashfree/disputes/webhook', '/emails/resend/webhook'].includes(req.path);
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !signedWebhook) {
     const origin = req.get('origin');
     if ((origin && origin !== getConfiguredAppUrl()) || req.get('sec-fetch-site') === 'cross-site') return res.status(403).json({ message: 'Cross-site request denied.' });
   }
@@ -213,7 +223,7 @@ const requireAdmin = async (req: AuthenticatedRequest, res: Response, next: Next
       }
       next();
     } catch {
-      return res.status(403).json({ success: false, message: 'Administrative privileges required for this action.' });
+      return res.status(503).json({ success: false, message: 'Administrative access could not be verified. Please retry.' });
     }
   });
 };
@@ -281,7 +291,7 @@ app.post('/api/contact', authRateLimiter, async (req, res) => {
   } catch { res.status(503).json({ message: 'Support requests are temporarily unavailable.' }); }
 });
 
-app.use('/api/admin', requireAdmin, adminRouter);
+app.use('/api/admin', requireAdmin, adminOperationsRouter, adminManagementRouter, adminRouter);
 
 // ============================================
 // AUTH ENDPOINTS (OPAQUE SESSIONS + COOKIES)
@@ -435,8 +445,8 @@ app.get('/api/orders/:orderId/invoice', requireAuth, async (req: AuthenticatedRe
     const order = await Store.getUserOrderById(req.userId!, req.params.orderId);
     if (!order) return res.status(404).send('Order not found.');
     const provider = String(order.paymentProvider || '').toLowerCase();
-    if (!hasLivePayment(order) || String(order.paymentStatus).toUpperCase() !== 'PAID' ||
-        provider !== 'razorpay' || !order.transactionId) {
+    if (!hasLivePayment(order) || !['PAID','PARTIALLY_REFUNDED','REFUNDED'].includes(String(order.paymentStatus).toUpperCase()) ||
+        !['razorpay','cashfree'].includes(provider) || !order.transactionId) {
       return res.status(403).send('A verified paid order is required for an invoice.');
     }
     const invoice = await buildInvoicePdf(order);
@@ -579,7 +589,7 @@ const handleOrderCreation = async (req: AuthenticatedRequest, res: Response) => 
       taxTreatment: 'Displayed order total; payment receipt only',
       policyVersion,
       total: calculatedTotal,
-      paymentMethod: 'Razorpay',
+      paymentMethod: cashfreeConfig().configured ? 'Cashfree' : 'Razorpay',
       checkoutStartedAt: now,
       requestId,
     };
@@ -610,14 +620,49 @@ app.post('/api/user/orders', requireAuth, authRateLimiter, handleOrderCreation);
 
 // ============================================
 
+app.get('/api/config/payments', (_req, res) => {
+  const cashfree = cashfreeConfig();
+  res.json({ success: true, gateways: {
+    cashfree: { configured: cashfree.configured, environment: cashfree.environment },
+    razorpay: { configured: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.RAZORPAY_WEBHOOK_SECRET), environment: paymentEnvironment() },
+  } });
+});
+registerCashfreeRoutes(app, requireAuth, authRateLimiter);
+registerCashfreeDisputeRoutes(app, requireAuth, requireAdmin, authRateLimiter);
+registerEmailWebhookRoutes(app);
 registerRazorpayRoutes(app, requireAuth, authRateLimiter);
 registerDownloadRoutes(app, requireAuth);
-registerPayURoutes(app, requireAuth, {
-  appUrl: getConfiguredAppUrl,
-  fulfill: async (order: any) => { await FirebaseRtdb.saveGlobalOrder(order); },
-  email: async (order: any) => { try { await sendOrderEmail(order); } catch {} },
+// These retired integrations must not be activated by stale environment variables.
+app.all(['/api/payments/payu/*', '/api/payments/paddle/*', '/api/config/paddle'], (_req, res) => res.status(410).json({ success:false, message:'This payment integration is retired. Use the configured checkout.' }));
+
+app.post('/api/admin/cashfree/orders/:orderId/refunds/:refundId/allocate', requireAdmin, async (req:any,res) => {
+  const input = z.object({ reviewed:z.literal(true), reason:z.string().trim().min(10).max(1000), allocations:z.array(z.object({productId:z.string().regex(/^[A-Za-z0-9_-]{1,100}$/),amountPaise:z.number().int().positive()})).min(1).max(30) }).safeParse(req.body);
+  if (!input.success) return res.status(400).json({success:false,message:'A review reason and exact item refund allocations are required.'});
+  const order = await Store.getGlobalOrder(req.params.orderId);
+  if (!order || String(order.paymentProvider).toLowerCase() !== 'cashfree') return res.status(404).json({success:false});
+  try {
+    const saved = await Store.rpc('allocate_cashfree_refund',`orders/${order.id}`,{refund_id:req.params.refundId,itemAllocations:input.data.allocations.map(item=>({productId:item.productId,amount:item.amountPaise})),reviewedBy:req.userId,reason:input.data.reason});
+    res.json({success:true,order:saved});
+  } catch { res.status(409).json({success:false,message:'Allocation must match a confirmed unallocated refund and the item paid totals.'}); }
 });
-registerPaddleRoutes(app, requireAuth);
+
+// Schedule this authenticated endpoint in your hosting provider. It never initiates a refund.
+app.all('/api/jobs/reconcile', async(req,res) => {
+  if (!process.env.CRON_SECRET || req.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) return res.status(403).json({success:false});
+  const orders = await Store.getAllGlobalOrders();
+  const candidates = orders.filter(order => String(order.paymentProvider).toLowerCase() === 'cashfree' &&
+    order.cashfreeOrderId && order.paymentEnvironment === cashfreeConfig().environment &&
+    ['PENDING','FAILED','PAID','PARTIALLY_REFUNDED'].includes(order.paymentStatus))
+    .sort((a,b) => String(a.reconciliationAttemptAt || '').localeCompare(String(b.reconciliationAttemptAt || ''))).slice(0,5);
+  const results = await Promise.allSettled(candidates.map(async order => {
+    await Store.rpc('order_note',`orders/${order.id}`,{reconciliationAttemptAt:new Date().toISOString()});
+    return syncCashfreeOrder(order);
+  }));
+  const emails = await retryOrderEmails(10);
+  const outcome = {completedAt:new Date().toISOString(),reconciled:results.filter(result=>result.status==='fulfilled').length,reviewRequired:results.filter(result=>result.status==='rejected').length,emails};
+  await Store.set('operations/reconciliationLastRun',outcome);
+  res.json({success:true,...outcome});
+});
 
 app.all('/api/payments/easebuzz/reconcile-cron', async (req, res) => {
   const cronSecret = process.env.CRON_SECRET;
@@ -629,7 +674,5 @@ app.all('/api/payments/easebuzz/reconcile-cron', async (req, res) => {
 });
 
 app.use('/api', (_req, res) => res.status(404).json({ success: false, message: 'Endpoint not found.' }));
-app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
-  res.status(503).json({ success: false, message: 'Service temporarily unavailable. Please retry or contact support.' });
-});
+app.use(apiErrorHandler);
 export default app;

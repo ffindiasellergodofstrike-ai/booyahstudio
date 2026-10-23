@@ -1,4 +1,12 @@
 import { hasLivePayment } from '../services/PaymentEnvironment';
+import { isVerifiedPaidOrder } from '../services/PaymentVerification';
+
+const itemHasAccess = (item: any): boolean => item.refunded !== true && item.accessStatus !== 'restricted' && item.downloadStatus !== 'REVOKED';
+const emailDeliveryLabel = (delivery: any): string => {
+  if (delivery?.providerStatus === 'delivered') return 'Delivered by email provider';
+  if (['bounced', 'failed', 'complained'].includes(delivery?.providerStatus) || ['failed', 'not_configured', 'review_required'].includes(delivery?.status)) return 'Delivery needs attention — your purchase remains in your account';
+  return delivery?.status === 'sent' ? 'Accepted by email provider' : 'Being prepared';
+};
 import React, { useState, useEffect } from 'react';
 import {
   User as UserIcon,
@@ -101,12 +109,12 @@ export const AccountPage: React.FC = () => {
   // Receipt Modal State
   const [viewingOrder, setViewingOrder] = useState<any | null>(null);
 
-  const handleSecureDownload = async (productId: string, defaultName: string) => {
+  const handleSecureDownload = async (productId: string, defaultName: string, orderId?: string) => {
     try {
       showToast('info', 'Authorizing Download', 'Validating purchase access and secure token...');
-      const res = await OrderService.requestDownloadToken(productId);
+      const res = await OrderService.requestDownloadToken(productId, orderId);
       if (res.success && res.downloadUrl) {
-        showToast('success', 'Download Initiated', `Streaming ${defaultName}...`);
+        showToast('success', 'Download link ready', `Your browser can now download ${defaultName}.`);
         const a = document.createElement('a');
         a.href = res.downloadUrl;
         a.download = defaultName;
@@ -134,11 +142,8 @@ export const AccountPage: React.FC = () => {
   }, [currentUser?.id]);
 
   const downloads = orders
-    .filter((order) => hasLivePayment(order) && order.paymentStatus?.toUpperCase() === 'PAID' &&
-      order.deliveryStatus === 'DELIVERED' && order.downloadStatus === 'AVAILABLE' &&
-      !['REFUNDED', 'PARTIALLY_REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED'].includes(String(order.status).toUpperCase()) &&
-      ['Razorpay'].includes(order.paymentProvider || '') && Boolean(order.transactionId))
-    .flatMap((order) => order.items.map((item) => ({ ...item, orderId: order.id })));
+    .filter(isVerifiedPaidOrder)
+    .flatMap((order) => order.items.filter(itemHasAccess).map((item) => ({ ...item, orderId: order.id })));
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -619,8 +624,10 @@ export const AccountPage: React.FC = () => {
 
       {/* Receipt Modal */}
       {viewingOrder && (() => {
-        const isPaid = hasLivePayment(viewingOrder) && String(viewingOrder.paymentStatus || '').toUpperCase() === 'PAID';
-        const isDelivered = viewingOrder.deliveryStatus === 'DELIVERED' && viewingOrder.downloadStatus === 'AVAILABLE';
+        const isPartial = String(viewingOrder.paymentStatus || '').toUpperCase() === 'PARTIALLY_REFUNDED';
+        const isPaid = hasLivePayment(viewingOrder) && ['PAID', 'PARTIALLY_REFUNDED'].includes(String(viewingOrder.paymentStatus || '').toUpperCase()) && ['cashfree', 'razorpay'].includes(String(viewingOrder.paymentProvider || '').toLowerCase()) && Boolean(viewingOrder.transactionId);
+        const isRefunded = String(viewingOrder.paymentStatus || '').toUpperCase() === 'REFUNDED';
+        const isDelivered = isVerifiedPaidOrder(viewingOrder);
         const isTest = !hasLivePayment(viewingOrder) && viewingOrder.paymentStatus === 'PAID';
         const isFailed =
           String(viewingOrder.paymentStatus || '').toUpperCase() === 'FAILED' ||
@@ -638,11 +645,11 @@ export const AccountPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
                   <div className="min-w-0">
                     <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Payment Status</p>
-                    <p className="text-sm font-black text-emerald-900 truncate">COMPLETED & VERIFIED</p>
+                    <p className="text-sm font-black text-emerald-900 truncate">{isPartial ? 'PARTIALLY REFUNDED' : 'COMPLETED & VERIFIED'}</p>
                   </div>
                   <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-emerald-200 shrink-0 self-start sm:self-center">
                     <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                    <span className="text-[10px] font-black text-emerald-700">PAID IN FULL</span>
+                    <span className="text-[10px] font-black text-emerald-700">{isPartial ? 'PARTIAL REFUND RECORDED' : 'PAID IN FULL'}</span>
                   </div>
                 </div>
               ) : isFailed ? (
@@ -660,16 +667,16 @@ export const AccountPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
                   <div className="min-w-0">
                     <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Payment Status</p>
-                    <p className="text-sm font-black text-amber-900 truncate">{isTest ? 'NO PURCHASE CREATED' : 'PAYMENT PENDING'}</p>
+                    <p className="text-sm font-black text-amber-900 truncate">{isRefunded ? 'REFUND CONFIRMED' : isTest ? 'NO PURCHASE CREATED' : 'PAYMENT PENDING'}</p>
                   </div>
                   <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-amber-200 shrink-0 self-start sm:self-center">
                     <Clock className="w-4 h-4 text-amber-500" />
-                    <span className="text-[10px] font-black text-amber-700">{isTest ? 'NO PRODUCT DELIVERY' : 'AWAITING PAYMENT'}</span>
+                    <span className="text-[10px] font-black text-amber-700">{isRefunded ? 'FURTHER DOWNLOADS RESTRICTED' : isTest ? 'NO PRODUCT DELIVERY' : 'AWAITING PAYMENT'}</span>
                   </div>
                 </div>
               )}
 
-              {!isPaid && !isFailed && (
+              {!isPaid && !isFailed && !isRefunded && (
                 <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl flex items-center gap-3 text-xs text-amber-800">
                   <Clock className="w-4 h-4 text-amber-600 shrink-0" />
                   <span className="font-medium">{isTest ? 'This transaction did not create a purchase. No files or payment receipt will be issued.' : 'Downloads and your receipt become available after payment confirmation.'}</span>
@@ -678,8 +685,8 @@ export const AccountPage: React.FC = () => {
               {isPaid && <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-700 space-y-1">
                 <p>{hasLivePayment(viewingOrder) ? `Receipt: ${viewingOrder.invoiceNumber || `INV-${viewingOrder.orderNumber}`}` : 'No completed purchase — no files or receipt.'}</p>
                 <p>Payment verified: {formatISTDate(viewingOrder.paymentVerifiedAt)}</p>
-                <p>Digital access: {isDelivered ? `Delivered ${formatISTDate(viewingOrder.deliveredAt)}` : 'Preparing delivery'}</p>
-                <p>Email: {viewingOrder.emailDelivery?.status === 'sent' ? 'Sent' : ['failed', 'not_configured'].includes(viewingOrder.emailDelivery?.status || '') ? 'Delivery needs attention — contact support' : 'Being prepared'}</p>
+                <p>Digital access: {isDelivered ? `Available since ${formatISTDate(viewingOrder.deliveredAt)}` : viewingOrder.deliveryStatus === 'REVOKED' ? 'Restricted — contact support' : 'Preparing delivery'}</p>
+                <p>Email: {emailDeliveryLabel(viewingOrder.emailDelivery)}</p>
               </div>}
 
               <div className="space-y-3">
@@ -690,15 +697,15 @@ export const AccountPage: React.FC = () => {
                   {viewingOrder.items.map((i: any, idx: number) => (
                     <div key={idx} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 group hover:bg-slate-50 transition-colors">
                       <div className="min-w-0">
-                        <p className="font-black text-slate-900 text-sm truncate">{i.product.title}</p>
+                        <p className="font-black text-slate-900 text-sm truncate">{i.product?.title || i.productTitle}</p>
                         <p className="text-[10px] font-bold text-slate-500 mt-0.5 truncate">
                           Qty: {i.quantity || 1}
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
-                        {isPaid && isDelivered && (
+                        {isPaid && isDelivered && itemHasAccess(i) && (
                           <button
-                            onClick={() => handleSecureDownload(i.productId, `${i.productSlug || 'product'}-v${i.version || '1.0'}.zip`)}
+                            onClick={() => handleSecureDownload(i.productId, `${i.productSlug || 'product'}-v${i.version || '1.0'}.zip`, viewingOrder.id)}
                             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 flex items-center gap-2"
                           >
                             <Download className="w-3.5 h-3.5" />
@@ -706,7 +713,7 @@ export const AccountPage: React.FC = () => {
                           </button>
                         )}
                         <span className="font-mono font-black text-slate-900 shrink-0 text-right text-sm">
-                          ₹{(i.price * i.quantity).toFixed(2)}
+                          ₹{(i.price * (i.quantity || 1)).toFixed(2)}
                         </span>
                       </div>
                     </div>

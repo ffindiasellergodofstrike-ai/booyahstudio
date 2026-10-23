@@ -24,7 +24,18 @@ import { Order } from '../types';
 
 import { AuthService } from '../services/AuthService';
 
-declare global { interface Window { Razorpay: any; } }
+declare global { interface Window { Razorpay: any; Cashfree: any; } }
+let cashfreeScript: Promise<void> | undefined;
+function loadCashfreeCheckout() {
+ if (window.Cashfree) return Promise.resolve();
+ if (!cashfreeScript) cashfreeScript = new Promise<void>((resolve, reject) => {
+  const script = document.createElement('script'); script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js'; script.async = true;
+  script.onload = () => window.Cashfree ? resolve() : reject(new Error('Checkout unavailable'));
+  script.onerror = () => { script.remove(); reject(new Error('Checkout unavailable')); };
+  document.head.appendChild(script);
+ }).catch(error => { cashfreeScript = undefined; throw error; });
+ return cashfreeScript;
+}
 let checkoutScript: Promise<void> | undefined;
 function loadRazorpayCheckout() {
  if (window.Razorpay) return Promise.resolve();
@@ -52,7 +63,7 @@ export const CheckoutPage: React.FC = () => {
   }, []);
   const paymentMethod = selectCustomerCheckout(gatewayConfig, cartItems.length === 1 && cartItems[0].quantity === 1 && cartSummary.discount === 0);
   const canCheckout = paymentMethod !== null;
-  const testMode = gatewayConfig.razorpay?.environment === 'test';
+  const testMode = paymentMethod ? gatewayConfig[paymentMethod]?.environment === 'test' : false;
 
   // Processing & Completed State
   const [isProcessing, setIsProcessing] = useState(false);
@@ -82,7 +93,7 @@ export const CheckoutPage: React.FC = () => {
             async () => {
               const order = await OrderService.fetchOrderById(orderId);
               const provider = String(order?.paymentProvider || '').toLowerCase();
-              if (!['razorpay'].includes(provider)) return { success: false, httpStatus: 409, status: 'PENDING', message: 'No payment has been initiated for this order.' };
+              if (!['razorpay', 'cashfree'].includes(provider)) return { success: false, httpStatus: 409, status: 'PENDING', message: 'No payment has been initiated for this order.' };
               const response = await fetch(`/api/payments/${provider}/reconcile/${encodeURIComponent(orderId)}`, { method: 'POST', credentials: 'include', cache: 'no-store' });
               const result = await response.json();
               return { ...result, httpStatus: response.status };
@@ -180,6 +191,23 @@ export const CheckoutPage: React.FC = () => {
     try {
       const sanitizedPhone = (customerPhone || '').replace(/\D/g, '').slice(-10);
 
+      if (!/^[6-9]\d{9}$/.test(sanitizedPhone)) throw new Error('Enter a valid 10-digit Indian contact number.');
+      if (paymentMethod === 'cashfree') {
+        await loadCashfreeCheckout();
+        const pendingOrder = await OrderService.createPendingOrderAsync(cartItems,
+          { fullName: customerName, email: customerEmail, country: 'India', phone: sanitizedPhone } as any,
+          cartSummary.discount, appliedCoupon?.code, 'Cashfree');
+        const init = await PaymentService.initiateCashfreePayment(pendingOrder.id, agreeTerms);
+        if (init.alreadyPaid) { window.location.href = `/checkout?status=pending&orderId=${encodeURIComponent(pendingOrder.id)}`; return; }
+        if (!init.success || !init.paymentSessionId) throw new Error(init.message || 'Could not open checkout.');
+        // All completion, cancellation and error outcomes are reconciled by the server.
+        try {
+          await window.Cashfree({ mode: init.mode }).checkout({ paymentSessionId: init.paymentSessionId, redirectTarget: '_modal' });
+        } finally {
+          window.location.href = `/checkout?status=pending&orderId=${encodeURIComponent(pendingOrder.id)}`;
+        }
+        return;
+      }
       await loadRazorpayCheckout();
       const pendingOrder = await OrderService.createPendingOrderAsync(cartItems,
         { fullName: customerName, email: customerEmail, country: 'India', phone: sanitizedPhone } as any,
@@ -226,7 +254,7 @@ export const CheckoutPage: React.FC = () => {
   };
 
   if (completedOrder && !hasLivePayment(completedOrder)) {
-    return <div className="max-w-2xl mx-auto px-6 py-16 text-center space-y-6"><p className="eyebrow justify-center">Booyahstudio</p><h1 className="text-3xl font-bold">Payment check complete</h1><p className="text-slate-600 leading-8">This transaction did not create a purchase. No product files, download access or purchase invoice will be issued. Contact us if you need help with a payment shown on your bank statement.</p><p className="text-sm">Reference: {completedOrder.orderNumber}</p><p role="status" className="text-sm">{completedOrder.emailDelivery?.status === 'sent' ? 'A confirmation email has been sent.' : completedOrder.emailDelivery?.status === 'failed' || completedOrder.emailDelivery?.status === 'not_configured' ? 'This transaction was recorded, but the email could not be sent. Please contact support.' : 'A confirmation email is being prepared.'}</p><button className="studio-button primary" onClick={()=>navigate('/account')}>View account</button></div>;
+    return <div className="max-w-2xl mx-auto px-6 py-16 text-center space-y-6"><p className="eyebrow justify-center">Booyahstudio</p><h1 className="text-3xl font-bold">Payment check complete</h1><p className="text-slate-600 leading-8">This transaction did not create a purchase. No product files, download access or purchase invoice will be issued. Contact us if you need help with a payment shown on your bank statement.</p><p className="text-sm">Reference: {completedOrder.orderNumber}</p><p role="status" className="text-sm">No purchase-confirmation email is sent for test transactions.</p><button className="studio-button primary" onClick={()=>navigate('/account')}>View account</button></div>;
   }
 
   // SUCCESS CONFIRMATION VIEW
@@ -253,7 +281,11 @@ export const CheckoutPage: React.FC = () => {
           </p>
           <p className="text-slate-600 text-xs sm:text-sm">
             Invoice: <strong>{completedOrder.invoiceNumber || `INV-${completedOrder.orderNumber}`}</strong>
-            {completedOrder.emailDelivery?.status === 'sent'
+            {completedOrder.emailDelivery?.providerStatus === 'delivered'
+              ? ' · Confirmation email delivered.'
+              : ['bounced','failed','complained','suppressed'].includes(completedOrder.emailDelivery?.providerStatus || '')
+              ? ' · Email delivery needs attention. Your order remains available in your account.'
+              : completedOrder.emailDelivery?.status === 'sent'
               ? ' · Confirmation email accepted for delivery.'
               : completedOrder.emailDelivery?.status === 'failed' || completedOrder.emailDelivery?.status === 'not_configured'
                 ? ' · Email delivery needs attention. Your order remains available in your account.'
@@ -307,11 +339,12 @@ export const CheckoutPage: React.FC = () => {
 
                   <button
                     id={`download-archive-btn-${idx}`}
+                    disabled={Boolean((item as any).refunded)}
                     onClick={() => handleSecureDownload(item.productId || item.product?.id, `${item.product?.slug || item.productSlug || item.productId}-v${item.product?.version || item.version || '1.0'}.zip`)}
                     className="p-2 sm:px-6 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs transition-all shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] sm:min-w-0 shrink-0"
                   >
                     <Download className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" />
-                    <span className="hidden sm:inline">Download Package</span>
+                    <span className="hidden sm:inline">{item.refunded ? 'Refunded item' : 'Download Package'}</span>
                   </button>
                 </div>
               </div>

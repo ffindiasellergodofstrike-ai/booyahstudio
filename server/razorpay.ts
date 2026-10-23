@@ -51,11 +51,10 @@ export async function syncDispute(order: any, disputeId: unknown) {
   });
 }
 export function registerRazorpayRoutes(app: Express, auth: RequestHandler, limiter: RequestHandler) {
-  app.get('/api/config/payments', (_req, res) => res.json({ success: true, gateways: { razorpay: { configured: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.RAZORPAY_WEBHOOK_SECRET), environment: paymentEnvironment() } } }));
   app.post('/api/payments/razorpay/initiate', auth, limiter, async (req: any, res) => {
     if (req.body.agreeTerms !== true) return res.status(400).json({ success: false, message: 'Please accept the purchase policies.' });
     let order = await Store.getUserOrderById(req.userId, req.body.orderId);
-    if (!order || order.paymentStatus !== 'PENDING') return res.status(409).json({ success: false, message: 'Order is not payable.' });
+    if (!order || order.paymentStatus !== 'PENDING' || order.cashfreeOrderId || (order.paymentProvider && String(order.paymentProvider).toLowerCase() !== 'razorpay')) return res.status(409).json({ success: false, message: 'Order is not payable.' });
     if (order.razorpayOrderId && order.paymentEnvironment !== paymentEnvironment()) return res.status(409).json({ success: false, message: 'Create a new order for the current payment environment.' });
     // Verify every product ZIP exists before accepting payment.
     for (const item of order.items) {

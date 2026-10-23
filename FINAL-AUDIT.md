@@ -1,6 +1,6 @@
 # FINAL AUDIT — Booyahstudio
 
-> Historical report: the audit below describes revision `9e434ad` and its earlier working tree, not the latest GitHub revision in this ZIP. For the registration fix on revision `81d4e973f9b745eeee0ba8c1ac464d579de020bd`, current checks and outstanding failures, see `VERCEL-REGISTRATION-FIX.md`. Earlier whole-site claims must not be treated as fresh verification of this version.
+> Historical report from the supplied project (5 October 2026). Current implementation and verification are documented in IMPLEMENTATION-NOTES.md and SETUP-HINDI.md. The later native Vercel API startup fix is preserved; VERCEL-REGISTRATION-FIX.md records its earlier investigation. Statements below describe the historical version.
 
 MANISH KUMAR SONKAR | Booyahstudio
 

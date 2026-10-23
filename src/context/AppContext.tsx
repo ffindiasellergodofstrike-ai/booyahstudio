@@ -1,3 +1,4 @@
+import { safePreviousUrl } from '../services/AuthNavigation';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CartItem, WishlistItem, User, Coupon, Product } from '../types';
 import { CartService } from '../services/CartService';
@@ -178,7 +179,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const fullUrl = target + queryString;
     
     // Store previous path for manual back navigation
-    localStorage.setItem('ff_previous_path', window.location.pathname + window.location.search);
+    localStorage.setItem('ff_previous_path', safePreviousUrl(window.location.pathname, window.location.search));
     
     setIsNavigating(true);
     
@@ -193,7 +194,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const goBack = () => {
-    const prev = localStorage.getItem('ff_previous_path');
+    const storedPrevious = localStorage.getItem('ff_previous_path');
+    const prev = storedPrevious ? safePreviousUrl(storedPrevious.split('?')[0], storedPrevious.includes('?') ? '?' + storedPrevious.split('?').slice(1).join('?') : '') : null;
     setIsNavigating(true);
     
     setTimeout(() => {

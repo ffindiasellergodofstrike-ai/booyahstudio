@@ -2,14 +2,16 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
-for (const key of ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'RAZORPAY_WEBHOOK_SECRET', 'RESEND_API_KEY', 'RESEND_FROM_EMAIL']) delete process.env[key];
+import crypto from 'node:crypto';
+for (const key of ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'RAZORPAY_WEBHOOK_SECRET', 'RESEND_API_KEY', 'RESEND_FROM_EMAIL', 'RESEND_WEBHOOK_SECRET', 'CASHFREE_APP_ID', 'CASHFREE_SECRET_KEY', 'CASHFREE_API_VERSION', 'CASHFREE_ENV', 'CRON_SECRET']) delete process.env[key];
 process.env.NODE_ENV = 'production';
 process.env.APP_URL = 'https://shop.example.com';
 const { default: app } = await import('../api/index.ts');
 const { default: page } = await import('../api/page.ts');
 const server = createServer((req, res) => {
   if (req.url.startsWith('/page-check')) {
-    req.query = { slug: new URL(req.url, 'http://localhost').searchParams.get('slug') };
+    const query = new URL(req.url, 'http://localhost').searchParams;
+    if (!query.has('native')) req.query = { slug: query.get('slug') };
     return page(req, res);
   }
   app(req, res);
@@ -33,6 +35,27 @@ try {
   const product = await fetch(`${base}/page-check?slug=margin-portfolio`, { headers: { Accept: 'text/html' } });
   assert.equal(product.status, 200);
   assert.match(await product.text(), /Margin/i);
+  assert.equal(product.headers.get('cache-control'), 'private, no-store');
+  const head = await fetch(`${base}/page-check?slug=margin-portfolio`, { method: 'HEAD', headers: { Accept: 'text/html' } });
+  assert.equal(head.status, 200); assert.equal(await head.text(), '');
+  const nativeQuery = await fetch(`${base}/page-check?slug=margin-portfolio&native=1`, { headers: { Accept:'text/html' } });
+  assert.equal(nativeQuery.status, 200, 'Native URL fallback does not require a framework query object');
+  const repeatedSlug = await fetch(`${base}/page-check?slug=margin-portfolio&slug=other&native=1`);
+  assert.equal(repeatedSlug.status, 404);
+  const deniedMethod = await fetch(`${base}/page-check?slug=margin-portfolio`, { method: 'POST' });
+  assert.equal(deniedMethod.status, 405); assert.equal(deniedMethod.headers.get('allow'), 'GET, HEAD');
+  assert.equal((await deniedMethod.json()).success, false);
+  process.env.CASHFREE_ENV = 'sandbox'; process.env.CASHFREE_SECRET_KEY = 'synthetic-runtime-secret';
+  const raw = ' {\n  "type" : "UNHANDLED_NATIVE_RUNTIME_TEST"\n } ', timestamp = String(Date.now());
+  const signature = crypto.createHmac('sha256', process.env.CASHFREE_SECRET_KEY).update(timestamp).update(raw).digest('base64');
+  const webhook = await fetch(`${base}/api/payments/cashfree/webhook`, { method: 'POST', headers: { 'content-type':'application/json', 'x-webhook-signature':signature, 'x-webhook-timestamp':timestamp }, body:raw });
+  assert.equal(webhook.status, 200, 'Native entrypoint must preserve the original signed body bytes');
+
+  const malformedJson = await fetch(`${base}/api/auth/login`, { method:'POST', headers:{'content-type':'application/json'}, body:'{bad-json' });
+  assert.equal(malformedJson.status,400); assert.equal((await malformedJson.json()).success,false);
+  const crossSite = await fetch(`${base}/api/auth/login`, { method:'POST', headers:{'content-type':'application/json',Origin:'https://other.example','Sec-Fetch-Site':'cross-site'},body:'{}' });
+  assert.equal(crossSite.status,403);
+
   // Exercise registration through the bundled API with synthetic Supabase responses.
   // The real Supabase SDK serializes these requests; no hosted account is created.
   process.env.SUPABASE_URL = 'https://synthetic.supabase.co';
@@ -74,9 +97,11 @@ try {
   assert.equal((await register(details)).status, 429);
   assert.equal(signupCalls, 2, 'Rate limited requests must not reach Supabase Auth');
   const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
-  assert.equal(config.functions['api/index.ts'].includeFiles, 'build/api-app.mjs');
+  assert.equal(config.functions['api/index.ts'].includeFiles, '{build/api-app.mjs,dist/index.html}');
   assert.equal(config.functions['api/page.ts'].includeFiles, '{build/api-app.mjs,dist/index.html}');
-  console.log('PASS: native Node API startup; health200; unconfigured503; API404; product404/200; simulated Supabase signup201, invalid400, provider rejection400, rate limit429. No hosted accounts or provider calls.');
+  assert.equal(config.functions['api/index.ts'].maxDuration, 300);
+  assert.equal(config.functions['api/page.ts'].maxDuration, 60);
+  console.log('PASS: native Node API startup; health200; unconfigured503; API404; product404/200/HEAD/405; raw signed webhook200; simulated Supabase signup201, invalid400, provider rejection400, rate limit429. No hosted accounts or provider calls.');
 } finally {
   globalThis.fetch = originalFetch;
   await new Promise(resolve => server.close(resolve));

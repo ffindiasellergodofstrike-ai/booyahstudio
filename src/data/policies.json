@@ -3,7 +3,7 @@
     "slug": "terms",
     "title": "Terms & Conditions",
     "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
-    "lastUpdated": "2026-10-05",
+    "lastUpdated": "October 22, 2026",
     "quickSummary": [
       "Trading name: Booyahstudio operated by MANISH KUMAR SONKAR.",
       "Applies to all website browsing, account registration, template listings, digital orders, downloads, and support.",
@@ -20,7 +20,7 @@
       {
         "id": "scope-account",
         "title": "2. Scope, Definitions & Account Responsibilities",
-        "content": "“Product” means the downloadable digital files described in a listing; “order” means your recorded purchase request; “delivery” means purchased access being made available electronically in your customer vault; “you” means the purchasing customer.\n\nYou must provide accurate email and contact details during account creation or guest checkout. You are responsible for maintaining the confidentiality of your account credentials, password, and access links. You must notify us immediately of any suspected unauthorized access or compromise. You agree to use the service in compliance with all applicable laws."
+        "content": "“Product” means the downloadable digital files described in a listing; “order” means your recorded purchase request; “delivery” means purchased access being made available electronically in your customer vault; “you” means the purchasing customer.\n\nYou must provide accurate email and contact details during account creation or registered checkout. You are responsible for maintaining the confidentiality of your account credentials, password, and access links. You must notify us immediately of any suspected unauthorized access or compromise. You agree to use the service in compliance with all applicable laws."
       },
       {
         "id": "product-requirements",
@@ -30,12 +30,12 @@
       {
         "id": "orders-payments",
         "title": "4. Orders, Payments & Verification",
-        "content": "Prices are displayed in INR and the final payable total is presented at checkout. We do not add undisclosed mandatory charges after purchase.\n\nA browser success screen, screenshot, or debit SMS alone does not authorize digital download access. We verify payment through trusted server-side webhooks and API checks with payment gateways (such as Razorpay). Access is granted only after successful verification of a captured payment matching the order. Failed, cancelled, pending, or unverified transactions do not unlock digital products."
+        "content": "Prices are displayed in INR and the final payable total is presented at checkout. We do not add undisclosed mandatory charges after purchase.\n\nA browser success screen, screenshot, or debit SMS alone does not authorize digital download access. We verify payment through trusted server-side webhooks and API checks with payment gateways (Cashfree, with existing Razorpay purchases supported where configured). Access is granted only after successful verification of a captured payment matching the order. Failed, cancelled, pending, or unverified transactions do not unlock digital products."
       },
       {
         "id": "delivery-records",
         "title": "5. Digital Product Delivery, Access & Download Records",
-        "content": "Purchased access is provided through your customer account vault and protected download links following payment verification. Confirmation emails link directly to your account vault, which remains the primary delivery channel.\n\nWe maintain electronic server logs of payment verifications, download link generations, access timestamps, IP addresses, and user-agent strings for security, license compliance, audit, and dispute resolution. These records serve as definitive evidence of delivery completion."
+        "content": "Purchased access is provided through your customer account vault and protected download links following payment verification. Confirmation emails link directly to your account vault, which remains the primary delivery channel.\n\nWe maintain electronic server logs of payment verifications, download link generations, access timestamps, IP addresses, and user-agent strings for security, license compliance, audit, and dispute resolution. These records may support delivery and dispute review. A generated link or accepted email alone does not establish that a file was downloaded or received."
       },
       {
         "id": "license-usage",
@@ -83,7 +83,7 @@
     "slug": "refund",
     "title": "Refund, Cancellation & Payment Policy",
     "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
-    "lastUpdated": "2026-10-05",
+    "lastUpdated": "October 22, 2026",
     "quickSummary": [
       "Digital products are delivered electronically; purchases are generally non-refundable once access or download links are generated.",
       "Refunds are granted for duplicate payments, technical payment errors, or non-delivery due to server verification failures.",
@@ -119,17 +119,17 @@
       {
         "id": "duplicate-payments",
         "title": "6. Duplicate Payments & Payment Error Processing",
-        "content": "If you notice multiple debits for a single order due to a network glitch or payment gateway retry, please email connectbooyahstudio@gmail.com with your order ID, payment references, and bank debit proof.\n\nUpon verifying the duplicate capture with Razorpay or the payment processor, we immediately initiate a full refund for the extra charge to the original payment instrument within 5–7 business days."
+        "content": "If you notice multiple debits for a single order due to a network glitch or payment gateway retry, please email connectbooyahstudio@gmail.com with your order ID, payment references, and bank debit proof.\n\nUpon verifying the duplicate capture with Razorpay or the payment processor, we arrange a refund of the extra charge through the original payment route after review. A separately refunded duplicate payment does not cancel the original valid purchase."
       },
       {
         "id": "refund-procedure",
         "title": "7. Refund Request Procedure & Review Timeline",
-        "content": "To request a refund, submit an email to connectbooyahstudio@gmail.com within 7 days of purchase containing:\n1. Order ID and Razorpay Payment ID\n2. Email address associated with the purchase\n3. Detailed explanation of the technical issue or duplicate debit\n\nRequests are evaluated within 2 business days. Approved refunds are credited back to the original payment method (UPI, card, net banking) within 5–7 business days as per banking standards."
+        "content": "To request a refund, submit an email to connectbooyahstudio@gmail.com within 7 days of purchase containing:\n1. Order ID and payment reference\n2. Email address associated with the purchase\n3. Detailed explanation of the technical issue or duplicate debit\n\nRequests are evaluated within 2 business days. Approved refunds are initiated through the original payment route. We provide the available refund reference; actual bank credit timing depends on the payment provider and bank. Confirmed full refunds revoke the corresponding access. For a partial refund, support records the affected items and agreed access resolution; unrelated paid products are not automatically revoked. An unallocated partial refund is flagged for review."
       },
       {
         "id": "gateways-verification",
         "title": "8. Payment Gateways, Verification & Transaction Security",
-        "content": "All online payments are processed securely via PCI-DSS compliant payment gateways (such as Razorpay). We verify all transactions server-side before granting digital access. If a payment is debited but fails server verification, Razorpay or your bank will automatically auto-refund the amount according to banking turnaround times."
+        "content": "All online payments are processed securely via PCI-DSS compliant payment gateways (Cashfree, with existing Razorpay purchases supported where configured). We verify all transactions server-side before granting digital access. If your account was debited but our verification is pending or unavailable, contact support with the order/payment reference. We reconcile the provider status; a merchant-side verification error does not itself initiate or guarantee a refund. Failed-payment reversals follow the provider and banking process."
       },
       {
         "id": "chargeback-interaction",
@@ -142,7 +142,7 @@
     "slug": "privacy",
     "title": "Privacy Policy",
     "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
-    "lastUpdated": "2026-10-05",
+    "lastUpdated": "October 22, 2026",
     "quickSummary": [
       "Explains how Booyahstudio collects, uses, stores, and protects your personal data.",
       "Covers account details, order history, payment verification info, download logs, and email communications.",
@@ -169,7 +169,7 @@
       {
         "id": "payment-providers",
         "title": "4. Payment Processing & Service Providers",
-        "content": "Online payment details (such as UPI IDs, card numbers, or net banking credentials) are collected directly by PCI-DSS compliant payment gateway partners (such as Razorpay). We NEVER receive, process, or store sensitive financial secrets like card security codes (CVV) or UPI PINs on our servers.\n\nWe share necessary data only with trusted infrastructure providers (e.g., hosting, email delivery) strictly for operating the store."
+        "content": "Online payment details (such as UPI IDs, card numbers, or net banking credentials) are collected directly by PCI-DSS compliant payment gateway partners (Cashfree, with existing Razorpay purchases supported where configured). We NEVER receive, process, or store sensitive financial secrets like card security codes (CVV) or UPI PINs on our servers.\n\nWe share necessary data only with trusted infrastructure providers (e.g., hosting, email delivery) strictly for operating the store."
       },
       {
         "id": "data-use",

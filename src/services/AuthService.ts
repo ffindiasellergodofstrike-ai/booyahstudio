@@ -1,7 +1,6 @@
 import { User } from '../types';
 
 const USER_STORAGE_KEY = 'booyah-studio_auth_user_v1';
-const PREVIOUS_STORAGE_KEY = 'booyah-studio_auth_user_v1';
 const LEGACY_STORAGE_KEY = 'booyah_studio_legacy_user_v1';
 
 export interface RegisterPayload {
@@ -22,21 +21,9 @@ class AuthServiceImpl {
   private isInitialized = false;
 
   constructor() {
-    let cachedUser = localStorage.getItem(USER_STORAGE_KEY);
-    if (!cachedUser) {
-      cachedUser = localStorage.getItem(PREVIOUS_STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
-      if (cachedUser) {
-        localStorage.setItem(USER_STORAGE_KEY, cachedUser);
-      }
-    }
-    if (cachedUser) {
-      try {
-        this.currentUser = JSON.parse(cachedUser);
-      } catch {
-        this.currentUser = null;
-      }
-    }
-    // Verify session in background via cookie session
+    // A cached profile is presentation data, never proof of an authenticated session.
+    localStorage.removeItem(USER_STORAGE_KEY);
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
     this.verifySession();
   }
 
@@ -83,8 +70,8 @@ class AuthServiceImpl {
       return null;
     } catch (err) {
       this.isInitialized = true;
-      this.notify();
-      return this.currentUser;
+      this.signOutLocal();
+      return null;
     }
   }
 
@@ -111,25 +98,15 @@ class AuthServiceImpl {
         };
       }
 
-      this.currentUser = data.user;
-      if (this.currentUser) {
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(this.currentUser));
-      }
-
-      this.notify();
-      return {
-        success: true,
-        user: this.currentUser || undefined,
-        message: data.message,
-      };
+      // Signup requires email confirmation and does not create an application session.
+      return { success: true, message: data.message };
     } catch (err: any) {
-      console.error('Register API Error:', err);
       return { success: false, message: 'Network error during registration. Please try again.' };
     }
   }
 
   /**
-   * Login via backend API with email or username
+   * Login via backend API with email and password
    */
   public async signIn(
     identifier: string,
@@ -148,7 +125,7 @@ class AuthServiceImpl {
       if (!res.ok || !data.success) {
         return {
           success: false,
-          message: data.message || 'Invalid username/email or password.',
+          message: data.message || 'Invalid email or password.',
         };
       }
 
@@ -163,8 +140,7 @@ class AuthServiceImpl {
         user: this.currentUser || undefined,
       };
     } catch (err) {
-      console.error('Login API Error:', err);
-      return { success: false, message: 'Invalid username/email or password.' };
+      return { success: false, message: 'Invalid email or password.' };
     }
   }
 

@@ -3,10 +3,18 @@ import type { Order } from '../types';
 
 export const isConfirmedPaidOrder = (order: Order | null): order is Order => {
   const provider = String(order?.paymentProvider || '').toLowerCase();
+  const cashfree = provider === 'cashfree';
+  const status = String(order?.paymentStatus || '').toUpperCase();
+  const record = order as any;
+  const payment = cashfree && record?.payments?.[record?.transactionId];
+  const providerVerified = cashfree
+    ? Boolean(record.cashfreeOrderId && payment?.status === 'SUCCESS' && payment.order_id === record.cashfreeOrderId &&
+        payment.environment === record.paymentEnvironment && payment.currency === 'INR' && payment.amount === Math.round(Number(record.total) * 100))
+    : provider === 'razorpay';
   return Boolean(
-    order && order.paymentStatus?.toUpperCase() === 'PAID' &&
-    provider === 'razorpay' && order.transactionId && order.deliveryStatus !== 'REVOKED' &&
-    !['REFUNDED', 'PARTIALLY_REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED'].includes(String(order.status).toUpperCase())
+    order && (status === 'PAID' || (cashfree && status === 'PARTIALLY_REFUNDED')) &&
+    providerVerified && order.transactionId && order.deliveryStatus !== 'REVOKED' &&
+    !['REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED', ...(cashfree ? [] : ['PARTIALLY_REFUNDED'])].includes(String(order.status).toUpperCase())
   );
 };
 
@@ -34,7 +42,7 @@ export async function verifyReturnedPayment(
   reconcile: () => Promise<ReconciliationResult>,
 ): Promise<PaymentVerificationResult> {
   let order = await getOrder();
-  if (order && (order.deliveryStatus === 'REVOKED' || ['REFUNDED','PARTIALLY_REFUNDED'].includes(String(order.paymentStatus)))) return { kind: 'failed', message: 'Further access is restricted. Contact support with this order reference.' };
+  if (order && (order.deliveryStatus === 'REVOKED' || (String(order.paymentStatus) === 'REFUNDED' || (String(order.paymentStatus) === 'PARTIALLY_REFUNDED' && String(order.paymentProvider).toLowerCase() !== 'cashfree')))) return { kind: 'failed', message: 'Further access is restricted. Contact support with this order reference.' };
   if (isConfirmedPaidOrder(order)) return { kind: 'paid', order };
 
   const result = await reconcile();

@@ -1,46 +1,59 @@
 MANISH KUMAR SONKAR | Booyahstudio
 
+# Privacy Policy
+
+Updated: October 22, 2026
+
+## 1. Business & Contact Information
+
+MANISH KUMAR SONKAR Owner of Booyahstudio
 Address: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003
 Customer support and grievances: connectbooyahstudio@gmail.com
 WhatsApp: +91 7393845435 (https://wa.me/917393845435)
 Grievance contact: MANISH KUMAR SONKAR, at the same email and address.
 
-# Privacy & Data Handling Policy
+This Privacy Policy explains how Booyahstudio (operated by MANISH KUMAR SONKAR) collects, uses, discloses, and safeguards your personal data when you visit our website, register an account, or purchase digital templates.
 
-Last updated: October 5, 2026
+## 2. Information We Collect
 
-## 2. Who handles your information
+We collect information necessary to fulfill digital orders, provide customer support, and maintain account security:
+• Account & Contact Information: Name, email address, mobile number, and password hash.
+• Order & Transaction Details: Purchased items, order IDs, payment reference IDs, amounts paid, and transaction timestamps.
+• Download & Access Records: Server access logs, IP addresses, user-agent strings, and download timestamps for security and license enforcement.
+• Support Communications: Emails, WhatsApp messages, and support tickets sent to us.
 
-Booyahstudio is operated by the merchant identified above. Contact the same grievance channel about privacy requests. This policy describes this website’s account, purchase, delivery, support and security data; third-party payment and communication services also have their own applicable privacy terms.
+## 3. Cookies & Local Browser Storage
 
-## 3. Information collected
+We use essential session cookies and local browser storage to keep you logged in, save items in your shopping cart/wishlist, and maintain secure navigation. We do not use intrusive cross-site tracking cookies.
 
-Registration supplies name, email and mobile number to Supabase Auth and the account profile; Supabase handles the password authentication data. We store account identifiers, profile information, optional company/country details, cart and wishlist selections, order items, product-listing snapshots, amounts, payment references/status, accepted policy version/timestamp, delivery/access records and download-authorisation records. Support forms collect name, email, message, reference and time; emails or WhatsApp conversations contain what you choose to send. Newsletter signup records email, consent times and subscription status. Session, rate-limit and authorisation records include relevant IP/user-agent or derived security identifiers and timestamps.
+## 4. Payment Processing & Service Providers
 
-## 4. Cookies and browser storage
+Online payment details (such as UPI IDs, card numbers, or net banking credentials) are collected directly by PCI-DSS compliant payment gateway partners (Cashfree, with existing Razorpay purchases supported where configured). We NEVER receive, process, or store sensitive financial secrets like card security codes (CVV) or UPI PINs on our servers.
 
-The website uses a session cookie for authentication and local browser storage for cached account display, cart, wishlist and navigation preferences. These are used for store functions. The current store does not add its own advertising or analytics tracker. Embedded payment checkout and third-party previews/assets may make requests to their providers and use their own necessary browser mechanisms; the providers’ notices apply to those services. Clearing storage or blocking required cookies can affect sign-in and saved selections.
+We share necessary data only with trusted infrastructure providers (e.g., hosting, email delivery) strictly for operating the store.
 
-## 5. Payment information
+## 5. Purposes of Data Processing & Email Communications
 
-Payment authentication is handled through Razorpay and the relevant payment institutions. Our application stores order/payment identifiers, amount, currency and verified status; it does not persist full card numbers, CVV or OTPs in its store records. We do not request those secrets for support or disputes. Passwords and recovery/payment credentials are never used as dispute evidence. Do not send them through support channels.
+We use your personal data to:
+• Verify payments and deliver digital template downloads to your account vault.
+• Send order receipts, download notifications, and critical security alerts.
+• Respond to customer support and grievance requests.
+• Prevent fraud, unauthorized sharing, and system abuse.
 
-## 6. Purposes and recipients
+We do not sell, rent, or trade your personal information to third parties for marketing purposes.
 
-We use information to authenticate customers, provide purchased access, send transaction/recovery emails, maintain order records, answer requests, investigate security issues, handle refunds/disputes and meet legal obligations. Supabase provides authentication/database/storage; Vercel hosts the application; Razorpay processes payments; Resend sends configured emails. Relevant information may also be provided to other necessary service/security providers, professional advisers and government/law-enforcement or competent authorities where legally required or otherwise lawfully justified. Contacting us through WhatsApp involves that service. We do not claim information is never shared. We limit sharing to the purpose and relevant information.
+## 6. Data Security, Safeguards & Retention
 
-## 7. Dispute minimisation
+We implement industry-standard administrative, technical, and physical safeguards—including SSL/TLS encryption, hashed passwords, and restricted server access—to protect your personal information against unauthorized access, loss, or disclosure.
 
-For payment disputes we may provide the order/payment reference, amount, purchased listing, verification/access/authorisation timestamps, relevant support communications, refund history and security records actually collected. We do not invent device fingerprints, file-open events, completed downloads or read receipts. Irrelevant personal information and authentication secrets must be excluded.
+We retain order records and transaction logs for as long as required to fulfill legal, tax, accounting, and dispute resolution requirements.
 
-## 8. Retention and safeguards
+## 7. Record Sharing for Dispute Minimisation
 
-Records are kept as needed for the transaction, customer service, tax/accounting obligations, fraud/security review, disputes and legal requirements. We review unnecessary records for removal and do not promise immediate deletion where retention is legally necessary. We use access controls, server-only credentials, private file storage and expiring links; no online system can promise absolute security. Providers may process data in their configured service locations, including outside your location, subject to applicable safeguards and law.
+In the event of a payment dispute, fraud investigation, or legal inquiry, relevant transaction records (such as IP logs, order confirmations, and download timestamps) may be shared with payment processors, banks, or law enforcement agencies as required by applicable law.
 
-## 9. Your choices and requests
+## 8. Your Choices, Rights & Grievance Support
 
-Contact support to request access, correction, deletion or other privacy rights available under applicable law, to report a concern, or to withdraw optional newsletter consent. You can stop newsletter messages by emailing support with “unsubscribe”; transaction and security communications may still be needed. We may verify identity proportionately before acting. We explain when a request cannot be completed because of a lawful retention or other requirement. Do not submit information about a child or another person without the required authority. Policy updates are published with a revised date.
+You have the right to access, update, or correct your personal account details by logging into your account or emailing connectbooyahstudio@gmail.com. You may also request deletion of your account, subject to non-deletable statutory transaction records.
 
-## 10. Contact and resolution
-
-Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected.
+For privacy inquiries or grievance concerns, contact MANISH KUMAR SONKAR at connectbooyahstudio@gmail.com.

@@ -1,11 +1,9 @@
 import { Order, OrderItem, CartItem, Product } from '../types';
 import { AuthService } from './AuthService';
+import { isVerifiedPaidOrder } from './PaymentVerification';
 
-const isDownloadableOrder = (order: Order): boolean =>
-  order.paymentStatus?.toUpperCase() === 'PAID' && order.paymentProvider === 'Razorpay' &&
-  Boolean(order.transactionId) &&
-  !['REFUNDED', 'PARTIALLY_REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED'].includes(String(order.status).toUpperCase()) &&
-  order.deliveryStatus === 'DELIVERED' && order.downloadStatus === 'AVAILABLE';
+const isDownloadableOrder = isVerifiedPaidOrder;
+const itemHasAccess = (item: any): boolean => item.refunded !== true && item.accessStatus !== 'restricted' && item.downloadStatus !== 'REVOKED';
 
 class OrderServiceImpl {
   private orders: Order[] = [];
@@ -82,7 +80,7 @@ class OrderServiceImpl {
     this.orders
       .filter(isDownloadableOrder)
       .forEach((o) => {
-        o.items.forEach((item) => {
+        o.items.filter(itemHasAccess).forEach((item) => {
           map.set(item.productId, item);
         });
       });
@@ -95,7 +93,7 @@ class OrderServiceImpl {
     userOrders
       .filter(isDownloadableOrder)
       .forEach((o) => {
-        o.items.forEach((item) => {
+        o.items.filter(itemHasAccess).forEach((item) => {
           map.set(item.productId, item);
         });
       });
@@ -133,11 +131,13 @@ class OrderServiceImpl {
   /**
    * Request a signed, short-lived download token from backend
    */
-  public async requestDownloadToken(productId: string): Promise<{ success: boolean; token?: string; downloadUrl?: string; message?: string }> {
+  public async requestDownloadToken(productId: string, orderId?: string): Promise<{ success: boolean; token?: string; downloadUrl?: string; message?: string }> {
     try {
       const res = await fetch(`/api/downloads/${encodeURIComponent(productId)}/token`, {
         method: 'POST',
         credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderId ? { orderId } : {}),
       });
       const data = await res.json();
       if (res.ok && data.success) {

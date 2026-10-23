@@ -1,5 +1,7 @@
 # Validation and launch status
 
+> Historical validation supplied with the original project. Current 23 October 2026 results are in `IMPLEMENTATION-NOTES.md` and `docs/verification/current-results.txt`; current provider setup is in `SETUP-HINDI.md`.
+
 Validated on 5 October 2026 against base commit `9e434ad1d993c3aac1760833bf122b35d7a66ab1` plus the included changes.
 
 ## Passed

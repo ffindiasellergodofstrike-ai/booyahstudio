@@ -1,3 +1,4 @@
+import { authReturnSearch } from '../services/AuthNavigation';
 import React, { useState } from 'react';
 import {
   Lock,
@@ -86,7 +87,7 @@ export const RegisterPage: React.FC = () => {
 
       if (res.success) {
         showToast('success', 'Check your email', res.message || 'Confirm your email, then sign in.');
-        navigate('/login');
+        navigate('/login', undefined, { ...authReturnSearch(searchParams?.redirect), confirmation: 'sent' });
       } else {
         setErrorMessage(res.message || 'Registration failed. Please check your details.');
         showToast('error', 'Registration Failed', res.message || 'Registration failed.');

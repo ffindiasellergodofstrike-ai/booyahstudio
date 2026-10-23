@@ -1,3 +1,4 @@
+import { authDestination, authReturnSearch } from '../services/AuthNavigation';
 import React, { useState } from 'react';
 import {
   Lock,
@@ -23,15 +24,49 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState(searchParams.reset === 'success'
+    ? 'Password updated. Sign in with your new password.'
+    : searchParams.confirmation === 'sent' ? 'Check your email to confirm your account, then sign in.' : '');
+  const [resendBusy, setResendBusy] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  React.useEffect(() => {
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    if (hash.get('error') || searchParams.error) {
+      setErrorMessage('This email confirmation link is invalid or expired. Request a new confirmation email below.');
+    } else if (hash.get('type') === 'signup') {
+      setConfirmationMessage('Email confirmation link processed. Sign in with your email and password.');
+    }
+    // Signup confirmation is handled by Supabase; browser tokens do not create our sid session.
+    if (window.location.hash) window.history.replaceState({}, '', window.location.pathname + window.location.search);
+  }, []);
+
+  React.useEffect(() => {
+    if (!resendCooldown) return;
+    const timer = window.setTimeout(() => setResendCooldown(value => Math.max(0, value - 1)), 1000);
+    return () => window.clearTimeout(timer);
+  }, [resendCooldown]);
+
+  async function resendConfirmation() {
+    setErrorMessage(null);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier.trim())) {
+      setErrorMessage('Enter your account email above to request a confirmation link.'); return;
+    }
+    setResendBusy(true);
+    try {
+      const response = await fetch('/api/auth/resend-confirmation', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: identifier.trim().toLowerCase() }) });
+      const result = await response.json();
+      if (response.status === 429 || result.success) setResendCooldown(Number(result.retryAfter) || 60);
+      if (result.success) setConfirmationMessage(result.message);
+      else setErrorMessage(result.message || 'Could not request confirmation. Please retry later.');
+    } catch { setErrorMessage('Confirmation is temporarily unavailable. Please retry later.'); }
+    finally { setResendBusy(false); }
+  }
 
   // If already authenticated, redirect
   React.useEffect(() => {
     if (isAuthenticated && currentUser) {
-      if (searchParams?.redirect === 'checkout') {
-        navigate('/checkout');
-      } else {
-        navigate('/account');
-      }
+      navigate(authDestination(searchParams?.redirect));
     }
   }, [isAuthenticated, currentUser, navigate, searchParams]);
 
@@ -53,13 +88,13 @@ export const LoginPage: React.FC = () => {
       const res = await signIn(identifier.trim(), password);
       if (res.success) {
         showToast('success', 'Welcome Back', `Successfully signed in as @${res.user?.username || res.user?.name}`);
-        navigate('/account');
+        navigate(authDestination(searchParams?.redirect));
       } else {
-        setErrorMessage(res.message || 'Invalid username/email or password.');
-        showToast('error', 'Sign In Failed', res.message || 'Invalid username/email or password.');
+        setErrorMessage(res.message || 'Invalid email or password.');
+        showToast('error', 'Sign In Failed', res.message || 'Invalid email or password.');
       }
     } catch {
-      setErrorMessage('Invalid username/email or password.');
+      setErrorMessage('Invalid email or password.');
     } finally {
       setIsLoading(false);
     }
@@ -88,6 +123,7 @@ export const LoginPage: React.FC = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
+            {confirmationMessage && <p role="status" className="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-blue-800 text-sm">{confirmationMessage}</p>}
             {errorMessage && (
               <div className="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3 text-red-700 text-sm animate-in fade-in">
                 <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
@@ -100,20 +136,20 @@ export const LoginPage: React.FC = () => {
 
             <div className="space-y-2">
               <label htmlFor="login-identifier" className="block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
-                Email, Mobile, or Username
+                Email Address
               </label>
               <div className="relative min-w-0">
                 <UserIcon className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 shrink-0" />
                 <input
                   id="login-identifier"
-                  type="text"
+                  type="email"
                   value={identifier}
                   onChange={(e) => {
                     setIdentifier(e.target.value);
                     setErrorMessage(null);
                   }}
-                  placeholder="Email or mobile number"
-                  autoComplete="username"
+                  placeholder="name@example.com"
+                  autoComplete="email"
                   required
                   className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all placeholder:text-slate-400 min-h-[44px]"
                 />
@@ -127,7 +163,7 @@ export const LoginPage: React.FC = () => {
                 </label>
                 <button
                   type="button"
-                  onClick={() => navigate('/forgot-password')}
+                  onClick={() => navigate('/forgot-password', undefined, authReturnSearch(searchParams?.redirect))}
                   className="text-[10px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors shrink-0 min-h-[32px] flex items-center"
                 >
                   Forgot password?
@@ -185,6 +221,11 @@ export const LoginPage: React.FC = () => {
                 Protected with <strong>cryptographic hashing</strong> and isolated database storage.
               </span>
             </div>
+
+            <button type="button" disabled={resendBusy || resendCooldown > 0} onClick={resendConfirmation}
+              className="text-xs font-bold text-blue-600 hover:text-blue-700 disabled:opacity-50 min-h-[32px]">
+              {resendBusy ? 'Requesting confirmation…' : resendCooldown > 0 ? `Resend confirmation in ${resendCooldown}s` : 'Resend confirmation email'}
+            </button>
 
             {/* Register Link */}
             <div className="pt-4 text-center text-sm text-slate-600 border-t border-slate-100">
