@@ -4,6 +4,7 @@ import { policyData, SUPPORTED_POLICY_SLUGS } from '../data/policyData';
 import { BUSINESS } from '../config/business';
 import { Brand } from './Brand';
 import { useApp } from '../context/AppContext';
+import { Spinner } from './ui/Spinner';
 import { useToast } from '../context/ToastContext';
 
 export const Footer: React.FC = () => {
@@ -37,7 +38,7 @@ export const Footer: React.FC = () => {
   const exploreLinks = [
     { label: 'All Templates', path: '/products' },
     { label: 'Your Wishlist', path: '/wishlist' },
-    { label: 'Customer Account', path: '/account' },
+    { label: 'My Account', path: '/account' },
     { label: 'Help & FAQs', path: '/faq' },
     { label: 'Our Story', path: '/about' },
     { label: 'Contact & Support', path: '/contact' },
@@ -78,7 +79,7 @@ export const Footer: React.FC = () => {
                 {BUSINESS.phone}
               </a>
               <br />
-              <span className="text-[11px] text-slate-500">
+              <span className="text-xs text-slate-500">
                 WhatsApp customer support & grievances
               </span>
             </address>
@@ -137,21 +138,23 @@ export const Footer: React.FC = () => {
                   required
                   placeholder="Your email address"
                   value={email}
+                  disabled={pending}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <button
                   disabled={pending}
+                  aria-busy={pending}
                   aria-label={pending ? 'Subscribing' : 'Subscribe to product updates'}
                 >
-                  {pending ? '…' : <ArrowRight size={18} />}
+                  {pending ? <Spinner size={18} /> : <ArrowRight size={18} />}
                 </button>
               </form>
             )}
 
-            <div className="mt-5 p-3 rounded-xl bg-[#eceee1] border border-[#dce1d1] text-[10px] text-[#556149] leading-relaxed flex items-start gap-2">
+            <div className="footer-delivery-note">
               <ShieldCheck className="w-4 h-4 text-[#456331] shrink-0 mt-0.5" />
               <span>
-                100% digital templates. Fast electronic delivery to your email and customer vault upon payment.
+                Digital downloads, made for your next project. Your files are available in your account after payment is confirmed.
               </span>
             </div>
           </div>

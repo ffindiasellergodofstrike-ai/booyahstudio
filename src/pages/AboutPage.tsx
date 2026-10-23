@@ -1,8 +1,40 @@
 import React from 'react';
-import { Code2, Download, LifeBuoy } from 'lucide-react';
+import { ArrowUpRight, Code2, Download, LifeBuoy, MapPin, Sparkles } from 'lucide-react';
 import { BUSINESS } from '../config/business';
 import { useApp } from '../context/AppContext';
+import '../styles/content.css';
+
 export const AboutPage: React.FC = () => {
- const { navigate } = useApp();
- return <div className="max-w-5xl mx-auto px-6 py-14 space-y-10"><div className="space-y-5"><p className="eyebrow">MEET Booyahstudio</p><h1 className="text-4xl font-bold tracking-tight">A better start for your next idea.</h1><p className="text-slate-600 leading-8 max-w-3xl">{BUSINESS.name} is a digital template store based in Varanasi, Uttar Pradesh. We offer website templates and source-code packages for creators, developers, and small businesses.</p></div><div className="grid sm:grid-cols-3 gap-6">{[[Code2,'Explore the source','Read the included features and technical requirements before choosing a template.'],[Download,'Digital delivery','After payment verification, request protected downloads in your account. Confirmation emails link to the account.'],[LifeBuoy,'Talk to us','Get help with purchases, download access, and the included documentation.']].map(([Icon,title,body])=>{const I=Icon as typeof Code2;return <div key={String(title)} className="bg-white border border-slate-200 rounded-xl p-6 space-y-3"><I size={24}/><h2 className="font-bold">{String(title)}</h2><p className="text-sm text-slate-600 leading-6">{String(body)}</p></div>;})}</div><section className="bg-white border border-slate-200 p-7 rounded-xl space-y-4"><h2 className="text-xl font-bold">Business & contact information</h2><p className="font-semibold">{BUSINESS.name}</p><address className="not-italic text-sm text-slate-600 leading-7">{BUSINESS.owner} · {BUSINESS.name}{BUSINESS.legalName ? ` · ${BUSINESS.legalName}` : ''}{BUSINESS.gstin ? <><br />GSTIN: {BUSINESS.gstin}</> : null}<br />{BUSINESS.address}<br/><a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a><br/><a href={BUSINESS.phoneHref}>{BUSINESS.phone}</a></address><p className="text-sm">{BUSINESS.supportHours}</p><p className="text-sm text-slate-600">Digital products only. Electronic delivery. Checkout currently supports India, with prices in INR.</p><button className="studio-button primary" onClick={()=>navigate('/products')}>Explore templates</button></section></div>;
+  const { navigate } = useApp();
+  const values = [
+    { icon: Code2, title: 'A foundation, not a finish line.', body: 'Start with a template, explore the included source, and shape it around your own ideas. Each listing explains what comes with your purchase.' },
+    { icon: Download, title: 'Your next step, made simple.', body: 'Once your payment is confirmed, find your purchased files and receipts together in your account.' },
+    { icon: LifeBuoy, title: 'A real person to turn to.', body: 'Questions about a purchase, a download or the included documentation? Get in touch. We’ll help you find the next step.' },
+  ];
+  return <div className="content-page about-page">
+    <section className="about-intro">
+      <div className="content-intro-copy">
+        <span className="content-kicker">OUR STORY</span>
+        <h1>Good ideas deserve<br />a <em>good beginning.</em></h1>
+        <p className="content-lead">A little less starting from scratch.<br />A little more making it your own.</p>
+        <p className="content-body">{BUSINESS.name} is an independent digital template store based in Varanasi, India. We create starting points for websites, projects and the ideas you’re ready to bring to life.</p>
+        <button type="button" className="content-button" onClick={() => navigate('/products')}>Explore the collection <ArrowUpRight size={18} /></button>
+      </div>
+      <div className="about-art" aria-hidden="true">
+        <div className="about-art-label"><Sparkles size={16} /><span>ROOM FOR YOUR IDEAS</span><span>01 / ∞</span></div>
+        <div className="about-paper about-paper-back"><span>YOUR NEXT CHAPTER</span><div className="about-paper-lines"><i /><i /><i /></div><span className="about-paper-sign">Made to be yours.</span></div>
+        <div className="about-paper about-paper-front"><span>A BETTER START</span><div>What<br />will you<br /><em>make?</em></div><ArrowUpRight size={32} /></div>
+        <div className="about-art-caption"><span className="about-art-dot" />FROM VARANASI, WITH POSSIBILITY.</div>
+      </div>
+    </section>
+
+    <section className="about-values" aria-label="What to expect">
+      {values.map(({ icon: Icon, title, body }, index) => <article className="content-feature" key={title}><div className="content-feature-top"><Icon size={23} strokeWidth={1.6} /><span>0{index + 1}</span></div><h2>{title}</h2><p>{body}</p></article>)}
+    </section>
+
+    <section className="about-bottom">
+      <div><span className="content-kicker">THOUGHTFULLY DIGITAL</span><h2>Choose the right start<br />for your next project.</h2><p>Explore the demos, read what’s included, and check the requirements and license before you choose.</p><button type="button" className="content-text-link" onClick={() => navigate('/faq')}>A few helpful answers <ArrowUpRight size={17} /></button></div>
+      <div className="about-business"><div className="content-business-heading"><MapPin size={20} /><span>Based in Varanasi, India</span></div><details><summary>Business & contact details</summary><address>{BUSINESS.owner} · {BUSINESS.name}{BUSINESS.legalName ? <><br />{BUSINESS.legalName}</> : null}{BUSINESS.gstin ? <><br />GSTIN: {BUSINESS.gstin}</> : null}<br />{BUSINESS.address}<br /><a href={'mailto:' + BUSINESS.email}>{BUSINESS.email}</a><br /><a href={BUSINESS.phoneHref} target="_blank" rel="noopener noreferrer">{BUSINESS.phone}</a></address></details><p>{BUSINESS.supportHours}</p><p>Digital products. Electronic delivery.<br />Checkout available in India, with prices in INR.</p></div>
+    </section>
+  </div>;
 };

@@ -1,5 +1,5 @@
 import { safePreviousUrl } from '../services/AuthNavigation';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useTransition } from 'react';
 import { CartItem, WishlistItem, User, Coupon, Product } from '../types';
 import { CartService } from '../services/CartService';
 import { WishlistService } from '../services/WishlistService';
@@ -122,7 +122,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(() => AuthService.getCurrentUser());
 
   // Mobile Menu & Quick Search
-  const [isNavigating, setIsNavigating] = useState(false);
+  const [isNavigating, startNavigation] = useTransition();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isQuickSearchOpen, setIsQuickSearchOpen] = useState(false);
   const [activeQuickSearchQuery, setActiveQuickSearchQuery] = useState('');
@@ -181,43 +181,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Store previous path for manual back navigation
     localStorage.setItem('ff_previous_path', safePreviousUrl(window.location.pathname, window.location.search));
     
-    setIsNavigating(true);
-    
-    setTimeout(() => {
-      window.history.pushState({}, '', fullUrl);
-      setNavState(parsePath(target, queryString));
-      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-      setIsMobileMenuOpen(false);
-      setIsQuickSearchOpen(false);
-      setIsNavigating(false);
-    }, 450);
+    window.history.pushState({}, '', fullUrl);
+    setIsMobileMenuOpen(false);
+    setIsQuickSearchOpen(false);
+    startNavigation(() => setNavState(parsePath(target, queryString)));
   };
 
   const goBack = () => {
     const storedPrevious = localStorage.getItem('ff_previous_path');
     const prev = storedPrevious ? safePreviousUrl(storedPrevious.split('?')[0], storedPrevious.includes('?') ? '?' + storedPrevious.split('?').slice(1).join('?') : '') : null;
-    setIsNavigating(true);
-    
-    setTimeout(() => {
-      if (prev && prev !== window.location.pathname) {
-        const { path, searchParams } = parsePath(prev.split('?')[0], prev.split('?')[1] ? '?' + prev.split('?')[1] : '');
-        window.history.pushState({}, '', prev);
-        setNavState({ path, params: {}, searchParams }); // params will be re-parsed in next turn or by segments logic
-        window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-      } else {
-        // Fallback to home or browser history
-        if (window.history.length > 1) {
-          window.history.back();
-        } else {
-          window.history.pushState({}, '', '/');
-          setNavState({ path: '/', params: {}, searchParams: {} });
-          window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-        }
-      }
-      setIsMobileMenuOpen(false);
-      setIsQuickSearchOpen(false);
-      setIsNavigating(false);
-    }, 450);
+    setIsMobileMenuOpen(false);
+    setIsQuickSearchOpen(false);
+    if (prev && prev !== window.location.pathname) {
+      window.history.pushState({}, '', prev);
+      const [pathname, query = ''] = prev.split('?');
+      startNavigation(() => setNavState(parsePath(pathname, query ? '?' + query : '')));
+    } else if (window.history.length > 1) window.history.back();
+    else {
+      window.history.pushState({}, '', '/');
+      startNavigation(() => setNavState(parsePath('/', '')));
+    }
   };
 
   // Keyboard shortcut (Cmd+K / Ctrl+K) for quick search

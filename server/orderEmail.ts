@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { Store } from './store';
 import { BUSINESS } from '../src/config/business';
 import { appOrigin } from './config';
+import { renderOrderEmailHtml } from './emailPresentation';
 
 type NotificationKind = 'emailDelivery' | 'refundEmailDelivery';
 export type EmailSendResult = { status: 'sent' | 'queued' | 'not_configured' | 'review_required' | 'skipped' | 'unavailable'; notificationId?: string };
@@ -45,6 +46,7 @@ function emailPayload(order: any, refund: boolean) {
     reply_to: BUSINESS.email,
     subject: `${BUSINESS.name}: ${refund ? 'refund recorded' : 'order confirmed'} ${order.id}`,
     text: lines.join('\n'),
+    html: renderOrderEmailHtml(order, refund, appOrigin()),
     tags: [{ name: 'store_notification', value: notificationIdFor(order, refund) }, { name: 'store_order', value: String(order.id) }],
   };
 }

@@ -41,7 +41,7 @@ export const HomePage: React.FC = () => {
           <div className="eyebrow"><span className="status-dot" /> SMALL DETAILS. BIG POSSIBILITIES.</div>
           <h1>Your next big idea.<br />A better<br /><span>head start.</span><Sparkles className="heading-spark" aria-hidden="true" /></h1>
           <p>Thoughtfully crafted website templates and digital assets. Less building from scratch. More bringing your ideas to life.</p>
-          <div className="hero-buttons"><button className="studio-button primary" onClick={browse}>Explore templates <ArrowUpRight size={18} /></button><button className="text-button" onClick={() => navigate('/about')}>Meet your next toolkit <ArrowRight size={16} /></button></div>
+          <div className="hero-buttons"><button className="studio-button primary" onClick={browse}>Explore templates <ArrowUpRight size={18} /></button><button className="text-button" onClick={() => navigate('/about')}>Our story <ArrowRight size={16} /></button></div>
           <div className="hero-checks"><span><Check size={14} /> Full source code</span><span><Check size={14} /> One-time purchase</span><span><Check size={14} /> Make it yours</span></div>
         </div>
         <div className="hero-showcase">
@@ -54,7 +54,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="benefit-strip" aria-label="What comes with your template"><div className="studio-container benefit-inner">{[[Code2, 'Your code. Your creative freedom.'], [Download, 'Digital delivery, zero waiting.'], [Layers3, 'A foundation you can build on.'], [LifeBuoy, 'A little help along the way.']].map(([Icon, label]) => { const BenefitIcon = Icon as typeof Code2; return <div key={String(label)}><BenefitIcon size={19} /><span>{String(label)}</span></div>; })}</div></section>
+      <section className="benefit-strip" aria-label="What comes with your template"><div className="studio-container benefit-inner">{[[Code2, 'Your code. Your creative freedom.'], [Download, 'Your files, in your account.'], [Layers3, 'A foundation you can build on.'], [LifeBuoy, 'A little help along the way.']].map(([Icon, label]) => { const BenefitIcon = Icon as typeof Code2; return <div key={String(label)}><BenefitIcon size={19} /><span>{String(label)}</span></div>; })}</div></section>
 
       <section className="studio-container collection-section" id="collection">
         <div className="section-heading"><div><div className="eyebrow">THE COLLECTION</div><h2>Good things start here<span>.</span></h2><p>Find the right foundation for whatever you’re building next.</p></div><button className="text-button" onClick={() => navigate('/products')}>View all products <ArrowUpRight size={17} /></button></div>
@@ -62,6 +62,15 @@ export const HomePage: React.FC = () => {
         <div className="collection-meta"><span role="status">{visibleProducts.length} thoughtfully crafted {visibleProducts.length === 1 ? 'product' : 'products'}</span><label>Sort by: <select value={sort} onChange={e => setSort(e.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option></select></label></div>
         {visibleProducts.length ? <div className="studio-product-grid">{visibleProducts.map(product => <ProductCard key={product.id} product={product} />)}</div> : <div className="collection-empty"><Search size={30} /><h3>No templates found</h3><p>Try a different search or explore the full collection.</p><button className="studio-button primary" onClick={() => { setQuery(''); setCollection(''); }}>Reset filters <ArrowRight size={16} /></button></div>}
         <div className="collection-footnote"><span><Code2 size={15} /> Beautiful on the outside. Flexible on the inside.</span><span>Made for makers, creators & ambitious ideas.</span></div>
+      </section>
+
+      <section className="studio-container how-section" aria-labelledby="how-heading">
+        <div className="section-heading"><div><div className="eyebrow">FROM IDEA TO SOMETHING REAL</div><h2 id="how-heading">A little less starting from scratch<span>.</span></h2><p>Find your fit. Add your own touch. Build what’s next.</p></div></div>
+        <div className="how-grid">{[
+          ['01', 'Find your starting point', 'Browse the collection and explore a live demo to see what feels right for your project.'],
+          ['02', 'Make it yours', 'Choose your template and complete checkout. Your purchase details stay together in your account.'],
+          ['03', 'Download & start creating', 'Once payment is confirmed, download your files from your account and follow the included instructions.'],
+        ].map(([step, title, description]) => <article className="how-card" key={step}><span>{step}</span><h3>{title}</h3><p>{description}</p></article>)}</div>
       </section>
 
       <section className="studio-container"><div className="studio-callout"><div className="callout-icon"><Sparkles size={30} /></div><div><div className="eyebrow">FROM “WHAT IF” TO WHAT’S NEXT</div><h2>You bring the idea.<br />We’ll bring the head start.</h2><p>Explore the demos, find your fit, and make something that’s yours.</p></div><button className="studio-button light" onClick={browse}>Find your template <ArrowUpRight size={18} /></button><span className="callout-decoration" aria-hidden="true">✳</span></div></section>

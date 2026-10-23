@@ -18,7 +18,7 @@ class OrderServiceImpl {
     });
   }
 
-  public async fetchUserOrders(): Promise<Order[]> {
+  public async fetchUserOrders(options: { throwOnError?: boolean } = {}): Promise<Order[]> {
     const ownerId = AuthService.getCurrentUser()?.id;
     if (!ownerId) return [];
     try {
@@ -34,9 +34,15 @@ class OrderServiceImpl {
         }
       }
     } catch (err) {
-      console.warn('Could not fetch user orders from backend:', err);
+      if (AuthService.getCurrentUser()?.id !== ownerId) return [];
+      this.orders = [];
+      if (options.throwOnError) throw new Error('We could not load your orders. Please try again.');
+      return [];
     }
-    if (AuthService.getCurrentUser()?.id === ownerId) this.orders = [];
+    if (AuthService.getCurrentUser()?.id === ownerId) {
+      this.orders = [];
+      if (options.throwOnError) throw new Error('We could not load your orders. Please try again.');
+    }
     return [];
   }
 

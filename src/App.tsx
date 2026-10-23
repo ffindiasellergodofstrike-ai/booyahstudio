@@ -6,8 +6,9 @@ import { MobileMenu } from './components/MobileMenu';
 import { Footer } from './components/Footer';
 import { QuickSearchModal } from './components/QuickSearchModal';
 import { SEOHead } from './components/SEOHead';
-import { motion, AnimatePresence } from 'motion/react';
-import { Flame } from 'lucide-react';
+import { MotionConfig } from 'motion/react';
+import { Spinner } from './components/ui/Spinner';
+import { EmptyState } from './components/EmptyState';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -104,7 +105,7 @@ const AppContent: React.FC = () => {
           <React.Suspense
             fallback={
               <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="w-8 h-8 rounded-full border-4 border-slate-300 border-t-blue-600 animate-spin" />
+                <span className="inline-flex items-center gap-3 text-sm" role="status"><Spinner size={24} />Opening admin…</span>
               </div>
             }
           >
@@ -112,18 +113,19 @@ const AppContent: React.FC = () => {
           </React.Suspense>
         );
       default:
-        return <section className="max-w-3xl mx-auto p-10"><h1 className="text-3xl font-bold">Page not found</h1><p className="my-5">The requested page is unavailable.</p><a href="/products" className="underline">Browse digital products</a></section>;
+        return <section className="studio-container studio-not-found"><p className="eyebrow">A SMALL DETOUR</p><h1>Looks like this page has moved.</h1><EmptyState title="Let’s find your next idea." description="This link may have changed. There’s plenty to explore in the collection." actionText="Explore templates" /></section>;
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white w-full max-w-full overflow-x-hidden">
+    <div className="studio-app min-h-screen flex flex-col font-sans antialiased w-full max-w-full">
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <SEOHead />
       {/* Header */}
       <Header />
 
       {/* Main Page Body */}
-      <main className="flex-1">
+      <main id="main-content" className="flex-1" tabIndex={-1}>
         {renderCurrentPage()}
       </main>
 
@@ -134,49 +136,17 @@ const AppContent: React.FC = () => {
       <MobileMenu />
       <QuickSearchModal />
 
-      {/* Clean Animated Loader on Click / Navigation Only */}
-      <AnimatePresence>
-        {isNavigating && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex flex-col items-center justify-center p-4 select-none pointer-events-auto"
-          >
-            <motion.div
-              initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.85, opacity: 0 }}
-              transition={{ type: 'spring', duration: 0.3 }}
-              className="flex flex-col items-center justify-center gap-3"
-            >
-              {/* Spinner with Flame Icon Animation */}
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-4 border-slate-700/40 border-t-blue-500 border-r-indigo-500 animate-spin" />
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                  <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300 fill-amber-400 animate-pulse" />
-                </div>
-              </div>
-
-              {/* Minimal Loading Text */}
-              <p className="text-xs sm:text-sm font-bold text-white tracking-widest uppercase font-mono animate-pulse">
-                Loading...
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isNavigating && <div className="route-progress" role="status" aria-label="Opening page"><span /><span className="sr-only">Opening page…</span></div>}
     </div>
   );
 };
 
 export default function App() {
   return (
-    <ToastProvider>
+    <MotionConfig reducedMotion="user"><ToastProvider>
       <AppProvider>
         <AppContent />
       </AppProvider>
-    </ToastProvider>
+    </ToastProvider></MotionConfig>
   );
 }
