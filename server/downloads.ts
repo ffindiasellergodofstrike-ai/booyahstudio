@@ -7,7 +7,12 @@ export function registerDownloadRoutes(app: Express, auth: RequestHandler) {
   app.post('/api/downloads/:productId/token', auth, async (req: any, res) => {
     const productId = req.params.productId;
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(productId)) return res.status(400).json({ success: false });
-    const orders = req.body.orderId ? [await Store.getUserOrderById(req.userId, req.body.orderId)] : await Store.getUserOrders(req.userId);
+    const body = req.body;
+    if (!req.is('application/json') || !body || typeof body !== 'object' || Array.isArray(body)) return res.status(400).json({ success: false, message: 'Send a JSON object with an optional order reference.' });
+    if (Object.prototype.hasOwnProperty.call(body, 'orderId') && (typeof body.orderId !== 'string' || !/^[A-Za-z0-9_-]{1,100}$/.test(body.orderId))) {
+      return res.status(400).json({ success: false, message: 'Enter a valid order reference.' });
+    }
+    const orders = body.orderId ? [await Store.getUserOrderById(req.userId, body.orderId)] : await Store.getUserOrders(req.userId);
     const order = orders.find(o => isPaidOrderForProduct(o, req.userId, productId));
     if (!order) return res.status(403).json({ success: false, message: 'A verified purchase belonging to your account is required.' });
     const allowed = await Store.rpc('rate', `downloadRates/${req.userId}_${productId}`, { now: Date.now(), windowMs: 3600000, maxAttempts: 20 });

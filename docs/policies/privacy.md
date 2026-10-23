@@ -2,7 +2,9 @@ MANISH KUMAR SONKAR | Booyahstudio
 
 # Privacy Policy
 
-Updated: October 22, 2026
+Updated: October 23, 2026
+
+Public policy: https://www.booyahstudio.shop/policies/privacy
 
 ## 1. Business & Contact Information
 
@@ -16,11 +18,12 @@ This Privacy Policy explains how Booyahstudio (operated by MANISH KUMAR SONKAR) 
 
 ## 2. Information We Collect
 
-We collect information necessary to fulfill digital orders, provide customer support, and maintain account security:
-• Account & Contact Information: Name, email address, mobile number, and password hash.
-• Order & Transaction Details: Purchased items, order IDs, payment reference IDs, amounts paid, and transaction timestamps.
-• Download & Access Records: Server access logs, IP addresses, user-agent strings, and download timestamps for security and license enforcement.
-• Support Communications: Emails, WhatsApp messages, and support tickets sent to us.
+We collect information needed to provide your account, digital orders and customer support:
+• Account and contact details: Your name, email address, mobile/contact number and any optional profile details you provide. Authentication credentials are handled by the configured authentication service, including Supabase; passwords are not kept as readable text.
+• Order and payment records: Purchased items, order IDs, payment references, amounts, payment status and timestamps.
+• Download and security records: Available file-access events, download-link creation, IP addresses, user-agent information and timestamps used for security and order support.
+• Communications: Contact-form messages, emails, WhatsApp messages and support records you send to us.
+• Product updates: Your email and subscription record if you separately choose to subscribe to updates.
 
 ## 3. Cookies & Local Browser Storage
 
@@ -28,19 +31,21 @@ We use essential session cookies and local browser storage to keep you logged in
 
 ## 4. Payment Processing & Service Providers
 
-Online payment details (such as UPI IDs, card numbers, or net banking credentials) are collected directly by PCI-DSS compliant payment gateway partners (Cashfree, with existing Razorpay purchases supported where configured). We NEVER receive, process, or store sensitive financial secrets like card security codes (CVV) or UPI PINs on our servers.
+Payment information is entered on the payment provider’s checkout, including Cashfree for new payments where enabled. Booyahstudio does not ask for or store card security codes (CVV), UPI PINs, banking passwords or payment OTPs. Necessary transaction references and payment status are retained to verify orders and provide support.
 
-We share necessary data only with trusted infrastructure providers (e.g., hosting, email delivery) strictly for operating the store.
+We share only the data necessary to operate the store with service providers for authentication and data storage (including Supabase), hosting (including Vercel), transactional email (including Resend), and payment processing (including Cashfree and the original processor for an existing order). These services may process data outside your region according to their service terms and privacy practices. They are not appointed as alternative owners or grievance contacts for Booyahstudio.
 
 ## 5. Purposes of Data Processing & Email Communications
 
-We use your personal data to:
-• Verify payments and deliver digital template downloads to your account vault.
-• Send order receipts, download notifications, and critical security alerts.
-• Respond to customer support and grievance requests.
-• Prevent fraud, unauthorized sharing, and system abuse.
+We use personal data to:
+• Create and protect your account.
+• Verify payments and provide your purchased downloads and receipts.
+• Send account, security, order, refund and download-related emails.
+• Respond to support requests and grievances.
+• Prevent fraud, unauthorized sharing and abuse.
+• Send optional product updates if you separately subscribe; you can ask us to stop these updates. Transactional and security messages remain necessary for your account and purchases.
 
-We do not sell, rent, or trade your personal information to third parties for marketing purposes.
+We do not sell, rent or trade personal data to third parties for marketing.
 
 ## 6. Data Security, Safeguards & Retention
 
@@ -54,6 +59,6 @@ In the event of a payment dispute, fraud investigation, or legal inquiry, releva
 
 ## 8. Your Choices, Rights & Grievance Support
 
-You have the right to access, update, or correct your personal account details by logging into your account or emailing connectbooyahstudio@gmail.com. You may also request deletion of your account, subject to non-deletable statutory transaction records.
+You may view or update available account details by signing in, or contact connectbooyahstudio@gmail.com to request access, correction or deletion of your personal information. We may need to verify that the request comes from the account holder. Records required for payment, tax, accounting, fraud prevention or legal obligations may need to be retained even when an account is deleted.
 
-For privacy inquiries or grievance concerns, contact MANISH KUMAR SONKAR at connectbooyahstudio@gmail.com.
+Privacy and grievance contact: MANISH KUMAR SONKAR, Owner of Booyahstudio, at connectbooyahstudio@gmail.com and the business address stated above. WhatsApp: +91 7393845435 (https://wa.me/917393845435). We acknowledge complaints within 48 hours and resolve them within one month, or any shorter period required by applicable law.

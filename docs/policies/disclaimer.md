@@ -1,34 +1,43 @@
 MANISH KUMAR SONKAR | Booyahstudio
 
+# Disclaimer & Limitation of Liability
+
+Updated: October 23, 2026
+
+Public policy: https://www.booyahstudio.shop/policies/disclaimer
+
+## 1. Business & Contact Information
+
+MANISH KUMAR SONKAR Owner of Booyahstudio
 Address: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003
 Customer support and grievances: connectbooyahstudio@gmail.com
 WhatsApp: +91 7393845435 (https://wa.me/917393845435)
 Grievance contact: MANISH KUMAR SONKAR, at the same email and address.
 
-# Disclaimer & Limitation of Liability
+This Disclaimer & Limitation of Liability document establishes the operational boundaries, technical disclaimers, and liability limits for Booyahstudio.
 
-Last updated: October 5, 2026
+## 2. Scope of Digital Products & Templates
 
-## 2. Product scope
+Booyahstudio provides digital website templates, user interface source code, and design assets intended for web developers, creators, and businesses. While we design code to high modern standards, digital templates are provided on an “as-is” and “as-available” basis without warranties of fitness for a specific custom application.
 
-Products are supplied within the features and requirements described at purchase. A template or source package is not automatically a hosted service, business result or guarantee of revenue. Demos illustrate stated features; sample content is illustrative. Any specific commitment in a listing and any legally required product standard remains applicable.
+## 3. Technical Dependencies, Compatibility & Modifications
 
-## 3. Technical dependencies
+Our templates depend on standard web technologies, frameworks (such as React, Vite, Tailwind CSS, Node.js), and third-party libraries specified in the product descriptions.
 
-Operation may depend on browser/device capabilities, hosting/server configuration, external APIs, framework/library versions and third-party services. Customer modifications can introduce errors. We do not promise universal current or future compatibility, uninterrupted availability or continued operation of an external API outside our control. We remain responsible for addressing genuine material defects or misdescription as required by our policies and law.
+You are responsible for reviewing technical prerequisites before purchase and ensuring your server or hosting environment is compatible. We are not liable for breaking changes caused by unannounced third-party library updates, modified hosting configurations, or user code customizations.
 
-## 4. Availability and external events
+## 4. Service Availability, External Networks & Third Parties
 
-Maintenance, network failures, security incidents and events outside reasonable control may temporarily affect the store or delivery. We take reasonable steps to investigate and restore service. A temporary interruption does not remove a customer’s right to support, delivery or an applicable remedy for a paid order.
+While we maintain reliable cloud hosting, we do not guarantee uninterrupted, error-free website access 100% of the time. Temporary downtime may occur due to scheduled maintenance, server updates, telecom outages, or external network issues beyond our control.
 
-## 5. Liability
+## 5. General Disclaimers & Warranty Exclusions
 
-To the extent permitted by applicable law, liability for ordinary contractual losses relating to a particular product is limited to reasonably foreseeable direct losses and, where lawful and fair, the amount paid for that affected product. Indirect or consequential losses, lost profits and losses caused by unauthorised modifications or unrelated third-party failures are excluded only to the extent such exclusion is lawful. This does not eliminate responsibility for a breach merely by calling a loss indirect.
+To the extent permitted by law, the listed digital files are provided for their described purpose and technical requirements. We do not promise that a template will meet every custom requirement, operate on unsupported platforms, generate income or achieve a particular search-engine ranking.
 
-## 6. Rights that remain
+This disclaimer does not exclude responsibility for delivering the advertised files, correcting a material misdescription, handling an eligible refund, or honoring rights and remedies that applicable law does not allow us to exclude. The copyright and license statements in our Terms & Conditions continue to apply.
 
-No term excludes or limits fraud, wilful misconduct, liability that cannot lawfully be excluded, mandatory consumer remedies or other non-waivable statutory rights. Any limitation applies only to the extent enforceable in the circumstances. Refund, correction and other remedies required by law take precedence over a conflicting disclaimer. Nothing offers “complete legal protection” to the merchant or guarantees the result of a dispute.
+## 6. Limitation of Liability & Statutory Rights
 
-## 7. Contact and resolution
+Under no circumstances shall Booyahstudio, its owner MANISH KUMAR SONKAR, or its operators be liable for any indirect, incidental, consequential, special, or punitive damages (including loss of data, loss of profits, or business interruption) arising out of or related to the use or inability to use our digital products or website.
 
-Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected.
+Our total cumulative financial liability for any direct claim shall not exceed the exact amount paid by you for the specific product in question. Nothing in this disclaimer excludes or limits consumer rights that cannot be excluded under applicable Indian consumer protection laws.

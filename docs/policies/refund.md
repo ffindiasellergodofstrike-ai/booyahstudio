@@ -2,7 +2,9 @@ MANISH KUMAR SONKAR | Booyahstudio
 
 # Refund, Cancellation & Payment Policy
 
-Updated: October 22, 2026
+Updated: October 23, 2026
+
+Public policy: https://www.booyahstudio.shop/policies/refund
 
 ## 1. Business & Contact Information
 
@@ -16,46 +18,62 @@ This Refund, Cancellation & Payment Policy governs all financial transactions, o
 
 ## 2. Digital Product Nature & General Refund Rule
 
-Because Booyahstudio provides digital templates, source code, and downloadable media that cannot be physically returned once accessed, purchases are generally final and non-refundable once payment is captured and digital access is made available in your customer vault, subject to applicable law and legitimate exceptions defined below.
+Booyahstudio sells downloadable digital templates and source-code packages. They cannot be physically returned. A purchase is generally final once payment is confirmed and the advertised download access is made available in your account; change-of-mind or accidental-purchase refunds are generally unavailable after this point, whether or not you choose to download.
+
+This general rule does not exclude a legitimate duplicate charge, missing or wrong files, material misdescription, unresolved major defect, non-delivery, unauthorized-payment rights or any remedy required by applicable law. Downloading a file does not waive these rights.
 
 ## 3. Eligible Refund Scenarios & Non-Delivery Situations
 
-A full refund or replacement will be issued under the following circumstances:
-• Non-Delivery: Technical failure on our server prevents digital download access after verified payment, and our support team is unable to deliver the files or resolve the issue within 72 hours.
-• Major Defect: The downloaded source package contains a critical, unfixable bug or missing core files that prevent usage, and our support team cannot provide a fix or working replacement.
-• Duplicate Charging: You were accidentally charged multiple times for a single purchase attempt.
+A replacement, correction or refund is available where the circumstances justify it:
+• Non-delivery: A verified successful payment is recorded but we cannot provide the purchased files or promptly resolve an access failure. We aim to correct a reported delivery failure within 72 hours; if delivery cannot be remedied, you may choose a replacement or refund. This service window does not postpone any remedy required by law.
+• Wrong or missing files / material misdescription: The supplied package materially differs from what the listing promised or lacks core files, and we cannot promptly supply the correct advertised package.
+• Major defect: A critical defect prevents the advertised core use and we cannot provide a working fix or replacement.
+• Duplicate charging: The payment provider confirms an extra successful charge for the same purchase. The extra charge is refunded without cancelling the valid original purchase.
+
+Where only particular items are affected, we may agree an item-specific remedy or partial refund with you. Mandatory consumer remedies remain available.
 
 ## 4. Ineligible Scenarios & Download/Access Exceptions
 
-Refunds WILL NOT be granted for:
-• Change of mind or buyer’s remorse after files have been downloaded.
-• Incompatibility with third-party software, hosting environments, or versions not specified in the published technical requirements.
-• Lack of technical skill or developer experience required to modify or deploy the template.
-• Unverified claims or failure to provide requested order information.
+A refund is generally not available solely because:
+• You changed your mind after confirmed payment and digital access were provided.
+• You need compatibility with an environment, feature or software version not promised in the listing.
+• You need custom development or deployment skills beyond the product’s stated scope.
+
+These exclusions do not apply when we supplied incorrect information, materially misdescribed the product, failed to provide the advertised files, or applicable law requires a remedy. We may ask for sufficient order details to identify the payment and investigate; if information is missing, we will explain what is needed rather than automatically treating the report as invalid.
 
 ## 5. Cancellation Prior to Digital Access
 
-You may request cancellation of an order if your payment is debited but the transaction remains pending and no download links or digital vault access have been generated or accessed. Once digital files are accessed or downloaded, cancellation is no longer possible.
+You can leave checkout or cancel an unpaid order before completing payment; no purchase is completed until payment succeeds. If a payment is debited but remains pending, contact us with the reference so we can check its status with Cashfree or the original payment provider. An unsettled or pending debit is not proof of a successful charge, and bank reversals follow the provider’s process.
+
+After a successful payment and digital access have been provided, ordinary change-of-mind cancellation is generally unavailable. You may still request a remedy for non-delivery, duplicate payment, incorrect files, material defects or other qualifying circumstances above. We cannot guarantee that an in-progress bank payment can be stopped.
 
 ## 6. Duplicate Payments & Payment Error Processing
 
-If you notice multiple debits for a single order due to a network glitch or payment gateway retry, please email connectbooyahstudio@gmail.com with your order ID, payment references, and bank debit proof.
+If you notice multiple successful debits for the same order, email connectbooyahstudio@gmail.com with your order ID, payment references and the dates and amounts debited. Mask unrelated bank or card information in any supporting image.
 
-Upon verifying the duplicate capture with Razorpay or the payment processor, we arrange a refund of the extra charge through the original payment route after review. A separately refunded duplicate payment does not cancel the original valid purchase.
+We check the records with Cashfree, or the original payment processor for an existing purchase. A verified extra charge is refunded through the original payment route after review. Refunding a duplicate charge does not cancel the valid original payment or the download access it purchased. Failed or pending debits are checked separately and follow the bank’s reversal process.
 
 ## 7. Refund Request Procedure & Review Timeline
 
-To request a refund, submit an email to connectbooyahstudio@gmail.com within 7 days of purchase containing:
-1. Order ID and payment reference
-2. Email address associated with the purchase
-3. Detailed explanation of the technical issue or duplicate debit
+Report an issue promptly, preferably within 7 days of purchase, by emailing connectbooyahstudio@gmail.com. Include:
+1. Order ID and payment reference, if available
+2. The email address used for the purchase
+3. A clear explanation and relevant evidence of the delivery, file or payment issue
 
-Requests are evaluated within 2 business days. Approved refunds are initiated through the original payment route. We provide the available refund reference; actual bank credit timing depends on the payment provider and bank. Confirmed full refunds revoke the corresponding access. For a partial refund, support records the affected items and agreed access resolution; unrelated paid products are not automatically revoked. An unallocated partial refund is flagged for review.
+We review requests within 2 business days and ask for any missing information. After approval, we initiate the agreed refund within 5 business days through the original payment route and provide the available refund reference. Bank credit normally takes a further 5–7 business days after initiation, depending on the payment method, bank and provider; it may take longer during provider or banking delays. Contact us with the refund reference if the credit has not appeared. We do not promise instant bank credit.
+
+A confirmed full refund removes access to the refunded purchase. A partial refund records the affected items and agreed access resolution; unrelated paid products remain available. A partial refund needing item allocation is reviewed before an item’s access is changed. We do not refund more than the successful amount paid for the affected purchase.
+
+The suggested 7-day reporting period is not a limit on a statutory claim, an unauthorized-payment complaint or a remedy that applicable law requires. Business days mean Monday to Friday, excluding public and bank holidays.
 
 ## 8. Payment Gateways, Verification & Transaction Security
 
-All online payments are processed securely via PCI-DSS compliant payment gateways (Cashfree, with existing Razorpay purchases supported where configured). We verify all transactions server-side before granting digital access. If your account was debited but our verification is pending or unavailable, contact support with the order/payment reference. We reconcile the provider status; a merchant-side verification error does not itself initiate or guarantee a refund. Failed-payment reversals follow the provider and banking process.
+Cashfree processes new online payments where live checkout is enabled; existing purchases made using another configured provider continue to be handled through that provider. Payment details are entered on the provider’s checkout. Booyahstudio verifies the payment on the server before granting paid access.
+
+If money is debited but your order is pending, contact us with the order/payment reference. We reconcile the provider’s status; a merchant-side verification error does not itself prove payment success or automatically initiate a refund. Failed-payment reversals follow the provider and bank process. Test transactions do not create a real purchase or unlock paid files.
 
 ## 9. Interaction with Chargebacks & Payment Disputes
 
-We encourage customers to contact our support team directly to resolve payment errors quickly. If a chargeback or payment dispute is raised with a bank while a refund request is open, the payment processor handles the dispute, and refund processing through our portal may be paused until the bank dispute is concluded.
+We encourage you to contact support so payment and delivery issues can be investigated quickly. This does not restrict your right to raise a complaint or dispute with your bank or payment provider.
+
+If a bank dispute and a refund request concern the same payment, we coordinate with the payment provider to avoid duplicate credit. Processing may need to follow the bank’s dispute process, and we will explain the known status. This does not remove any remedy or timeline required by applicable law.

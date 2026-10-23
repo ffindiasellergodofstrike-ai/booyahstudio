@@ -110,7 +110,7 @@ adminOperationsRouter.get('/readiness', async (_req,res) => {
     {id:'cashfree',label:'Cashfree configuration',status:cashfree.configured?'manual':'not_configured',message:cashfree.configured?`Keys configured for ${cashfree.environment}; merchant activation, webhooks and a real payment still need verification.`:'Set matching CASHFREE_APP_ID, CASHFREE_SECRET_KEY and CASHFREE_ENV in Vercel.'},
     {id:'resend',label:'Order email configuration',status:readiness.resend.apiConfigured&&readiness.resend.senderConfigured?'manual':'not_configured',message:'Verify the Resend sending domain, API key and sender; test inbox delivery.'},
     {id:'email_events',label:'Email delivery tracking',status:readiness.resend.webhookConfigured?'manual':'not_configured',message:'Configure the signed Resend webhook; API acceptance alone is not inbox delivery.'},
-    {id:'scheduler',label:'Reconciliation and email retry scheduler',status:readiness.scheduler.configured?'manual':'not_configured',message:'Configure an external 5-minute job with CRON_SECRET. The secret alone does not schedule the job.'},
+    {id:'scheduler',label:'Reconciliation and email retry scheduler',status:readiness.scheduler.configured?'manual':'not_configured',message:'A daily Vercel fallback is declared in the repository. Set CRON_SECRET and verify its last run after deployment. For prompt email retries and payment recovery, use a 5-minute authenticated scheduler (Vercel Pro or external); a secret alone does not verify any job ran.'},
   ];
   res.json({success:true,readiness,checks,appUrl:origin,environment:cashfree.environment,lastReconciledAt:lastRun?.completedAt || null});
 });

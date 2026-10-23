@@ -3,6 +3,7 @@ import { SUPPORTED_POLICY_SLUGS } from '../src/data/policyData';
 import { appOrigin } from './config';
 import 'express-async-errors';
 import { seoMiddleware } from './seoMiddleware';
+import { renderRobots, renderSitemap } from '../src/seo/publicPages';
 import fs from 'node:fs';
 import { hasLivePayment } from '../src/services/PaymentEnvironment';
 import { BUSINESS } from '../src/config/business';
@@ -139,41 +140,15 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/robots.txt', (_req: Request, res: Response) => {
-  res.type('text/plain').send(`User-agent: *
-Disallow: /admin
-Disallow: /account
-Disallow: /checkout
-Disallow: /cart
-Disallow: /wishlist
-Disallow: /search
-Disallow: /login
-Disallow: /register
-Disallow: /forgot-password
-Disallow: /api/
-Disallow: /.data/
-
-Sitemap: https://www.booyahstudio.shop/sitemap.xml
-`);
+app.use('/demos', (_req, res, next) => {
+  res.set('X-Robots-Tag', 'noindex, nofollow');
+  next();
 });
-
-app.get('/sitemap.xml', (_req: Request, res: Response) => {
-  const sitemapPath = path.join(process.cwd(), 'dist', 'sitemap.xml');
-  if (fs.existsSync(sitemapPath)) {
-    return res.type('application/xml').sendFile(sitemapPath);
-  }
-  const policySlugs = SUPPORTED_POLICY_SLUGS;
-  const paths = [
-    '/',
-    '/products',
-    '/about',
-    '/contact',
-    '/faq',
-    ...policySlugs.map((p) => `/policies/${p}`),
-    ...PRODUCTS.map((p) => `/product/${p.slug}`),
-  ];
-  const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map((p) => `<url><loc>https://www.booyahstudio.shop${p}</loc></url>`).join('')}</urlset>`;
-  res.type('application/xml').send(xml);
+app.get('/robots.txt', (_req: Request, res: Response) => {
+  res.type('text/plain').send(renderRobots());
+});
+app.get('/sitemap.xml', async (_req: Request, res: Response) => {
+  res.type('application/xml').send(renderSitemap(await getProductCatalog()));
 });
 
 app.use(seoMiddleware);
@@ -286,8 +261,10 @@ app.post('/api/contact', authRateLimiter, async (req, res) => {
   if (!input.success) return res.status(400).json({ message: 'Enter a valid name, email, and message (10–4,000 characters).' });
   try {
     const reference = `BS-${crypto.randomBytes(8).toString('hex')}`;
-    await Store.set(`supportRequests/${reference}`, { ...input.data, reference, createdAt: new Date().toISOString(), status: 'open' });
-    res.status(201).json({ success: true, reference });
+    const submittedAt = new Date().toISOString();
+    await Store.set(`supportRequests/${reference}`, { ...input.data, reference, createdAt: submittedAt, status: 'open' });
+    // Return only this validated submission; no lookup by a public reference exposes another complaint.
+    res.status(201).json({ success: true, reference, receipt: { ...input.data, reference, submittedAt } });
   } catch { res.status(503).json({ message: 'Support requests are temporarily unavailable.' }); }
 });
 

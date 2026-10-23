@@ -1,34 +1,32 @@
 MANISH KUMAR SONKAR | Booyahstudio
 
+# Payment Gateways, Verification & Transaction Security
+
+Updated: October 23, 2026
+
+MANISH KUMAR SONKAR Owner of Booyahstudio
 Address: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003
 Customer support and grievances: connectbooyahstudio@gmail.com
 WhatsApp: +91 7393845435 (https://wa.me/917393845435)
 Grievance contact: MANISH KUMAR SONKAR, at the same email and address.
 
-# Order, Payment & Transaction Policy
+This topic is part of the current [Refund, Cancellation & Payment Policy](https://www.booyahstudio.shop/policies/refund); that complete policy governs. The former /policies/payments route resolves to the current policy.
 
-Last updated: October 5, 2026
+## 8. Payment Gateways, Verification & Transaction Security
 
-## 2. Order formation
+Cashfree processes new online payments where live checkout is enabled; existing purchases made using another configured provider continue to be handled through that provider. Payment details are entered on the provider’s checkout. Booyahstudio verifies the payment on the server before granting paid access.
 
-Review the product, license, account email and final INR total. The server determines product prices and any valid advertised discount using the catalog. It stores product information, total, order ID and timestamps. Accept the purchase policies before initiating payment. A pending order is a request to purchase and does not establish successful payment.
+If money is debited but your order is pending, contact us with the order/payment reference. We reconcile the provider’s status; a merchant-side verification error does not itself prove payment success or automatically initiate a refund. Failed-payment reversals follow the provider and bank process. Test transactions do not create a real purchase or unlock paid files.
 
-## 3. Razorpay processing
+## 7. Refund Request Procedure & Review Timeline
 
-The integrated checkout uses Razorpay. Payment-method availability and transaction acceptance depend on the provider and financial institutions. Razorpay’s own applicable terms relate to payment processing and remain separate from our customer-facing product policies; not every provider rule becomes a merchant policy. Do not send card authentication details to us over support channels.
+Report an issue promptly, preferably within 7 days of purchase, by emailing connectbooyahstudio@gmail.com. Include:
+1. Order ID and payment reference, if available
+2. The email address used for the purchase
+3. A clear explanation and relevant evidence of the delivery, file or payment issue
 
-## 4. Trusted verification
+We review requests within 2 business days and ask for any missing information. After approval, we initiate the agreed refund within 5 business days through the original payment route and provide the available refund reference. Bank credit normally takes a further 5–7 business days after initiation, depending on the payment method, bank and provider; it may take longer during provider or banking delays. Contact us with the refund reference if the credit has not appeared. We do not promise instant bank credit.
 
-We create the payment-provider order on the server and bind it to the customer order. We verify the checkout signature and fetch provider payment state, or validate a provider webhook and fetch its current state. Amount, currency, order identity, environment and captured status must match before fulfilment. A frontend “payment successful” screen, a client request, a screenshot or a payment notification alone cannot unlock the files.
+A confirmed full refund removes access to the refunded purchase. A partial refund records the affected items and agreed access resolution; unrelated paid products remain available. A partial refund needing item allocation is reviewed before an item’s access is changed. We do not refund more than the successful amount paid for the affected purchase.
 
-## 5. Pending, failed and duplicate events
-
-Failed, cancelled, pending, test and unverified transactions do not automatically grant paid access. A debit may require investigation even when the screen shows a failure. Repeated legitimate payment notifications are processed safely so one payment does not create repeated fulfilment. Avoid immediately paying again if you suspect a debit; check the account and contact support.
-
-## 6. Receipts and refunds
-
-Order/payment confirmations and payment receipts may be provided through the account or email. A payment receipt is not represented as a GST tax invoice. Contact support for the legally required invoice or tax documentation applicable to your order. Refunds are reviewed under the Refund & Cancellation Policy and processed using the provider’s supported procedures. No gateway, bank or dispute outcome is guaranteed.
-
-## 7. Contact and resolution
-
-Contact the support or grievance contact above with your order ID, payment reference, purchase date and a description of the problem. Do not send passwords, OTPs, CVV, full card numbers or payment authentication secrets. We review the available records and explain the appropriate next step. Mandatory consumer rights remain unaffected.
+The suggested 7-day reporting period is not a limit on a statutory claim, an unauthorized-payment complaint or a remedy that applicable law requires. Business days mean Monday to Friday, excluding public and bank holidays.

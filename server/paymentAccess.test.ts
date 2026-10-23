@@ -39,6 +39,9 @@ test('active purchase alone cannot authorize an unpaid, revoked or manually mark
   currentOrder = { ...paidOrder, status: 'PARTIALLY_REFUNDED' };
   assert.equal(await findPaidPurchase('buyer-1', 'linknest-pro'), null);
   currentOrder = paidOrder;
+  currentOrder = { ...paidOrder, items: [{ productId: 'linknest-pro', accessStatus: 'restricted' }] };
+  assert.equal(await findPaidPurchase('buyer-1', 'linknest-pro'), null, 'a stale active purchase cannot bypass the current item restriction');
+  currentOrder = paidOrder;
   assert.deepEqual(await findPaidPurchase('buyer-1', 'linknest-pro'), purchase);
 });
 
@@ -66,6 +69,7 @@ test('Cashfree access requires a verified matching funding payment and preserves
   assert.equal(permits({ ...order, paymentEnvironment: 'test' }), false);
   assert.equal(permits({ ...order, userId: 'another-buyer' }), false);
   assert.equal(permits({ ...order, deliveryStatus: 'REVOKED' }), false);
+  assert.equal(permits({ ...order, items: [{ productId: 'linknest-pro', accessStatus: 'restricted' }] }), false, 'an explicit item restriction also blocks an otherwise funded order');
   const partial = { ...order, status: 'PARTIALLY_REFUNDED', paymentStatus: 'PARTIALLY_REFUNDED', items: [
     { productId: 'linknest-pro', refunded: false }, { productId: 'finora', refunded: true },
   ] };

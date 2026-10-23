@@ -4,7 +4,8 @@ import { PRODUCTS } from '../src/data/products';
 import { Request, Response, NextFunction } from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getSEOPageData, injectSEOMetadata, POLICY_REDIRECTS } from '../src/seo/seoMetadata';
+import { getSEOPageData, injectSEOMetadata, POLICY_REDIRECTS, policyData } from '../src/seo/seoMetadata';
+import { injectPublicPageContent } from '../src/seo/publicPages';
 
 let cachedIndexHtml: string | null = null;
 
@@ -30,7 +31,7 @@ export async function seoMiddleware(req: Request, res: Response, next: NextFunct
   if (process.env.NODE_ENV !== 'production') return next();
   // Only process GET / HEAD requests for non-API, non-asset paths
   if (req.method !== 'GET' && req.method !== 'HEAD') return next();
-  if (req.path.startsWith('/api/') || req.path.startsWith('/demos/') || req.path.startsWith('/product-images/') || req.path.includes('.')) {
+  if (/^\/api(?:\/|$)/i.test(req.path) || req.path.startsWith('/demos/') || req.path.startsWith('/product-images/') || req.path.includes('.')) {
     return next();
   }
 
@@ -42,7 +43,8 @@ export async function seoMiddleware(req: Request, res: Response, next: NextFunct
 
   // Check for retired policy redirects
   const rootSlug = cleanPath.startsWith('/') ? cleanPath.slice(1) : '';
-  const redirectTarget = POLICY_REDIRECTS[rootSlug];
+  const policyKey = cleanPath.startsWith('/policies/') ? cleanPath.slice('/policies/'.length) : rootSlug;
+  const redirectTarget = cleanPath === '/policies' ? 'terms' : POLICY_REDIRECTS[policyKey] || (!cleanPath.startsWith('/policies/') && policyData[policyKey] ? policyKey : undefined);
   if (redirectTarget) {
     return res.redirect(301, `/policies/${redirectTarget}`);
   }
@@ -55,12 +57,14 @@ export async function seoMiddleware(req: Request, res: Response, next: NextFunct
     return next();
   }
 
-  const products = cleanPath.startsWith('/product/') && process.env.SUPABASE_URL ? mergeProductCatalog(PRODUCTS, await Store.getAllProducts()) : PRODUCTS;
+  const catalogPage = cleanPath.startsWith('/product/') || cleanPath.startsWith('/category/');
+  const products = catalogPage && process.env.SUPABASE_URL ? mergeProductCatalog(PRODUCTS, await Store.getAllProducts()) : PRODUCTS;
   const pageSEOData = getSEOPageData(cleanPath, queryObj, products);
   const shell = getIndexHtmlShell();
-  const renderedHtml = injectSEOMetadata(shell, pageSEOData);
+  const renderedHtml = injectPublicPageContent(injectSEOMetadata(shell, pageSEOData), cleanPath, products);
 
-  const status = pageSEOData.statusCode || (pageSEOData.noindex ? 200 : 200);
+  const status = pageSEOData.statusCode || 200;
+  if (pageSEOData.noindex) res.setHeader('X-Robots-Tag', 'noindex, nofollow');
 
   res.status(status).setHeader('Content-Type', 'text/html; charset=utf-8').send(renderedHtml);
 }

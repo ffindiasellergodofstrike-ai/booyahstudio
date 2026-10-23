@@ -1,7 +1,7 @@
 // Run after pnpm build. Deliberately uses native Node, not tsx/Vite's module loader.
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import crypto from 'node:crypto';
 for (const key of ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'RAZORPAY_WEBHOOK_SECRET', 'RESEND_API_KEY', 'RESEND_FROM_EMAIL', 'RESEND_WEBHOOK_SECRET', 'CASHFREE_APP_ID', 'CASHFREE_SECRET_KEY', 'CASHFREE_API_VERSION', 'CASHFREE_ENV', 'CRON_SECRET']) delete process.env[key];
 process.env.NODE_ENV = 'production';
@@ -45,6 +45,28 @@ try {
   const deniedMethod = await fetch(`${base}/page-check?slug=margin-portfolio`, { method: 'POST' });
   assert.equal(deniedMethod.status, 405); assert.equal(deniedMethod.headers.get('allow'), 'GET, HEAD');
   assert.equal((await deniedMethod.json()).success, false);
+  const contactPage = await fetch(`${base}/page-check?path=contact&native=1`, { headers: { Accept: 'text/html' } });
+  assert.equal(contactPage.status, 200);
+  const contactHtml = await contactPage.text();
+  assert.match(contactHtml, /MANISH KUMAR SONKAR/);
+  assert.match(contactHtml, /Customer support and grievances/);
+  assert.match(contactHtml, /connectbooyahstudio@gmail\.com/);
+  const missingPage = await fetch(`${base}/page-check?path=not-a-page&native=1`, { headers: { Accept: 'text/html' } });
+  assert.equal(missingPage.status, 404);
+  assert.equal(missingPage.headers.get('x-robots-tag'), 'noindex, nofollow');
+  const policyAlias = await fetch(`${base}/page-check?path=policies/delivery&native=1`, { redirect: 'manual', headers: { Accept: 'text/html' } });
+  assert.equal(policyAlias.status, 301);
+  assert.equal(policyAlias.headers.get('location'), '/policies/terms');
+  for (const blockedPath of ['api/auth/me', 'API/auth/me', 'demos/linknest-pro', 'assets/private']) {
+    assert.equal((await fetch(`${base}/page-check?path=${blockedPath}&native=1`)).status, 404, blockedPath);
+  }
+  assert.equal((await fetch(`${base}/page-check?path=contact&path=about&native=1`)).status, 404);
+  assert.equal((await fetch(`${base}/page-check?path=contact&slug=margin-portfolio&native=1`)).status, 404);
+  const sitemapPage = await fetch(`${base}/page-check?path=sitemap.xml&native=1`);
+  assert.equal(sitemapPage.status, 200);
+  assert.match(sitemapPage.headers.get('content-type'), /application\/xml/);
+  assert.match(await sitemapPage.text(), /<urlset/);
+  assert.equal(existsSync(new URL('../dist/sitemap.xml', import.meta.url)), false, 'static output must not shadow the live sitemap rewrite');
   process.env.CASHFREE_ENV = 'sandbox'; process.env.CASHFREE_SECRET_KEY = 'synthetic-runtime-secret';
   const raw = ' {\n  "type" : "UNHANDLED_NATIVE_RUNTIME_TEST"\n } ', timestamp = String(Date.now());
   const signature = crypto.createHmac('sha256', process.env.CASHFREE_SECRET_KEY).update(timestamp).update(raw).digest('base64');
@@ -101,7 +123,7 @@ try {
   assert.equal(config.functions['api/page.ts'].includeFiles, '{build/api-app.mjs,dist/index.html}');
   assert.equal(config.functions['api/index.ts'].maxDuration, 300);
   assert.equal(config.functions['api/page.ts'].maxDuration, 60);
-  console.log('PASS: native Node API startup; health200; unconfigured503; API404; product404/200/HEAD/405; raw signed webhook200; simulated Supabase signup201, invalid400, provider rejection400, rate limit429. No hosted accounts or provider calls.');
+  console.log('PASS: native Node API startup; health200; unconfigured503; API404; product404/200/HEAD/405; readable contact, HTML404, policy301, blocked fallback paths; raw signed webhook200; simulated Supabase signup201, invalid400, provider rejection400, rate limit429. No hosted accounts or provider calls.');
 } finally {
   globalThis.fetch = originalFetch;
   await new Promise(resolve => server.close(resolve));

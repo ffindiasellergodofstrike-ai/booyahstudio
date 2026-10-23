@@ -46,13 +46,13 @@ test('all 80 original source pages and public demos have matching working local 
   }
 });
 
-test('Vercel routes preserve API, demo directories and product share pages before SPA fallback', () => {
+test('Vercel routes preserve API, demo directories and product share pages before the status-aware HTML fallback', () => {
   const config = JSON.parse(text('vercel.json'));
   assert.equal(config.outputDirectory, 'dist');
   assert.deepEqual(config.rewrites[0], { source:'/api/:path*', destination:'/api' });
   assert.ok(config.rewrites.some((r: any) => r.source === '/product/:slug' && r.destination === '/api/page?slug=:slug'));
   assert.ok(config.rewrites.some((r: any) => r.source === '/demos/:product/' && r.destination === '/demos/:product/index.html'));
-  assert.deepEqual(config.rewrites.at(-1), { source:'/(.*)', destination:'/index.html' });
+  assert.deepEqual(config.rewrites.at(-1), { source:'/:path*', destination:'/api/page?path=:path*' });
   assert.match(text('api/index.ts'), /server\/app/);
   const scripts = JSON.parse(text('package.json')).scripts;
   assert.ok(scripts.build.includes('generate-product-pages.ts'));

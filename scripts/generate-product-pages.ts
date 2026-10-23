@@ -1,72 +1,40 @@
-import { SUPPORTED_POLICY_SLUGS, policyData } from '../src/data/policyData';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { PRODUCTS, CATEGORIES } from '../src/data/products';
-import { getSEOPageData, injectSEOMetadata, BASE_URL } from '../src/seo/seoMetadata';
+import { getSEOPageData, injectSEOMetadata } from '../src/seo/seoMetadata';
+import { injectPublicPageContent, publicCanonicalPaths, renderRobots, renderSitemap } from '../src/seo/publicPages';
 
-async function generateBuildAssets() {
-  const shell = await readFile('dist/index.html', 'utf8');
-
-  const policySlugs = SUPPORTED_POLICY_SLUGS;
-
-  const publicRoutes = [
-    '/',
-    '/products',
-    '/about',
-    '/contact',
-    '/faq',
-    ...policySlugs.map((p) => `/policies/${p}`),
-    ...CATEGORIES.map((c) => `/category/${c.slug}`),
-    ...PRODUCTS.map((p) => `/product/${p.slug}`),
-  ];
-
-  // Pre-render static HTML pages for crawlers and direct visits
-  for (const route of [...publicRoutes, '/search', '/wishlist', '/cart', '/checkout', '/account', '/login', '/register', '/forgot-password', '/admin']) {
-    const pageData = getSEOPageData(route);
-    let renderedHtml = injectSEOMetadata(shell, pageData);
-    const policy = policyData[route.replace('/policies/', '')];
-    const escape = (text: string) => text.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-    if (policy && route.startsWith('/policies/')) renderedHtml = renderedHtml.replace('<div id="root"></div>', `<div id="root"><main><p>${escape(policy.subtitle)}</p><h1>${escape(policy.title)}</h1>${policy.sections.map(section => `<section><h2>${escape(section.title)}</h2><p style="white-space:pre-line">${escape(section.content)}</p></section>`).join('')}</main></div>`);
-
-    if (route === '/') {
-      await writeFile('dist/index.html', renderedHtml);
-    } else {
-      const dirPath = `dist${route}`;
-      await mkdir(dirPath, { recursive: true });
-      await writeFile(`${dirPath}/index.html`, renderedHtml);
+async function markDemosNoindex(directory: string) {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const location = `${directory}/${entry.name}`;
+    if (entry.isDirectory()) await markDemosNoindex(location);
+    else if (entry.name.endsWith('.html')) {
+      const html = await readFile(location, 'utf8');
+      const clean = html.replace(/<meta\s+name=["']robots["'][^>]*>/gi, '');
+      await writeFile(location, clean.replace(/<\/head>/i, '<meta name="robots" content="noindex, nofollow" />\n</head>'));
     }
   }
-
-  // Generate sitemap.xml
-  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${publicRoutes.map((route) => `  <url><loc>${BASE_URL}${route === '/' ? '/' : route}</loc></url>`).join('\n')}
-</urlset>`;
-
-  await writeFile('dist/sitemap.xml', sitemapXml);
-
-  // Generate robots.txt
-  const robotsTxt = `User-agent: *
-Disallow: /admin
-Disallow: /account
-Disallow: /checkout
-Disallow: /cart
-Disallow: /wishlist
-Disallow: /search
-Disallow: /login
-Disallow: /register
-Disallow: /forgot-password
-Disallow: /api/
-Disallow: /.data/
-
-Sitemap: ${BASE_URL}/sitemap.xml
-`;
-
-  await writeFile('dist/robots.txt', robotsTxt);
-
-  console.log(`Successfully pre-rendered metadata for ${publicRoutes.length} public canonical pages, sitemap.xml, and robots.txt.`);
 }
-
-generateBuildAssets().catch((err) => {
-  console.error('Error generating pre-rendered build assets:', err);
-  process.exit(1);
-});
+async function generateBuildAssets() {
+  const shell = await readFile('dist/index.html', 'utf8');
+  const publicRoutes = publicCanonicalPaths(PRODUCTS);
+  const routes = [...new Set([...publicRoutes, ...CATEGORIES.map(category => `/category/${category.slug}`), '/search', '/wishlist', '/cart', '/checkout', '/account', '/login', '/register', '/forgot-password', '/admin'])];
+  for (const route of routes) {
+    const pageData = getSEOPageData(route);
+    const renderedHtml = injectPublicPageContent(injectSEOMetadata(shell, pageData), route);
+    if (route === '/') await writeFile('dist/index.html', renderedHtml);
+    else {
+      const directory = `dist${route}`;
+      await mkdir(directory, { recursive: true });
+      await writeFile(`${directory}/index.html`, renderedHtml);
+    }
+  }
+  // Vercel serves filesystem files before rewrites. Keep only a private audit snapshot
+  // so /sitemap.xml always reaches the live catalog endpoint after deployment.
+  await mkdir('build', { recursive: true });
+  await writeFile('build/sitemap.xml', renderSitemap(PRODUCTS));
+  await rm('dist/sitemap.xml', { force: true });
+  await writeFile('dist/robots.txt', renderRobots());
+  await markDemosNoindex('dist/demos');
+  console.log(`Successfully pre-rendered readable HTML and metadata for ${publicRoutes.length} public canonical pages, plus private noindex pages and robots.txt. Sitemap audit snapshot is build/sitemap.xml; /sitemap.xml uses the live catalog endpoint.`);
+}
+generateBuildAssets().catch(error => { console.error('Error generating pre-rendered build assets:', error); process.exit(1); });

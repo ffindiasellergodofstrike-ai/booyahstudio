@@ -17,7 +17,7 @@ export const AboutPage: React.FC = () => {
         <span className="content-kicker">OUR STORY</span>
         <h1>Good ideas deserve<br />a <em>good beginning.</em></h1>
         <p className="content-lead">A little less starting from scratch.<br />A little more making it your own.</p>
-        <p className="content-body">{BUSINESS.name} is an independent digital template store based in Varanasi, India. We create starting points for websites, projects and the ideas you’re ready to bring to life.</p>
+        <p className="content-body">{BUSINESS.name} is an independent digital template store based in Varanasi, India. Owned and operated by {BUSINESS.owner}, we create original templates and source-code products for the projects you’re ready to bring to life.</p>
         <button type="button" className="content-button" onClick={() => navigate('/products')}>Explore the collection <ArrowUpRight size={18} /></button>
       </div>
       <div className="about-art" aria-hidden="true">
@@ -34,7 +34,7 @@ export const AboutPage: React.FC = () => {
 
     <section className="about-bottom">
       <div><span className="content-kicker">THOUGHTFULLY DIGITAL</span><h2>Choose the right start<br />for your next project.</h2><p>Explore the demos, read what’s included, and check the requirements and license before you choose.</p><button type="button" className="content-text-link" onClick={() => navigate('/faq')}>A few helpful answers <ArrowUpRight size={17} /></button></div>
-      <div className="about-business"><div className="content-business-heading"><MapPin size={20} /><span>Based in Varanasi, India</span></div><details><summary>Business & contact details</summary><address>{BUSINESS.owner} · {BUSINESS.name}{BUSINESS.legalName ? <><br />{BUSINESS.legalName}</> : null}{BUSINESS.gstin ? <><br />GSTIN: {BUSINESS.gstin}</> : null}<br />{BUSINESS.address}<br /><a href={'mailto:' + BUSINESS.email}>{BUSINESS.email}</a><br /><a href={BUSINESS.phoneHref} target="_blank" rel="noopener noreferrer">{BUSINESS.phone}</a></address></details><p>{BUSINESS.supportHours}</p><p>Digital products. Electronic delivery.<br />Checkout available in India, with prices in INR.</p></div>
+      <div className="about-business"><div className="content-business-heading"><MapPin size={20} /><span>Based in Varanasi, India</span></div><details open><summary>Business & contact details</summary><address>{BUSINESS.owner}, Owner of {BUSINESS.name}{BUSINESS.legalName ? <><br />{BUSINESS.legalName}</> : null}{BUSINESS.gstin ? <><br />GSTIN: {BUSINESS.gstin}</> : null}<br />{BUSINESS.address}<br /><a href={'mailto:' + BUSINESS.email}>{BUSINESS.email}</a><br /><a href={BUSINESS.phoneHref} target="_blank" rel="noopener noreferrer">{BUSINESS.phone}</a></address><p>Grievance contact: {BUSINESS.owner}, at the same email and address.</p></details><p>{BUSINESS.supportHours}</p><p>Digital products. Electronic delivery.<br />Checkout available in India, with prices in INR.</p><p>Original products and website content © {new Date().getFullYear()} {BUSINESS.owner}. Third-party components keep their own licenses and notices.</p></div>
     </section>
   </div>;
 };

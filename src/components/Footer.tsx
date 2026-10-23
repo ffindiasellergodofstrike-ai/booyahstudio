@@ -44,7 +44,11 @@ export const Footer: React.FC = () => {
     { label: 'Contact & Support', path: '/contact' },
   ];
 
-  const policyLinks = SUPPORTED_POLICY_SLUGS.map(slug => ({ label: policyData[slug].title, path: `/policies/${slug}` }));
+  const policyLinks = [
+    ...SUPPORTED_POLICY_SLUGS.map(slug => ({ label: policyData[slug].title, path: `/policies/${slug}` })),
+    { label: 'Digital delivery', path: '/policies/delivery' },
+    { label: 'Copyright & usage', path: '/policies/copyright' },
+  ];
 
   return (
     <footer className="studio-footer" aria-label="Store Footer">
@@ -65,7 +69,7 @@ export const Footer: React.FC = () => {
               For the things you haven’t built yet.
             </p>
             <address className="not-italic text-xs leading-6 mt-4 text-slate-600">
-              {BUSINESS.owner} · {BUSINESS.name}
+              {BUSINESS.owner}, Owner of {BUSINESS.name}
               {BUSINESS.legalName ? ` · ${BUSINESS.legalName}` : ''}
               {BUSINESS.gstin ? <><br />GSTIN: {BUSINESS.gstin}</> : null}
               <br />
@@ -80,7 +84,8 @@ export const Footer: React.FC = () => {
               </a>
               <br />
               <span className="text-xs text-slate-500">
-                WhatsApp customer support & grievances
+                Customer support and grievances via the email and WhatsApp above.
+                <br />Grievance contact: {BUSINESS.owner}, at the same email and address.
               </span>
             </address>
             <span className="footer-made">A little inspiration. A lot of possibility.</span>
@@ -102,7 +107,7 @@ export const Footer: React.FC = () => {
             </nav>
           </div>
 
-          {/* Policies Column - Direct links to all 8 relevant policies */}
+          {/* Current store policies and delivery / license details */}
           <div className="footer-link-column">
             <h3>Policies</h3>
             <nav aria-label="Store policies">
@@ -163,7 +168,7 @@ export const Footer: React.FC = () => {
         {/* Footer Bottom Bar - Organized, readable, no duplicate links */}
         <div className="footer-bottom">
           <span>
-            © {new Date().getFullYear()} {BUSINESS.name}. All rights reserved.
+            © {new Date().getFullYear()} {BUSINESS.owner} · {BUSINESS.name}. All rights reserved.
           </span>
           <div className="footer-bottom-badges">
             <span>India Store</span>

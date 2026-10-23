@@ -1,9 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { authDestination, authReturnSearch, safePreviousUrl } from './AuthNavigation';
-test('authentication return navigation accepts checkout only',()=>{
- assert.equal(authDestination('checkout'),'/checkout');
- for(const unsafe of ['https://attacker.test','//attacker.test','/admin',undefined])assert.equal(authDestination(unsafe),'/account');
+test('authentication return navigation accepts only supported symbolic destinations',()=>{
+ for (const [hint, destination] of [['checkout', '/checkout'], ['downloads', '/account/downloads'], ['orders', '/account/orders']]) {
+  assert.equal(authDestination(hint), destination);
+  assert.deepEqual(authReturnSearch(hint), { redirect: hint });
+ }
+ for(const unsafe of ['https://attacker.test','//attacker.test','/admin','/account/downloads','__proto__','constructor','toString',undefined])assert.equal(authDestination(unsafe),'/account');
  assert.deepEqual(authReturnSearch('checkout'),{redirect:'checkout'});assert.deepEqual(authReturnSearch('/admin'),{});
 });
 test('local navigation history strips recovery/session material and external destinations',()=>{

@@ -1,3 +1,4 @@
+import { authReturnSearch } from '../services/AuthNavigation';
 import { hasLivePayment } from '../services/PaymentEnvironment';
 import { isVerifiedPaidOrder } from '../services/PaymentVerification';
 
@@ -243,7 +244,7 @@ export const AccountPage: React.FC = () => {
         <span className="purchase-eyebrow">A PLACE FOR YOUR NEXT CHAPTER</span>
         <h1>Your ideas.<br />Your <em>collection.</em></h1>
         <p>Sign in to find your purchases, download your files, and pick up where you left off.</p>
-        <div className="account-welcome-actions"><button onClick={() => navigate('/login')} className="purchase-button purchase-button-primary">Sign in <ArrowUpRight size={18} /></button><button onClick={() => navigate('/register')} className="purchase-button purchase-button-secondary">Create an account <ArrowRight size={17} /></button></div>
+        <div className="account-welcome-actions"><button onClick={() => navigate('/login', undefined, authReturnSearch(activeTab))} className="purchase-button purchase-button-primary">Sign in <ArrowUpRight size={18} /></button><button onClick={() => navigate('/register', undefined, authReturnSearch(activeTab))} className="purchase-button purchase-button-secondary">Create an account <ArrowRight size={17} /></button></div>
         <button onClick={() => navigate('/products')} className="purchase-text-link">Just browsing? Explore the collection <ArrowRight size={15} /></button>
       </div>
       <div className="account-welcome-art" aria-hidden="true">
@@ -605,6 +606,7 @@ export const AccountPage: React.FC = () => {
         const isPartial = String(viewingOrder.paymentStatus || '').toUpperCase() === 'PARTIALLY_REFUNDED';
         const isPaid = hasLivePayment(viewingOrder) && ['PAID', 'PARTIALLY_REFUNDED'].includes(String(viewingOrder.paymentStatus || '').toUpperCase()) && ['cashfree', 'razorpay'].includes(String(viewingOrder.paymentProvider || '').toLowerCase()) && Boolean(viewingOrder.transactionId);
         const isRefunded = String(viewingOrder.paymentStatus || '').toUpperCase() === 'REFUNDED';
+        const hasReceipt = isPaid || (isRefunded && hasLivePayment(viewingOrder) && ['cashfree', 'razorpay'].includes(String(viewingOrder.paymentProvider || '').toLowerCase()) && Boolean(viewingOrder.transactionId));
         const isDelivered = isVerifiedPaidOrder(viewingOrder);
         const isTest = !hasLivePayment(viewingOrder) && viewingOrder.paymentStatus === 'PAID';
         const isFailed =
@@ -716,7 +718,7 @@ export const AccountPage: React.FC = () => {
                 </div>
               </div>
 
-              {isPaid && (
+              {hasReceipt && (
                 <button
                   disabled={receiptBusy !== null}
                   aria-busy={receiptBusy === viewingOrder.id}

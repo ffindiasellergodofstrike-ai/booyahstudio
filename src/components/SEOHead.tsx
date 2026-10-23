@@ -1,7 +1,7 @@
 import { useProductCatalog } from '../hooks/useProductCatalog';
 import React, { useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { getSEOPageData, injectSEOMetadata } from '../seo/seoMetadata';
+import { getSEOPageData } from '../seo/seoMetadata';
 
 export const SEOHead: React.FC = () => {
   const products = useProductCatalog();
@@ -73,6 +73,7 @@ export const SEOHead: React.FC = () => {
     updateMeta('meta[name="twitter:title"]', 'content', pageData.title);
     updateMeta('meta[name="twitter:description"]', 'content', pageData.description);
     updateMeta('meta[name="twitter:image"]', 'content', pageData.ogImage);
+    updateMeta('meta[name="twitter:image:alt"]', 'content', pageData.ogImageAlt);
 
     // JSON-LD
     updateJsonLd(pageData.jsonLd);

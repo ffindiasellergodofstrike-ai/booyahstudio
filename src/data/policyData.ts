@@ -3,8 +3,8 @@ export interface PolicySection { id: string; title: string; content: string; }
 export interface Policy { slug: string; title: string; subtitle: string; lastUpdated: string; quickSummary: string[]; sections: PolicySection[]; }
 export type SupportedPolicySlug = string;
 export const SUPPORTED_POLICY_SLUGS = pages.map(page => page.slug);
-export const policyData: Record<string, Policy> = Object.fromEntries(pages.map(page => [page.slug, page]));
-export const POLICY_REDIRECTS: Record<string, SupportedPolicySlug> = {
+export const policyData: Record<string, Policy> = Object.assign(Object.create(null), Object.fromEntries(pages.map(page => [page.slug, page])));
+export const POLICY_REDIRECTS: Record<string, SupportedPolicySlug> = Object.assign(Object.create(null), {
   'delivery': 'terms',
   'fraud': 'terms',
   'chargebacks': 'terms',
@@ -28,4 +28,4 @@ export const POLICY_REDIRECTS: Record<string, SupportedPolicySlug> = {
   'payment': 'refund',
   'refund-policy': 'refund',
   'terms-and-conditions': 'terms',
-};
+});

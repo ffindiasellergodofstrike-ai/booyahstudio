@@ -142,6 +142,8 @@ export function registerCashfreeRoutes(app: Express, auth: RequestHandler, limit
         (order.cashfreeOrderId && order.paymentEnvironment !== cashfreeConfig().environment)) return res.status(409).json({ success:false,message:'This order is not payable in the current environment. Check it in your account.' });
     const phone = String(order.customer?.phone || '').replace(/\D/g,'').slice(-10);
     if (!/^[6-9]\d{9}$/.test(phone)) return res.status(400).json({ success:false,message:'Enter a valid 10-digit Indian contact number. No mobile OTP is required.' });
+    const totalPaise = moneyPaise(order.total);
+    if (totalPaise === null || totalPaise < 100) return res.status(400).json({ success:false,message:'Online checkout requires an order total of at least ₹1. Please contact support.' });
     for (const item of order.items || []) {
       const {data,error} = await supabaseAdmin().storage.from('products').info(`${item.productId}.zip`);
       if (error || !data) return res.status(503).json({ success:false,message:'A product file is temporarily unavailable. Contact support before paying.' });

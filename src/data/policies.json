@@ -3,13 +3,13 @@
     "slug": "terms",
     "title": "Terms & Conditions",
     "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
-    "lastUpdated": "October 22, 2026",
+    "lastUpdated": "October 23, 2026",
     "quickSummary": [
-      "Trading name: Booyahstudio operated by MANISH KUMAR SONKAR.",
-      "Applies to all website browsing, account registration, template listings, digital orders, downloads, and support.",
-      "Digital products are licensed, not sold; redistributed, resold, or unauthorized shared downloads are strictly prohibited.",
-      "Orders require server-side payment verification before protected access is granted to customer accounts.",
-      "Comprehensive rules for copyright, acceptable use, fraud prevention, chargebacks, account security, and grievance redressal."
+      "Trading name: Booyahstudio, owned and operated by MANISH KUMAR SONKAR.",
+      "Original digital templates and source-code products sold directly by their creator; third-party components retain their licenses.",
+      "Prices and the final total are shown in INR before payment. Only verified successful payments unlock paid downloads.",
+      "Electronic delivery through your account Downloads section, normally immediately after verification; allow up to 24 hours for a delay.",
+      "License, copyright, support and grievance details apply alongside your non-excludable consumer rights."
     ],
     "sections": [
       {
@@ -20,7 +20,7 @@
       {
         "id": "scope-account",
         "title": "2. Scope, Definitions & Account Responsibilities",
-        "content": "“Product” means the downloadable digital files described in a listing; “order” means your recorded purchase request; “delivery” means purchased access being made available electronically in your customer vault; “you” means the purchasing customer.\n\nYou must provide accurate email and contact details during account creation or registered checkout. You are responsible for maintaining the confidentiality of your account credentials, password, and access links. You must notify us immediately of any suspected unauthorized access or compromise. You agree to use the service in compliance with all applicable laws."
+        "content": "“Product” means the downloadable digital files described in a listing; “order” means your recorded purchase request; “delivery” means purchased download access being made available electronically in your account; “you” means the purchasing customer. No physical product is shipped.\n\nYou must provide accurate email and contact details during account creation or checkout. You are responsible for keeping your account credentials, password and access links private. Notify us immediately of suspected unauthorized access. You agree to use the service in compliance with applicable law."
       },
       {
         "id": "product-requirements",
@@ -30,22 +30,22 @@
       {
         "id": "orders-payments",
         "title": "4. Orders, Payments & Verification",
-        "content": "Prices are displayed in INR and the final payable total is presented at checkout. We do not add undisclosed mandatory charges after purchase.\n\nA browser success screen, screenshot, or debit SMS alone does not authorize digital download access. We verify payment through trusted server-side webhooks and API checks with payment gateways (Cashfree, with existing Razorpay purchases supported where configured). Access is granted only after successful verification of a captured payment matching the order. Failed, cancelled, pending, or unverified transactions do not unlock digital products."
+        "content": "Prices are displayed in INR and the final payable total, including any applicable charges, is presented before payment. We do not add undisclosed mandatory charges after purchase.\n\nA browser success screen, screenshot or debit SMS alone does not confirm payment. We verify payment using trusted server-side webhooks and API checks with Cashfree; existing Razorpay purchases are supported where configured. Download access is granted only after the payment provider confirms a successful payment matching the order. Failed, cancelled, pending, test or unverified transactions do not unlock a paid product.\n\nBooyahstudio sells its own digital products directly. We do not collect payments on behalf of third-party sellers through this storefront."
       },
       {
         "id": "delivery-records",
         "title": "5. Digital Product Delivery, Access & Download Records",
-        "content": "Purchased access is provided through your customer account vault and protected download links following payment verification. Confirmation emails link directly to your account vault, which remains the primary delivery channel.\n\nWe maintain electronic server logs of payment verifications, download link generations, access timestamps, IP addresses, and user-agent strings for security, license compliance, audit, and dispute resolution. These records may support delivery and dispute review. A generated link or accepted email alone does not establish that a file was downloaded or received."
+        "content": "Delivery is electronic only. No physical shipping, courier delivery or shipping fee applies. After successful payment verification, the purchased files are normally available immediately in your account → Downloads. Please allow up to 24 hours if payment confirmation or file preparation is delayed. A pending bank debit is not a verified payment.\n\nWe send an order confirmation to the email address used at checkout, with a link to the purchased downloads in your account. Sign in with the same email to access your order, receipts and eligible files. Email delivery may be delayed or filtered to spam; your account remains the main place to get your files. Download links are protected and may expire; request a new link from your account when required.\n\nIf a verified purchase is still unavailable after 24 hours, contact connectbooyahstudio@gmail.com or WhatsApp +91 7393845435 with your order reference. We aim to correct a reported delivery failure within 72 hours. If we cannot provide the advertised files or a prompt resolution, you may choose a replacement or a refund under the Refund, Cancellation & Payment Policy. This support window does not require you to wait to report the issue or postpone a remedy required by law.\n\nWe keep electronic records of payment verification, email status, download-link creation and available file-access events, including timestamps and relevant security information, to support orders, license compliance and dispute review. A generated link, an email accepted by the delivery provider or a browser redirect alone does not prove that a customer downloaded or received a file."
       },
       {
         "id": "license-usage",
         "title": "6. Digital Product License & Usage Rules",
-        "content": "Your purchase grants a non-exclusive, non-transferable personal or commercial license as specified in the product listing. It does not transfer underlying intellectual property or copyright ownership.\n\nYou may customize and use the template for permitted projects. You MUST NOT re-sell, re-license, sub-license, share, bundle, distribute, or publicly host the original source files or modified template packages as downloadable assets."
+        "content": "Your purchase grants a non-exclusive license to use and customize the listed files for the personal or commercial use specified in the product listing and included license. It does not transfer underlying intellectual property or copyright ownership. Review the listing before purchase; contact us if your intended use is unclear.\n\nYou may edit the source for the permitted project. Unless an applicable license expressly allows it, you must not resell, relicense, sublicense, share or redistribute the proprietary source package, publish it as a competing downloadable template, or provide public access to the paid files. Third-party and open-source components keep their own license terms, copyright notices and permissions; those terms govern those components."
       },
       {
         "id": "copyright-ip",
         "title": "7. Copyright & Intellectual Property Protection",
-        "content": "All templates, source code, designs, branding, logos, graphics, and documentation on Booyahstudio are the intellectual property of MANISH KUMAR SONKAR or used under lawful open-source/licensed permissions.\n\nUnauthorized duplication, scraping, reverse engineering, or resale of our proprietary digital assets is strictly prohibited and subject to legal enforcement under Indian copyright laws."
+        "content": "The original Booyahstudio products, templates, designs, source-code contributions, product descriptions, branding and documentation are created by and owned by MANISH KUMAR SONKAR, Owner of Booyahstudio. Copyright in those original materials is reserved. Buying a download gives the license described in the listing; it does not transfer ownership of the original work.\n\nThird-party libraries, open-source components, fonts, trademarks and other material lawfully included or referenced retain their respective owners and license terms. Required copyright notices and licenses must remain with those components. This ownership statement does not claim ownership of third-party software or remove rights granted by its licenses.\n\nUnauthorized copying, public mirroring, redistribution or resale of our proprietary downloadable packages is prohibited. This does not prohibit editing the purchased source for a use allowed by your license. For a copyright concern, email connectbooyahstudio@gmail.com with the affected URL or product, a description of the original work and information showing your authority to report it. MANISH KUMAR SONKAR handles these reports at the business address and contact details above."
       },
       {
         "id": "acceptable-use",
@@ -60,12 +60,12 @@
       {
         "id": "chargebacks-disputes",
         "title": "10. Chargebacks, Payment Disputes & Evidence",
-        "content": "If you experience an order or payment issue, please contact customer support before initiating a chargeback or payment dispute with your bank.\n\nIn the event of a chargeback or bank dispute, we submit server-side payment capture logs, order details, IP address logs, email communications, and download verification records to the payment processor or financial institution to demonstrate lawful transaction fulfillment."
+        "content": "If an order or payment is not right, please contact support so we can investigate and help promptly. You remain entitled to raise an unauthorized-payment complaint or dispute with your bank or payment provider; contacting us first is a request, not a condition on those rights.\n\nWhen responding to a dispute, we may provide relevant order and payment records, support correspondence and available email/download-access records to the payment processor or financial institution. We distinguish payment confirmation, email-provider acceptance, link creation and recorded file access rather than treating them as the same event. The bank or payment provider decides the dispute under its rules."
       },
       {
         "id": "support-grievances",
         "title": "11. Customer Support & Grievance Redressal",
-        "content": "We provide customer support for access issues, payment verification, and template documentation through email (connectbooyahstudio@gmail.com) and WhatsApp (+91 7393845435).\n\nMANISH KUMAR SONKAR is the designated Grievance Officer. Written grievances regarding orders, privacy, intellectual property, or payments will be acknowledged within 48 hours and addressed within statutory timelines."
+        "content": "Customer support and grievances: connectbooyahstudio@gmail.com. WhatsApp: +91 7393845435 (https://wa.me/917393845435).\n\nGrievance contact: MANISH KUMAR SONKAR, Owner of Booyahstudio, at S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003, using the same email and WhatsApp number. No separate third-party grievance contact is appointed on this website.\n\nInclude your order reference where available, the account email and a clear description of the issue. The website contact form provides a reference and a copy of the submitted complaint for your records. Do not send passwords, OTPs, UPI PINs, CVVs or full payment-card details. We acknowledge complaints within 48 hours and resolve them within one month, or any shorter period required by applicable law. If an issue requires further investigation, we provide an update and the next steps. These support targets do not delay a shorter refund or non-delivery commitment stated in our policies."
       },
       {
         "id": "disclaimer-liability",
@@ -83,12 +83,13 @@
     "slug": "refund",
     "title": "Refund, Cancellation & Payment Policy",
     "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
-    "lastUpdated": "October 22, 2026",
+    "lastUpdated": "October 23, 2026",
     "quickSummary": [
-      "Digital products are delivered electronically; purchases are generally non-refundable once access or download links are generated.",
-      "Refunds are granted for duplicate payments, technical payment errors, or non-delivery due to server verification failures.",
-      "Cancellations are accepted before payment verification or digital access grant.",
-      "Outlines request procedure, review timelines, and interaction with payment gateways and bank disputes."
+      "Digital purchases are generally final after payment is confirmed and access is provided; change-of-mind refunds are generally unavailable.",
+      "Duplicate payments, wrong or missing files, unresolved material defects and non-delivery remain eligible for review.",
+      "Cancellation is available before payment completion and delivery. A pending debit is checked with the payment provider.",
+      "We review requests within 2 business days and initiate approved refunds within 5 business days; bank credit normally takes a further 5–7 business days.",
+      "Your applicable consumer rights are not waived by downloading a file or by the suggested reporting period."
     ],
     "sections": [
       {
@@ -99,42 +100,42 @@
       {
         "id": "digital-nature",
         "title": "2. Digital Product Nature & General Refund Rule",
-        "content": "Because Booyahstudio provides digital templates, source code, and downloadable media that cannot be physically returned once accessed, purchases are generally final and non-refundable once payment is captured and digital access is made available in your customer vault, subject to applicable law and legitimate exceptions defined below."
+        "content": "Booyahstudio sells downloadable digital templates and source-code packages. They cannot be physically returned. A purchase is generally final once payment is confirmed and the advertised download access is made available in your account; change-of-mind or accidental-purchase refunds are generally unavailable after this point, whether or not you choose to download.\n\nThis general rule does not exclude a legitimate duplicate charge, missing or wrong files, material misdescription, unresolved major defect, non-delivery, unauthorized-payment rights or any remedy required by applicable law. Downloading a file does not waive these rights."
       },
       {
         "id": "eligible-scenarios",
         "title": "3. Eligible Refund Scenarios & Non-Delivery Situations",
-        "content": "A full refund or replacement will be issued under the following circumstances:\n• Non-Delivery: Technical failure on our server prevents digital download access after verified payment, and our support team is unable to deliver the files or resolve the issue within 72 hours.\n• Major Defect: The downloaded source package contains a critical, unfixable bug or missing core files that prevent usage, and our support team cannot provide a fix or working replacement.\n• Duplicate Charging: You were accidentally charged multiple times for a single purchase attempt."
+        "content": "A replacement, correction or refund is available where the circumstances justify it:\n• Non-delivery: A verified successful payment is recorded but we cannot provide the purchased files or promptly resolve an access failure. We aim to correct a reported delivery failure within 72 hours; if delivery cannot be remedied, you may choose a replacement or refund. This service window does not postpone any remedy required by law.\n• Wrong or missing files / material misdescription: The supplied package materially differs from what the listing promised or lacks core files, and we cannot promptly supply the correct advertised package.\n• Major defect: A critical defect prevents the advertised core use and we cannot provide a working fix or replacement.\n• Duplicate charging: The payment provider confirms an extra successful charge for the same purchase. The extra charge is refunded without cancelling the valid original purchase.\n\nWhere only particular items are affected, we may agree an item-specific remedy or partial refund with you. Mandatory consumer remedies remain available."
       },
       {
         "id": "ineligible-scenarios",
         "title": "4. Ineligible Scenarios & Download/Access Exceptions",
-        "content": "Refunds WILL NOT be granted for:\n• Change of mind or buyer’s remorse after files have been downloaded.\n• Incompatibility with third-party software, hosting environments, or versions not specified in the published technical requirements.\n• Lack of technical skill or developer experience required to modify or deploy the template.\n• Unverified claims or failure to provide requested order information."
+        "content": "A refund is generally not available solely because:\n• You changed your mind after confirmed payment and digital access were provided.\n• You need compatibility with an environment, feature or software version not promised in the listing.\n• You need custom development or deployment skills beyond the product’s stated scope.\n\nThese exclusions do not apply when we supplied incorrect information, materially misdescribed the product, failed to provide the advertised files, or applicable law requires a remedy. We may ask for sufficient order details to identify the payment and investigate; if information is missing, we will explain what is needed rather than automatically treating the report as invalid."
       },
       {
         "id": "cancellations",
         "title": "5. Cancellation Prior to Digital Access",
-        "content": "You may request cancellation of an order if your payment is debited but the transaction remains pending and no download links or digital vault access have been generated or accessed. Once digital files are accessed or downloaded, cancellation is no longer possible."
+        "content": "You can leave checkout or cancel an unpaid order before completing payment; no purchase is completed until payment succeeds. If a payment is debited but remains pending, contact us with the reference so we can check its status with Cashfree or the original payment provider. An unsettled or pending debit is not proof of a successful charge, and bank reversals follow the provider’s process.\n\nAfter a successful payment and digital access have been provided, ordinary change-of-mind cancellation is generally unavailable. You may still request a remedy for non-delivery, duplicate payment, incorrect files, material defects or other qualifying circumstances above. We cannot guarantee that an in-progress bank payment can be stopped."
       },
       {
         "id": "duplicate-payments",
         "title": "6. Duplicate Payments & Payment Error Processing",
-        "content": "If you notice multiple debits for a single order due to a network glitch or payment gateway retry, please email connectbooyahstudio@gmail.com with your order ID, payment references, and bank debit proof.\n\nUpon verifying the duplicate capture with Razorpay or the payment processor, we arrange a refund of the extra charge through the original payment route after review. A separately refunded duplicate payment does not cancel the original valid purchase."
+        "content": "If you notice multiple successful debits for the same order, email connectbooyahstudio@gmail.com with your order ID, payment references and the dates and amounts debited. Mask unrelated bank or card information in any supporting image.\n\nWe check the records with Cashfree, or the original payment processor for an existing purchase. A verified extra charge is refunded through the original payment route after review. Refunding a duplicate charge does not cancel the valid original payment or the download access it purchased. Failed or pending debits are checked separately and follow the bank’s reversal process."
       },
       {
         "id": "refund-procedure",
         "title": "7. Refund Request Procedure & Review Timeline",
-        "content": "To request a refund, submit an email to connectbooyahstudio@gmail.com within 7 days of purchase containing:\n1. Order ID and payment reference\n2. Email address associated with the purchase\n3. Detailed explanation of the technical issue or duplicate debit\n\nRequests are evaluated within 2 business days. Approved refunds are initiated through the original payment route. We provide the available refund reference; actual bank credit timing depends on the payment provider and bank. Confirmed full refunds revoke the corresponding access. For a partial refund, support records the affected items and agreed access resolution; unrelated paid products are not automatically revoked. An unallocated partial refund is flagged for review."
+        "content": "Report an issue promptly, preferably within 7 days of purchase, by emailing connectbooyahstudio@gmail.com. Include:\n1. Order ID and payment reference, if available\n2. The email address used for the purchase\n3. A clear explanation and relevant evidence of the delivery, file or payment issue\n\nWe review requests within 2 business days and ask for any missing information. After approval, we initiate the agreed refund within 5 business days through the original payment route and provide the available refund reference. Bank credit normally takes a further 5–7 business days after initiation, depending on the payment method, bank and provider; it may take longer during provider or banking delays. Contact us with the refund reference if the credit has not appeared. We do not promise instant bank credit.\n\nA confirmed full refund removes access to the refunded purchase. A partial refund records the affected items and agreed access resolution; unrelated paid products remain available. A partial refund needing item allocation is reviewed before an item’s access is changed. We do not refund more than the successful amount paid for the affected purchase.\n\nThe suggested 7-day reporting period is not a limit on a statutory claim, an unauthorized-payment complaint or a remedy that applicable law requires. Business days mean Monday to Friday, excluding public and bank holidays."
       },
       {
         "id": "gateways-verification",
         "title": "8. Payment Gateways, Verification & Transaction Security",
-        "content": "All online payments are processed securely via PCI-DSS compliant payment gateways (Cashfree, with existing Razorpay purchases supported where configured). We verify all transactions server-side before granting digital access. If your account was debited but our verification is pending or unavailable, contact support with the order/payment reference. We reconcile the provider status; a merchant-side verification error does not itself initiate or guarantee a refund. Failed-payment reversals follow the provider and banking process."
+        "content": "Cashfree processes new online payments where live checkout is enabled; existing purchases made using another configured provider continue to be handled through that provider. Payment details are entered on the provider’s checkout. Booyahstudio verifies the payment on the server before granting paid access.\n\nIf money is debited but your order is pending, contact us with the order/payment reference. We reconcile the provider’s status; a merchant-side verification error does not itself prove payment success or automatically initiate a refund. Failed-payment reversals follow the provider and bank process. Test transactions do not create a real purchase or unlock paid files."
       },
       {
         "id": "chargeback-interaction",
         "title": "9. Interaction with Chargebacks & Payment Disputes",
-        "content": "We encourage customers to contact our support team directly to resolve payment errors quickly. If a chargeback or payment dispute is raised with a bank while a refund request is open, the payment processor handles the dispute, and refund processing through our portal may be paused until the bank dispute is concluded."
+        "content": "We encourage you to contact support so payment and delivery issues can be investigated quickly. This does not restrict your right to raise a complaint or dispute with your bank or payment provider.\n\nIf a bank dispute and a refund request concern the same payment, we coordinate with the payment provider to avoid duplicate credit. Processing may need to follow the bank’s dispute process, and we will explain the known status. This does not remove any remedy or timeline required by applicable law."
       }
     ]
   },
@@ -142,7 +143,7 @@
     "slug": "privacy",
     "title": "Privacy Policy",
     "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
-    "lastUpdated": "October 22, 2026",
+    "lastUpdated": "October 23, 2026",
     "quickSummary": [
       "Explains how Booyahstudio collects, uses, stores, and protects your personal data.",
       "Covers account details, order history, payment verification info, download logs, and email communications.",
@@ -159,7 +160,7 @@
       {
         "id": "info-collected",
         "title": "2. Information We Collect",
-        "content": "We collect information necessary to fulfill digital orders, provide customer support, and maintain account security:\n• Account & Contact Information: Name, email address, mobile number, and password hash.\n• Order & Transaction Details: Purchased items, order IDs, payment reference IDs, amounts paid, and transaction timestamps.\n• Download & Access Records: Server access logs, IP addresses, user-agent strings, and download timestamps for security and license enforcement.\n• Support Communications: Emails, WhatsApp messages, and support tickets sent to us."
+        "content": "We collect information needed to provide your account, digital orders and customer support:\n• Account and contact details: Your name, email address, mobile/contact number and any optional profile details you provide. Authentication credentials are handled by the configured authentication service, including Supabase; passwords are not kept as readable text.\n• Order and payment records: Purchased items, order IDs, payment references, amounts, payment status and timestamps.\n• Download and security records: Available file-access events, download-link creation, IP addresses, user-agent information and timestamps used for security and order support.\n• Communications: Contact-form messages, emails, WhatsApp messages and support records you send to us.\n• Product updates: Your email and subscription record if you separately choose to subscribe to updates."
       },
       {
         "id": "cookies-storage",
@@ -169,12 +170,12 @@
       {
         "id": "payment-providers",
         "title": "4. Payment Processing & Service Providers",
-        "content": "Online payment details (such as UPI IDs, card numbers, or net banking credentials) are collected directly by PCI-DSS compliant payment gateway partners (Cashfree, with existing Razorpay purchases supported where configured). We NEVER receive, process, or store sensitive financial secrets like card security codes (CVV) or UPI PINs on our servers.\n\nWe share necessary data only with trusted infrastructure providers (e.g., hosting, email delivery) strictly for operating the store."
+        "content": "Payment information is entered on the payment provider’s checkout, including Cashfree for new payments where enabled. Booyahstudio does not ask for or store card security codes (CVV), UPI PINs, banking passwords or payment OTPs. Necessary transaction references and payment status are retained to verify orders and provide support.\n\nWe share only the data necessary to operate the store with service providers for authentication and data storage (including Supabase), hosting (including Vercel), transactional email (including Resend), and payment processing (including Cashfree and the original processor for an existing order). These services may process data outside your region according to their service terms and privacy practices. They are not appointed as alternative owners or grievance contacts for Booyahstudio."
       },
       {
         "id": "data-use",
         "title": "5. Purposes of Data Processing & Email Communications",
-        "content": "We use your personal data to:\n• Verify payments and deliver digital template downloads to your account vault.\n• Send order receipts, download notifications, and critical security alerts.\n• Respond to customer support and grievance requests.\n• Prevent fraud, unauthorized sharing, and system abuse.\n\nWe do not sell, rent, or trade your personal information to third parties for marketing purposes."
+        "content": "We use personal data to:\n• Create and protect your account.\n• Verify payments and provide your purchased downloads and receipts.\n• Send account, security, order, refund and download-related emails.\n• Respond to support requests and grievances.\n• Prevent fraud, unauthorized sharing and abuse.\n• Send optional product updates if you separately subscribe; you can ask us to stop these updates. Transactional and security messages remain necessary for your account and purchases.\n\nWe do not sell, rent or trade personal data to third parties for marketing."
       },
       {
         "id": "security-retention",
@@ -189,7 +190,7 @@
       {
         "id": "user-rights",
         "title": "8. Your Choices, Rights & Grievance Support",
-        "content": "You have the right to access, update, or correct your personal account details by logging into your account or emailing connectbooyahstudio@gmail.com. You may also request deletion of your account, subject to non-deletable statutory transaction records.\n\nFor privacy inquiries or grievance concerns, contact MANISH KUMAR SONKAR at connectbooyahstudio@gmail.com."
+        "content": "You may view or update available account details by signing in, or contact connectbooyahstudio@gmail.com to request access, correction or deletion of your personal information. We may need to verify that the request comes from the account holder. Records required for payment, tax, accounting, fraud prevention or legal obligations may need to be retained even when an account is deleted.\n\nPrivacy and grievance contact: MANISH KUMAR SONKAR, Owner of Booyahstudio, at connectbooyahstudio@gmail.com and the business address stated above. WhatsApp: +91 7393845435 (https://wa.me/917393845435). We acknowledge complaints within 48 hours and resolve them within one month, or any shorter period required by applicable law."
       }
     ]
   },
@@ -197,7 +198,7 @@
     "slug": "disclaimer",
     "title": "Disclaimer & Limitation of Liability",
     "subtitle": "MANISH KUMAR SONKAR Owner of Booyahstudio\nAddress: S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003\nCustomer support and grievances: connectbooyahstudio@gmail.com\nWhatsApp: +91 7393845435 (https://wa.me/917393845435)\nGrievance contact: MANISH KUMAR SONKAR, at the same email and address.",
-    "lastUpdated": "2026-10-05",
+    "lastUpdated": "October 23, 2026",
     "quickSummary": [
       "Sets out general disclaimers regarding website availability, digital product compatibility, and third-party tools.",
       "Clarifies that digital templates are provided \"as-is\" and require appropriate developer skills and environment setup.",
@@ -227,7 +228,7 @@
       {
         "id": "general-disclaimers",
         "title": "5. General Disclaimers & Warranty Exclusions",
-        "content": "To the fullest extent permitted by law, Booyahstudio disclaims all express or implied warranties, including implied warranties of merchantability, fitness for a particular purpose, or non-infringement.\n\nWe do not warrant that template usage will yield specific financial profits, business success, or search engine rankings for your application."
+        "content": "To the extent permitted by law, the listed digital files are provided for their described purpose and technical requirements. We do not promise that a template will meet every custom requirement, operate on unsupported platforms, generate income or achieve a particular search-engine ranking.\n\nThis disclaimer does not exclude responsibility for delivering the advertised files, correcting a material misdescription, handling an eligible refund, or honoring rights and remedies that applicable law does not allow us to exclude. The copyright and license statements in our Terms & Conditions continue to apply."
       },
       {
         "id": "limitation-liability",

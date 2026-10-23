@@ -9,11 +9,12 @@ test('branded order HTML escapes order content and links only to the account rat
  const html=renderOrderEmailHtml({...order,orderNumber:'<script>unsafe</script>',transactionId:'ref" onclick="bad',items:[{productTitle:'<img src=x onerror=alert(1)> & "title"'}],signedUrl:'https://private.invalid/file.zip?token=secret'},false,'https://store.example.test');
  assert.match(html,/&lt;script&gt;unsafe&lt;\/script&gt;/);assert.match(html,/&lt;img src=x onerror=alert\(1\)&gt; &amp; &quot;title&quot;/);
  assert.doesNotMatch(html,/<script>|<img|href="javascript:|private\.invalid|token=secret/);
- assert.match(html,/href="https:\/\/store.example.test\/account"/);assert.match(html,/INR 1499\.00/);assert.match(html,/View your downloads/);
+ assert.match(html,/href="https:\/\/store.example.test\/account\/downloads"/);assert.match(html,/INR 1499\.00/);assert.match(html,/Download your files/);
 });
 
 test('refund presentation reports the confirmed amount without claiming every download was revoked',()=>{
  const html=renderOrderEmailHtml({...order,refundedAmount:100,items:[{productTitle:'First',refunded:true},{productTitle:'Second'}]},true,'https://store.example.test');
+ assert.match(html,/href="https:\/\/store.example.test\/account\/orders"/);
  assert.match(html,/Your refund is confirmed/);assert.match(html,/INR 100\.00/);assert.match(html,/which products remain available/);
  assert.match(html,/Refunded · further downloads restricted/);assert.match(html,/Second/);assert.doesNotMatch(html,/all downloads.*revoked/i);
 });

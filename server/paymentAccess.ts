@@ -18,7 +18,7 @@ export function isPaidOrderForProduct(order: any, userId: string, productId: str
     providerVerified && Boolean(order.transactionId) &&
     !['REFUNDED', 'REVOKED', 'CANCELLED', 'FAILED', ...(cashfree ? [] : ['PARTIALLY_REFUNDED'])].includes(String(order.status).toUpperCase()) &&
     order.deliveryStatus === 'DELIVERED' && order.downloadStatus === 'AVAILABLE' &&
-    item && item.refunded !== true && item.downloadStatus !== 'REVOKED'
+    item && item.refunded !== true && item.accessStatus !== 'restricted' && item.downloadStatus !== 'REVOKED'
   );
 }
 

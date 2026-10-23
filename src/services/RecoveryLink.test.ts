@@ -59,3 +59,15 @@ test('ordinary requests remain the email form and unsupported PKCE links do not 
  assert.match(unsupported.message, /unsupported format/);
  assert.equal(unsupported.cleanUrl, '/forgot-password');
 });
+
+
+test('recovery navigation preserves only safe download and order hints without credentials', () => {
+ for (const hint of ['downloads', 'orders']) {
+  const link = readRecoveryLink(`?redirect=${hint}&token_hash=synthetic-recovery-hash&email=private@example.test`, '');
+  assert.equal(link.cleanUrl, `/forgot-password?redirect=${hint}`);
+  assert.deepEqual(link.credentials, { tokenHash: 'synthetic-recovery-hash' });
+ }
+ for (const hint of ['/account/downloads', '//attacker.test', '__proto__']) {
+  assert.equal(readRecoveryLink(`?redirect=${encodeURIComponent(hint)}`, session).cleanUrl, '/forgot-password');
+ }
+});

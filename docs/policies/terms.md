@@ -2,7 +2,9 @@ MANISH KUMAR SONKAR | Booyahstudio
 
 # Terms & Conditions
 
-Updated: October 22, 2026
+Updated: October 23, 2026
+
+Public policy: https://www.booyahstudio.shop/policies/terms
 
 ## 1. Business & Contact Information
 
@@ -16,9 +18,9 @@ Booyahstudio is an e-commerce website operated by MANISH KUMAR SONKAR. We sell d
 
 ## 2. Scope, Definitions & Account Responsibilities
 
-“Product” means the downloadable digital files described in a listing; “order” means your recorded purchase request; “delivery” means purchased access being made available electronically in your customer vault; “you” means the purchasing customer.
+“Product” means the downloadable digital files described in a listing; “order” means your recorded purchase request; “delivery” means purchased download access being made available electronically in your account; “you” means the purchasing customer. No physical product is shipped.
 
-You must provide accurate email and contact details during account creation or registered checkout. You are responsible for maintaining the confidentiality of your account credentials, password, and access links. You must notify us immediately of any suspected unauthorized access or compromise. You agree to use the service in compliance with all applicable laws.
+You must provide accurate email and contact details during account creation or checkout. You are responsible for keeping your account credentials, password and access links private. Notify us immediately of suspected unauthorized access. You agree to use the service in compliance with applicable law.
 
 ## 3. Pre-Purchase Requirements & Technical Description
 
@@ -28,27 +30,35 @@ We maintain listing standards that accurately describe included templates, sourc
 
 ## 4. Orders, Payments & Verification
 
-Prices are displayed in INR and the final payable total is presented at checkout. We do not add undisclosed mandatory charges after purchase.
+Prices are displayed in INR and the final payable total, including any applicable charges, is presented before payment. We do not add undisclosed mandatory charges after purchase.
 
-A browser success screen, screenshot, or debit SMS alone does not authorize digital download access. We verify payment through trusted server-side webhooks and API checks with payment gateways (Cashfree, with existing Razorpay purchases supported where configured). Access is granted only after successful verification of a captured payment matching the order. Failed, cancelled, pending, or unverified transactions do not unlock digital products.
+A browser success screen, screenshot or debit SMS alone does not confirm payment. We verify payment using trusted server-side webhooks and API checks with Cashfree; existing Razorpay purchases are supported where configured. Download access is granted only after the payment provider confirms a successful payment matching the order. Failed, cancelled, pending, test or unverified transactions do not unlock a paid product.
+
+Booyahstudio sells its own digital products directly. We do not collect payments on behalf of third-party sellers through this storefront.
 
 ## 5. Digital Product Delivery, Access & Download Records
 
-Purchased access is provided through your customer account vault and protected download links following payment verification. Confirmation emails link directly to your account vault, which remains the primary delivery channel.
+Delivery is electronic only. No physical shipping, courier delivery or shipping fee applies. After successful payment verification, the purchased files are normally available immediately in your account → Downloads. Please allow up to 24 hours if payment confirmation or file preparation is delayed. A pending bank debit is not a verified payment.
 
-We maintain electronic server logs of payment verifications, download link generations, access timestamps, IP addresses, and user-agent strings for security, license compliance, audit, and dispute resolution. These records may support delivery and dispute review. A generated link or accepted email alone does not establish that a file was downloaded or received.
+We send an order confirmation to the email address used at checkout, with a link to the purchased downloads in your account. Sign in with the same email to access your order, receipts and eligible files. Email delivery may be delayed or filtered to spam; your account remains the main place to get your files. Download links are protected and may expire; request a new link from your account when required.
+
+If a verified purchase is still unavailable after 24 hours, contact connectbooyahstudio@gmail.com or WhatsApp +91 7393845435 with your order reference. We aim to correct a reported delivery failure within 72 hours. If we cannot provide the advertised files or a prompt resolution, you may choose a replacement or a refund under the Refund, Cancellation & Payment Policy. This support window does not require you to wait to report the issue or postpone a remedy required by law.
+
+We keep electronic records of payment verification, email status, download-link creation and available file-access events, including timestamps and relevant security information, to support orders, license compliance and dispute review. A generated link, an email accepted by the delivery provider or a browser redirect alone does not prove that a customer downloaded or received a file.
 
 ## 6. Digital Product License & Usage Rules
 
-Your purchase grants a non-exclusive, non-transferable personal or commercial license as specified in the product listing. It does not transfer underlying intellectual property or copyright ownership.
+Your purchase grants a non-exclusive license to use and customize the listed files for the personal or commercial use specified in the product listing and included license. It does not transfer underlying intellectual property or copyright ownership. Review the listing before purchase; contact us if your intended use is unclear.
 
-You may customize and use the template for permitted projects. You MUST NOT re-sell, re-license, sub-license, share, bundle, distribute, or publicly host the original source files or modified template packages as downloadable assets.
+You may edit the source for the permitted project. Unless an applicable license expressly allows it, you must not resell, relicense, sublicense, share or redistribute the proprietary source package, publish it as a competing downloadable template, or provide public access to the paid files. Third-party and open-source components keep their own license terms, copyright notices and permissions; those terms govern those components.
 
 ## 7. Copyright & Intellectual Property Protection
 
-All templates, source code, designs, branding, logos, graphics, and documentation on Booyahstudio are the intellectual property of MANISH KUMAR SONKAR or used under lawful open-source/licensed permissions.
+The original Booyahstudio products, templates, designs, source-code contributions, product descriptions, branding and documentation are created by and owned by MANISH KUMAR SONKAR, Owner of Booyahstudio. Copyright in those original materials is reserved. Buying a download gives the license described in the listing; it does not transfer ownership of the original work.
 
-Unauthorized duplication, scraping, reverse engineering, or resale of our proprietary digital assets is strictly prohibited and subject to legal enforcement under Indian copyright laws.
+Third-party libraries, open-source components, fonts, trademarks and other material lawfully included or referenced retain their respective owners and license terms. Required copyright notices and licenses must remain with those components. This ownership statement does not claim ownership of third-party software or remove rights granted by its licenses.
+
+Unauthorized copying, public mirroring, redistribution or resale of our proprietary downloadable packages is prohibited. This does not prohibit editing the purchased source for a use allowed by your license. For a copyright concern, email connectbooyahstudio@gmail.com with the affected URL or product, a description of the original work and information showing your authority to report it. MANISH KUMAR SONKAR handles these reports at the business address and contact details above.
 
 ## 8. Acceptable Use & Prohibited Conduct
 
@@ -62,15 +72,17 @@ In cases of suspected fraud or security violations, we reserve the right to temp
 
 ## 10. Chargebacks, Payment Disputes & Evidence
 
-If you experience an order or payment issue, please contact customer support before initiating a chargeback or payment dispute with your bank.
+If an order or payment is not right, please contact support so we can investigate and help promptly. You remain entitled to raise an unauthorized-payment complaint or dispute with your bank or payment provider; contacting us first is a request, not a condition on those rights.
 
-In the event of a chargeback or bank dispute, we submit server-side payment capture logs, order details, IP address logs, email communications, and download verification records to the payment processor or financial institution to demonstrate lawful transaction fulfillment.
+When responding to a dispute, we may provide relevant order and payment records, support correspondence and available email/download-access records to the payment processor or financial institution. We distinguish payment confirmation, email-provider acceptance, link creation and recorded file access rather than treating them as the same event. The bank or payment provider decides the dispute under its rules.
 
 ## 11. Customer Support & Grievance Redressal
 
-We provide customer support for access issues, payment verification, and template documentation through email (connectbooyahstudio@gmail.com) and WhatsApp (+91 7393845435).
+Customer support and grievances: connectbooyahstudio@gmail.com. WhatsApp: +91 7393845435 (https://wa.me/917393845435).
 
-MANISH KUMAR SONKAR is the designated Grievance Officer. Written grievances regarding orders, privacy, intellectual property, or payments will be acknowledged within 48 hours and addressed within statutory timelines.
+Grievance contact: MANISH KUMAR SONKAR, Owner of Booyahstudio, at S-8/88 A-1, Panchkosi Road, PURANI CHUNGI, SHIVPUR, Varanasi, Varanasi, Uttar Pradesh, 221003, using the same email and WhatsApp number. No separate third-party grievance contact is appointed on this website.
+
+Include your order reference where available, the account email and a clear description of the issue. The website contact form provides a reference and a copy of the submitted complaint for your records. Do not send passwords, OTPs, UPI PINs, CVVs or full payment-card details. We acknowledge complaints within 48 hours and resolve them within one month, or any shorter period required by applicable law. If an issue requires further investigation, we provide an update and the next steps. These support targets do not delay a shorter refund or non-delivery commitment stated in our policies.
 
 ## 12. General Disclaimers & Limitation of Liability
 

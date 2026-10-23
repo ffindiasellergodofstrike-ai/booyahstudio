@@ -23,3 +23,18 @@ test('Even a direct purchase-email call for a test order sends only a test notic
  assert.doesNotMatch(payload.html,/secret\.zip|href=|Download Item|Download Invoice/);
  assert.match(payload.text,/will not receive any product files/);assert.equal(payload.reply_to,'connectbooyahstudio@gmail.com');
 });
+
+
+test('compatibility email sender never claims success without configuration or after provider rejection', async t => {
+ const previous = { RESEND_API_KEY: process.env.RESEND_API_KEY, RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL };
+ t.after(() => { for (const [key, value] of Object.entries(previous)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; } });
+ delete process.env.RESEND_API_KEY;
+ delete process.env.RESEND_FROM_EMAIL;
+ const order = { id: 'test-notice', paymentEnvironment: 'test', customerEmail: 'buyer@example.test' };
+ const fetcher = t.mock.method(globalThis, 'fetch', async () => Response.json({ message: 'Rejected' }, { status: 400 }));
+ assert.equal((await sendPurchaseConfirmationEmail(order)).status, 'not_configured');
+ assert.equal(fetcher.mock.callCount(), 0);
+ process.env.RESEND_API_KEY = 're_synthetic'; process.env.RESEND_FROM_EMAIL = 'Store <orders@example.test>';
+ assert.equal((await sendPurchaseConfirmationEmail(order)).status, 'unavailable');
+ assert.equal((await sendPurchaseConfirmationEmail({ ...order, paymentEnvironment: undefined })).status, 'skipped');
+});

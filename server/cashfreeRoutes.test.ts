@@ -69,6 +69,10 @@ test('Cashfree HTTP purchase flow: trusted totals, file readiness, retry/replay,
   };
   const config=await(await originalFetch(base+'/api/config/payments')).json();assert.equal(config.gateways.cashfree.configured,true);
   const order=await makeOrder();assert.equal(order.total,PRODUCTS[0].price+PRODUCTS[1].price);
+  // Cashfree's documented INR minimum is ₹1; reject an unsupported trusted total before any gateway call.
+  const belowMinimum={...order,id:'minimum_total_order',total:0.99};await Store.saveGlobalOrder(belowMinimum);
+  const minimumResponse=await post('/api/payments/cashfree/initiate',{orderId:belowMinimum.id,agreeTerms:true});
+  assert.equal(minimumResponse.status,400);assert.match((await minimumResponse.json()).message,/at least ₹1/);assert.equal(createCalls,0);
   assert.equal((await post('/api/payments/cashfree/initiate',{orderId:order.id,agreeTerms:true},bob)).status,404);
   assert.equal((await post('/api/payments/cashfree/initiate',{orderId:order.id,agreeTerms:false})).status,400);
   missingFile=true;assert.equal((await post('/api/payments/cashfree/initiate',{orderId:order.id,agreeTerms:true})).status,503);assert.equal(createCalls,0);missingFile=false;

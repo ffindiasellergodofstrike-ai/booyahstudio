@@ -28,12 +28,14 @@ test('deployment links use explicit trusted origin or platform deployment values
 test('Vercel routing preserves API errors, dynamic categories, product shell tracing and safe deployment inputs', () => {
   assert.equal(deployment.framework,'vite'); assert.equal(deployment.installCommand,'pnpm install --frozen-lockfile');
   assert.deepEqual(deployment.rewrites[0],{source:'/api/:path*',destination:'/api'});
+  assert.deepEqual(deployment.rewrites.find((rule:any)=>rule.source==='/sitemap.xml'),{source:'/sitemap.xml',destination:'/api/page?path=sitemap.xml'});
   assert.equal(deployment.functions['api/index.ts'].includeFiles,'{build/api-app.mjs,dist/index.html}');
   assert.equal(deployment.functions['api/page.ts'].includeFiles,'{build/api-app.mjs,dist/index.html}');
   assert.ok(deployment.functions['api/index.ts'].maxDuration>=60);
   assert.equal(deployment.rewrites.find((rule:any)=>rule.source==='/product/:slug')?.destination,'/api/page?slug=:slug');
   assert.equal(deployment.rewrites.find((rule:any)=>rule.source==='/category/:slug'),undefined,'new admin categories must not rewrite to absent prebuilt files');
-  assert.deepEqual(deployment.rewrites.at(-1),{source:'/(.*)',destination:'/index.html'});
+  assert.deepEqual(deployment.rewrites.at(-1),{source:'/:path*',destination:'/api/page?path=:path*'}, 'unknown and policy-alias pages must reach status-aware HTML rendering');
+  assert.deepEqual(deployment.crons, [{ path: '/api/jobs/reconcile', schedule: '0 0 * * *' }], 'daily fallback must remain deployable on all Vercel plans');
   for (const slug of ['terms','privacy','refund','disclaimer']) assert.equal(deployment.rewrites.find((rule:any)=>rule.source===`/policies/${slug}`)?.destination,`/policies/${slug}/index.html`);
   const ignore=readFileSync(new URL('../.vercelignore',import.meta.url),'utf8');
   for(const path of ['**/*.zip','owner-files/','private-product-uploads/','.env','node_modules/']) assert.ok(ignore.split('\n').includes(path));

@@ -87,7 +87,8 @@ test('Resend sends one idempotent live order confirmation with correct products 
   assert.equal(calls.length, 1);
   const payload = JSON.parse(calls[0].body);
   assert.match(payload.text, /First template/); assert.match(payload.text, /Second template/); assert.match(payload.text, /1234567890/);
-  assert.match(payload.text, /https:\/\/store.example.test\/account/); assert.doesNotMatch(payload.text, /signedUrl|\.zip|token=/);
+  assert.match(payload.text, /https:\/\/store.example.test\/account\/downloads/); assert.match(payload.html, /href="https:\/\/store.example.test\/account\/downloads"/); assert.doesNotMatch(payload.text, /signedUrl|\.zip|token=/);
+  assert.match(payload.text, /Grievance contact: MANISH KUMAR SONKAR/); assert.match(payload.text, /https:\/\/wa.me\/917393845435/);
   assert.equal(calls[0].headers['Idempotency-Key'], 'order-BS-email-test');
   assert.equal(read(`orders/${order.id}`).emailDelivery.providerStatus, 'accepted');
   await sendOrderEmail(order); assert.equal(calls.length, 1);
@@ -219,4 +220,20 @@ test('an accepted historical order receipt is not resent if its outbox record is
   const worker = await retryOrderEmails(1);
   assert.equal(worker.discovered, 0); assert.equal(worker.attempted, 0);
   assert.equal(fetcher.mock.callCount(), 0);
+});
+
+
+test('the legacy live email entry point uses the stored verified order and ignores supplied private URLs', async t => {
+ const { sendPurchaseConfirmationEmail } = await import('./purchaseEmail');
+ const { order, values } = setup(t);
+ const calls: any[] = [];
+ t.mock.method(globalThis, 'fetch', async (_url: any, init: any) => { calls.push(JSON.parse(init.body)); return Response.json({ id: 'email_legacy_live' }); });
+ const callerSnapshot = { ...order, customerEmail: 'wrong@example.test', items: [{ productTitle: '<script>changed</script>' }] };
+ assert.equal((await sendPurchaseConfirmationEmail(callerSnapshot, [{ downloadUrl: 'https://private.invalid/file.zip?token=secret' }], { invoiceUrl: 'https://private.invalid/invoice' })).status, 'sent');
+ assert.equal(calls[0].to, order.customerEmail);
+ assert.match(calls[0].text, /First template/);
+ assert.doesNotMatch(JSON.stringify(calls[0]), /private.invalid|token=secret|wrong@example.test|<script>/);
+ values.set(`orders/${order.id}`, { ...order, id: order.id, paymentStatus: 'PENDING' });
+ assert.equal((await sendPurchaseConfirmationEmail(order)).status, 'skipped');
+ assert.equal(calls.length, 1);
 });

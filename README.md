@@ -4,6 +4,8 @@
 
 MANISH KUMAR SONKAR | Booyahstudio
 
+**Cashfree readiness review:** Read [CASHFREE-READINESS-HINDI.md](CASHFREE-READINESS-HINDI.md) for the verified code/policy flow and the production settings still requiring live validation.
+
 Single-seller digital-products store. React/Vite frontend, Express API on Vercel, Supabase Auth/PostgreSQL/private Storage, Cashfree checkout (with historic Razorpay support) and Resend email.
 
 **Keep the GitHub repository private:** the complete owner source includes paid product files. Only `dist` is the public website output. Never publish the owner ZIP as a public site asset.

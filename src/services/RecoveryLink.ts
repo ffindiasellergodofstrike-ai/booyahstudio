@@ -1,3 +1,5 @@
+import { authReturnSearch } from './AuthNavigation';
+
 export type RecoveryCredentials = { tokenHash: string } | { accessToken: string };
 export interface RecoveryLink {
   credentials: RecoveryCredentials | null;
@@ -13,7 +15,8 @@ export function readRecoveryLink(search = '', fragment = ''): RecoveryLink {
   const query = new URLSearchParams(search);
   const hash = new URLSearchParams(fragment.replace(/^#/, ''));
   // Keep only the supported internal return hint; never retain authentication material in history.
-  const cleanUrl = `/forgot-password${query.get('redirect') === 'checkout' ? '?redirect=checkout' : ''}`;
+  const returnQuery = new URLSearchParams(authReturnSearch(query.get('redirect') || undefined)).toString();
+  const cleanUrl = `/forgot-password${returnQuery ? '?' + returnQuery : ''}`;
   const result = (credentials: RecoveryCredentials | null, message = ''): RecoveryLink => ({ credentials, message, cleanUrl });
   const hasError = (params: URLSearchParams) => ['error', 'error_code', 'error_description'].some(key => params.has(key));
   if (hasError(query) || hasError(hash)) return result(null, invalidMessage);

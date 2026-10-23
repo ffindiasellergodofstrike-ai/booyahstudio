@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, Phone, UserRound } from 'lucide-react';
-import { authReturnSearch } from '../services/AuthNavigation';
+import { authDestination, authReturnSearch } from '../services/AuthNavigation';
 import { useApp } from '../context/AppContext';
 import { useToast } from '../context/ToastContext';
 import { AuthShell } from '../components/auth/AuthShell';
@@ -15,7 +15,7 @@ export const RegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false), [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   useEffect(() => {
-    if (isAuthenticated && currentUser) navigate(searchParams?.redirect === 'checkout' ? '/checkout' : '/account');
+    if (isAuthenticated && currentUser) navigate(authDestination(searchParams?.redirect));
   }, [isAuthenticated, currentUser, navigate, searchParams]);
   function handleMobileChange(e: React.ChangeEvent<HTMLInputElement>) { setMobile(e.target.value.replace(/\D/g, '').slice(0, 10)); setErrorMessage(null); }
   async function handleSubmit(e: React.FormEvent) {

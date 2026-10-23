@@ -1,6 +1,8 @@
-/** Only supported internal return destinations may be carried through authentication. */
-export const authDestination = (redirect?: string): string => redirect === 'checkout' ? '/checkout' : '/account';
-export const authReturnSearch = (redirect?: string): Record<string, string> => redirect === 'checkout' ? { redirect: 'checkout' } : {};
+/** Symbolic return hints only: never accept a customer-supplied URL or arbitrary path. */
+const AUTH_DESTINATIONS: Readonly<Record<string, string>> = Object.freeze({ checkout: '/checkout', downloads: '/account/downloads', orders: '/account/orders' });
+const isReturnHint = (redirect?: string): redirect is string => Boolean(redirect && Object.hasOwn(AUTH_DESTINATIONS, redirect));
+export const authDestination = (redirect?: string): string => isReturnHint(redirect) ? AUTH_DESTINATIONS[redirect] : '/account';
+export const authReturnSearch = (redirect?: string): Record<string, string> => isReturnHint(redirect) ? { redirect } : {};
 
 /** Never persist email authentication material in local navigation history. */
 export function safePreviousUrl(pathname: string, search = ''): string {

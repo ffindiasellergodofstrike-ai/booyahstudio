@@ -36,9 +36,12 @@ function emailPayload(order: any, refund: boolean) {
     refund
       ? `Refund confirmed by the payment provider: INR ${Number(order.refundedAmount).toFixed(2)}. Bank credit timing depends on the provider and bank. Review your current product access and contact support if anything is unclear.`
       : 'Your purchased product access is available. Sign in using the email address used for this order.',
-    `Account and downloads: ${appOrigin()}/account`, '',
+    `${refund ? 'Your orders' : 'Download your purchased files'}: ${appOrigin()}/account/${refund ? 'orders' : 'downloads'}`,
+    'Sign in with the same email used at checkout. Download links are generated securely when you choose a file.', '',
     `Support: ${BUSINESS.email}`,
-    `WhatsApp: ${BUSINESS.phone}`,
+    `WhatsApp: ${BUSINESS.phone} (${BUSINESS.phoneHref})`,
+    `Grievance contact: ${BUSINESS.owner}, at the same email and address.`,
+    `Copyright ${new Date().getFullYear()} ${BUSINESS.owner} | ${BUSINESS.name}. Product use is subject to its supplied license.`,
   ];
   return {
     from: process.env.RESEND_FROM_EMAIL!,
