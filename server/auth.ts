@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import { z } from 'zod';
 import { Store } from './store';
 import { supabaseAuth } from './supabase';
+import { RecoveryError, verifyRecoveryBearer, claimRecoverySession, updatePasswordWithBearer } from './supabaseRecovery';
 import type { Express, RequestHandler } from 'express';
 const hash = (v: string) => crypto.createHash('sha256').update(v).digest('hex');
 const normalizedEmail = z.string().trim().email().max(254).transform(value => value.toLowerCase());
@@ -84,10 +85,33 @@ export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
     if (error) { if (error.status === 429) res.set('Retry-After', '60'); return res.status(emailFailure(error)).json({ success: false, message: 'Recovery email could not be requested. Please retry later.', retryAfter: error.status === 429 ? 60 : undefined }); }
     res.json({ success: true, message: 'If the account exists, check its email for a recovery link.' });
   });
-  // Token hash arrives from the Supabase recovery email template. POST prevents link scanners consuming it.
+  // Support custom token-hash links and Supabase's default implicit recovery link.
+  // Both are verified only when a password is explicitly submitted.
   app.post('/api/auth/reset-password', limiter, async (req, res) => {
-    const input = z.object({ tokenHash: z.string().min(10).max(256), password: z.string().min(8).max(128), confirmPassword: z.string().optional() }).refine(value => value.confirmPassword === undefined || value.password === value.confirmPassword).safeParse(req.body);
+    const fields = { password: z.string().min(8).max(128), confirmPassword: z.string().optional() };
+    const input = z.union([
+      z.object({ tokenHash: z.string().min(10).max(256), ...fields }).strict(),
+      z.object({ accessToken: z.string().min(20).max(8192), ...fields }).strict(),
+    ]).refine(value => value.confirmPassword === undefined || value.password === value.confirmPassword).safeParse(req.body);
     if (!input.success) return res.status(400).json({ success: false, message: 'A recovery link and password of at least 8 characters are required.' });
+    if ('accessToken' in input.data) {
+      try {
+        const { user, sessionId, client } = await verifyRecoveryBearer(input.data.accessToken);
+        await claimRecoverySession(sessionId);
+        await Store.updateUserProfile(user.id, { sessionValidAfter: Date.now() });
+        await updatePasswordWithBearer(input.data.accessToken, input.data.password);
+        try { await Store.updateUserProfile(user.id, { sessionValidAfter: Date.now() }); }
+        catch { return res.status(503).json({ success: false, code: 'RECOVERY_RESTART', message: 'Your password was updated, but session cleanup could not be confirmed. Request a new recovery email or contact support.' }); }
+        // Password mutation already succeeded. Provider logout failure must not
+        // falsely report that the password is unchanged; local sessions are revoked.
+        try { await client.auth.admin.signOut(input.data.accessToken, 'global'); } catch { /* best effort provider cleanup */ }
+        res.clearCookie('sid', cookie);
+        return res.json({ success: true, message: 'Password updated. Please sign in again.' });
+      } catch (error) {
+        if (error instanceof RecoveryError) return res.status(error.status).json({ success: false, code: error.code, message: error.message });
+        throw error;
+      }
+    }
     const client = supabaseAuth();
     const { data, error } = await client.auth.verifyOtp({ token_hash: input.data.tokenHash, type: 'recovery' });
     if (error || !data.user || !data.session) return res.status(400).json({ success: false, code: 'RECOVERY_INVALID', message: 'Recovery link is invalid, expired or already used. Request a new email.' });
@@ -96,7 +120,7 @@ export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
     const result = await client.auth.updateUser({ password: input.data.password });
     if (result.error) return res.status(400).json({ success: false, code: 'RECOVERY_RESTART', message: 'Password update failed. Request a new recovery link.' });
     await Store.updateUserProfile(data.user.id, { sessionValidAfter: Date.now() });
-    await client.auth.signOut({ scope: 'global' });
+    try { await client.auth.signOut({ scope: 'global' }); } catch { /* password already changed and store sessions revoked */ }
     res.clearCookie('sid', cookie);
     res.json({ success: true, message: 'Password updated. Please sign in again.' });
   });

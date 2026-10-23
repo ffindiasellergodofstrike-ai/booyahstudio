@@ -30,14 +30,14 @@ connectbooyahstudio@gmail.com · WhatsApp +91 7393845435
 2. Set Auth **Site URL** to your final HTTPS domain, provisionally `https://www.booyahstudio.shop` from the existing repository.
 3. Add allowed redirect URLs `https://www.booyahstudio.shop/login` and `https://www.booyahstudio.shop/forgot-password`. Add your exact development URLs separately if needed.
 4. Configure custom SMTP using your **Resend SMTP** settings shown in the Resend dashboard. Verify its sending domain and sender. The Vercel Resend API key alone does not configure Supabase email.
-5. In the **Reset Password** email template, use this link (replace the domain if yours differs):
+5. In the **Reset Password** email template, this token-hash link is recommended:
 
 ```html
 <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}">Reset your Booyahstudio password</a>
 ```
 
 6. Keep Supabase's supported confirmation link in the **Confirm signup** template, and brand its text as Booyahstudio. After confirming, the customer signs in on `/login`.
-7. Test a new signup, confirmation, login, logout and password-reset email. Opening recovery does not change the password: the customer submits the new password, then the backend verifies the one-time Supabase recovery token. Used/expired links must fail. Earlier store sessions become invalid after reset.
+7. Test signup, confirmation, login, logout and password recovery for an existing account. Both the custom token-hash link and Supabase's default implicit recovery link are supported. Opening the page never changes the password; the customer explicitly submits a new password and the server verifies the recovery proof. Credentials are removed from the URL and not stored in browser storage. Expired/replayed links fail, and earlier store sessions become invalid after reset. See `RECOVERY-FIX.md`.
 
 ## 4. Private product ZIPs
 

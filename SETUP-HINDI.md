@@ -15,13 +15,13 @@ Admin panel `/admin` par email/password se khulta hai. Owner role ki first-time 
 5. Site URL: exact final HTTPS origin, jaise `https://www.booyahstudio.shop`. APP_URL bhi yahi origin ho; path/query mat daalein.
 6. Redirect allowlist mein final origin ke `/login` aur `/forgot-password` add karein. Local development/preview ke exact origins alag add karein; production mein broad wildcard mat use karein.
 7. Confirm signup email template ke button mein `{{ .ConfirmationURL }}` use karein. App signup confirmation ke baad `/login` bhejta hai; user email/password se login karega.
-8. **Reset Password email template** ka link exactly is flow se match kare:
+8. **Reset Password email template** ke liye recommended token-hash link:
 
 ```html
 <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}">Reset your password</a>
 ```
 
-Backend redirectTo ko trusted APP_URL + `/forgot-password` set karta hai. Page email form ya token ke saath new-password form dikhata hai. Page kholne se token consume nahi hota; password submit hone par recovery token verify hota hai. Invalid/expired/reused links par naya email request karein. Success ke baad purane app sessions invalidate hote hain aur fresh login chahiye.
+Backend redirectTo ko trusted APP_URL + `/forgot-password` set karta hai. Is custom token-hash flow mein page kholne par app OTP verify nahi karta; password submit hone par token verify hota hai. Supabase ka default `{{ .ConfirmationURL }}` recovery link bhi supported hai: provider email verify karke `#access_token=...&type=recovery` bhejta hai aur page new-password form kholta hai. App original bearer ko server par verify karta hai; refresh token retain/send nahi karta. Recovery credentials address bar/history se hata di jaati hain. Invalid/expired/reused links par naya email request karein. Success ke baad purane app sessions invalidate hote hain aur fresh login chahiye. Existing account ko dobara register karne ki zaroorat nahi. See `RECOVERY-FIX.md`.
 
 ## 2. Supabase Auth email via Resend SMTP
 
