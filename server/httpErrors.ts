@@ -13,9 +13,9 @@ export const apiErrorHandler: ErrorRequestHandler = (error, req, res, _next) => 
     : invalidBody ? 'The request body is invalid or incomplete. Refresh and try again.'
     : invalidUpload ? 'The uploaded form has invalid fields or too many files.'
     : 'Service temporarily unavailable. Please retry or contact support with this reference.';
-  // Query strings, headers, user input and exception messages can contain secrets.
-  // Emit only a bounded route category and correlation reference to runtime logs.
-  console.error(JSON.stringify({ event: 'API_REQUEST_FAILED', requestId, status, method: req.method,
-    route: req.path.startsWith('/api/') ? '/api/' : 'page', errorType: tooLarge ? 'PAYLOAD_TOO_LARGE' : invalidBody || invalidUpload ? 'INVALID_BODY' : 'SERVICE_ERROR' }));
+  if (status >= 500) {
+    console.error(JSON.stringify({ event: 'API_REQUEST_FAILED', requestId, status, method: req.method,
+      route: req.path.startsWith('/api/') ? '/api/' : 'page', errorType: 'SERVICE_ERROR' }));
+  }
   res.status(status).set('Cache-Control', 'private, no-store').set('X-Request-ID', requestId).json({ success: false, message, requestId });
 };

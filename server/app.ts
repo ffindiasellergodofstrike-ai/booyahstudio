@@ -58,15 +58,53 @@ export interface AuthenticatedRequest extends Request {
 export const app = express();
 
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    useDefaults: false,
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://sdk.cashfree.com",
+        "https://checkout.razorpay.com",
+        ...(process.env.NODE_ENV === 'production' ? [] : ["'unsafe-eval'"]),
+      ],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
+      connectSrc: [
+        "'self'",
+        "https://*.cashfree.com",
+        "https://api.razorpay.com",
+        "https://lumberjack.razorpay.com",
+        "https://*.supabase.co",
+        ...(process.env.NODE_ENV === 'production' ? [] : ["ws:", "wss:", "http://localhost:*", "http://127.0.0.1:*", "https://*.run.app", "https://*.google.com"]),
+      ],
+      frameSrc: ["'self'", "https://*.cashfree.com", "https://api.razorpay.com", "https://checkout.razorpay.com"],
+      frameAncestors: process.env.NODE_ENV === 'production'
+        ? ["'self'"]
+        : ["'self'", "https://aistudio.google.com", "https://*.google.com", "https://*.googleusercontent.com", "https://*.usercontent.goog", "https://*.run.app", "http://localhost:*", "http://127.0.0.1:*"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'", "https://*.cashfree.com", "https://api.razorpay.com"],
+    },
+  },
+  frameguard: process.env.NODE_ENV === 'production' ? { action: 'sameorigin' } : false,
+  crossOriginResourcePolicy: process.env.NODE_ENV === 'production' ? { policy: 'same-origin' } : false,
+  crossOriginOpenerPolicy: process.env.NODE_ENV === 'production' ? { policy: 'same-origin' } : false,
   crossOriginEmbedderPolicy: false,
 }));
 
+const isAllowedPreviewOrigin = (origin?: string) =>
+  process.env.NODE_ENV !== 'production' &&
+  typeof origin === 'string' &&
+  /^https:\/\/ais-(?:dev|pre)-[a-z0-9-]+-\d+\.[a-z0-9-]+\.run\.app$/i.test(origin);
+
 // Block direct access to internal data, private archives, server source code, and configuration files
 const BLOCKED_PATH_PATTERNS = [
-  /^\/(\.data|\.env|demofiles|templates|owner-files|supabase|docs|server|scripts|build)(\/|$)/i,
+  /^\/(\.data|\.env|\.git|demofiles|templates|owner-files|private-product-uploads|supabase|docs|server|scripts|build)(\/|$)/i,
   /^\/api\/index(\.ts|\.js)?$/i,
-  /\.zip$/i,
+  /\.(?:zip|tar|gz|7z|rar|sql|bak|map)$/i,
   /\.ya?ml$/i,
   /\.lock$/i,
   /\.py$/i,
@@ -88,7 +126,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     return res.status(404).send('Not Found');
   }
 
-  if (BLOCKED_PATH_PATTERNS.some(pattern => pattern.test(safePath))) {
+  const isViteDevModule =
+    process.env.NODE_ENV !== 'production' &&
+    (safePath.startsWith('/node_modules/') || safePath.startsWith('/@'));
+
+  if (!isViteDevModule && BLOCKED_PATH_PATTERNS.some(pattern => pattern.test(safePath))) {
     return res.status(404).send('Not Found');
   }
 
@@ -97,7 +139,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || origin.replace(/\/+$/, '') === getConfiguredAppUrl()) {
+    if (!origin || origin.replace(/\/+$/, '') === getConfiguredAppUrl() || isAllowedPreviewOrigin(origin)) {
       return callback(null, true);
     }
     if (process.env.NODE_ENV !== 'production') {
@@ -128,7 +170,10 @@ app.use('/api', (req, res, next) => {
   const signedWebhook = ['/payments/razorpay/webhook', '/payments/cashfree/webhook', '/payments/cashfree/disputes/webhook', '/emails/resend/webhook'].includes(req.path);
   if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !signedWebhook) {
     const origin = req.get('origin');
-    if ((origin && origin !== getConfiguredAppUrl()) || req.get('sec-fetch-site') === 'cross-site') return res.status(403).json({ message: 'Cross-site request denied.' });
+    const previewAllowed = isAllowedPreviewOrigin(origin);
+    if ((origin && origin !== getConfiguredAppUrl() && !previewAllowed) || (!previewAllowed && req.get('sec-fetch-site') === 'cross-site')) {
+      return res.status(403).json({ message: 'Cross-site request denied.' });
+    }
   }
   next();
 });

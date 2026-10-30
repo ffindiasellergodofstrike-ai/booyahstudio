@@ -512,7 +512,13 @@ adminRouter.get('/settings', async (req: any, res: Response) => {
 
 adminRouter.put('/settings', async (req: any, res: Response) => {
   try {
-    await Store.saveGlobalSettings(req.body);
+    if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+      return res.status(400).json({ success: false, message: 'Settings payload must be a JSON object.' });
+    }
+    const sanitized = Object.fromEntries(
+      Object.entries(req.body).filter(([key]) => !['__proto__', 'constructor', 'prototype'].includes(key))
+    );
+    await Store.saveGlobalSettings(sanitized);
     res.json({ success: true, message: 'Settings saved successfully.' });
   } catch (err: any) {
     res.status(500).json({ success: false, message: 'Failed to save settings.' });

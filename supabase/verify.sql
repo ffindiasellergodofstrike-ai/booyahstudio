@@ -1,32 +1,40 @@
--- Run only against a disposable database after the migration.
+-- Non-destructive verification script: runs inside BEGIN ... ROLLBACK so no existing customer, order, or payment data is persisted or modified.
 begin;
 set local role service_role;
 do $$
-declare snapshot jsonb;
+declare
+ order_doc jsonb;
 begin
- perform public.store_write('validation_user/u/profile','{"name":"Synthetic"}'::jsonb,'set');
- perform public.store_write('validation_user/u/credentials/passwordHash','"synthetic-hash"'::jsonb,'set');
- if public.store_read('validation_user/u/profile/name') <> '"Synthetic"'::jsonb then raise exception 'nested write failed'; end if;
- perform public.store_multiple('{"validation_order/o":{"status":"PAID"},"validation_user/u/orders/o":{"status":"PAID"}}'::jsonb);
- if public.store_read('validation_order/o') <> public.store_read('validation_user/u/orders/o') then raise exception 'mirrored order failed'; end if;
- snapshot:=public.store_snapshot('validation_order','o');
- if not public.store_compare_set('validation_order','o',(snapshot->>'version')::bigint,'{"status":"REFUNDED"}'::jsonb) then raise exception 'compare and set failed'; end if;
- if public.store_compare_set('validation_order','o',(snapshot->>'version')::bigint,'{"status":"PAID"}'::jsonb) then raise exception 'stale overwrite permitted'; end if;
- perform public.store_write('validation_user/u/credentials',null,'delete');
- if public.store_read('validation_user/u/credentials') is not null then raise exception 'nested delete failed'; end if;
- if public.store_read('validation_user/u/profile/name') <> '"Synthetic"'::jsonb then raise exception 'delete destroyed sibling'; end if;
- begin
-  perform public.store_multiple('{"validation_order/o":{"status":"BAD"},"zz_invalid":42}'::jsonb);
-  raise exception 'invalid transaction succeeded';
- exception when others then
-  if public.store_read('validation_order/o/status') <> '"REFUNDED"'::jsonb then raise exception 'transaction rollback failed'; end if;
- end;
+ perform public.store_operation('set', 'orders/verify_tx_order', '{"id":"verify_tx_order","userId":"verify_tx_user","total":100,"paymentStatus":"PENDING","status":"PENDING","deliveryStatus":"PENDING","downloadStatus":"UNAVAILABLE","items":[{"productId":"verify_item","productTitle":"Verify Item","price":100,"quantity":1}]}'::jsonb);
+ order_doc := public.store_operation('bind_cashfree', 'orders/verify_tx_order', '{"cashfreeOrderId":"verify_tx_order","cfOrderId":"cf_verify_tx","paymentProvider":"Cashfree","paymentEnvironment":"test","policyVersion":"verify","policyAcceptedAt":"2026-10-30T00:00:00Z"}'::jsonb);
+ if order_doc->>'cashfreeOrderId' <> 'verify_tx_order' then
+  raise exception 'Cashfree order binding verification failed';
+ end if;
+ order_doc := public.store_operation('sync_cashfree_snapshot', 'orders/verify_tx_order', '{"payments":[{"id":"pay_verify_tx","order_id":"verify_tx_order","amount":10000,"currency":"INR","status":"SUCCESS","environment":"test"}],"refunds":[]}'::jsonb);
+ if order_doc->>'paymentStatus' <> 'PAID' or order_doc->>'deliveryStatus' <> 'TEST_ONLY' then
+  raise exception 'Cashfree sandbox snapshot isolation verification failed';
+ end if;
 end $$;
 reset role;
 do $$
+declare
+ tbl text;
 begin
- if has_table_privilege('anon','public.store_documents','SELECT') or has_table_privilege('authenticated','public.store_documents','SELECT') then raise exception 'public data exposure'; end if;
- if has_function_privilege('anon','public.store_read(text)','EXECUTE') or has_function_privilege('authenticated','public.store_compare_set(text,text,bigint,jsonb)','EXECUTE') then raise exception 'public function exposure'; end if;
- if not (select relrowsecurity from pg_class where oid='public.store_documents'::regclass) then raise exception 'RLS not enabled'; end if;
+ foreach tbl in array array['store_state','cashfree_order_bindings','cashfree_payments','cashfree_refunds'] loop
+  if has_table_privilege('anon', 'public.' || tbl, 'SELECT') or has_table_privilege('authenticated', 'public.' || tbl, 'SELECT') then
+   raise exception 'Public/authenticated table exposure on %', tbl;
+  end if;
+  if not (select relrowsecurity from pg_class where oid = ('public.' || tbl)::regclass) then
+   raise exception 'RLS not enabled on %', tbl;
+  end if;
+ end loop;
+ if has_function_privilege('anon', 'public.store_operation(text,text,jsonb)', 'EXECUTE') or
+    has_function_privilege('authenticated', 'public.store_operation(text,text,jsonb)', 'EXECUTE') then
+  raise exception 'Public/authenticated function exposure on store_operation';
+ end if;
+ if has_function_privilege('anon', 'public.store_set(jsonb,text[],jsonb)', 'EXECUTE') or
+    has_function_privilege('authenticated', 'public.store_set(jsonb,text[],jsonb)', 'EXECUTE') then
+  raise exception 'Public/authenticated function exposure on store_set';
+ end if;
 end $$;
 rollback;

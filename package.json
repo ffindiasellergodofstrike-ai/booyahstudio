@@ -13,7 +13,9 @@
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test server/*.test.ts src/services/*.test.ts",
-    "check:vercel": "node scripts/check-vercel-runtime.mjs"
+    "check:vercel": "node scripts/check-vercel-runtime.mjs",
+    "package:products": "node scripts/package-products.mjs",
+    "upload:products:dry-run": "node scripts/upload-product-zips.mjs --dry-run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

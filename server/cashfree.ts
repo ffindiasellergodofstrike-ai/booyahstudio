@@ -11,7 +11,7 @@ const merchantOrderId = /^[A-Za-z0-9_-]{3,45}$/;
 const providerId = /^[A-Za-z0-9_-]{1,100}$/;
 const paymentStates = new Set(['SUCCESS', 'FAILED', 'PENDING', 'USER_DROPPED', 'CANCELLED', 'NOT_ATTEMPTED']);
 export function cashfreeConfig() {
-  const mode = process.env.CASHFREE_ENV || 'sandbox';
+  const mode = (process.env.CASHFREE_ENV || 'sandbox').trim().toLowerCase();
   if (!['sandbox', 'production'].includes(mode)) throw new Error('CASHFREE_ENV must be sandbox or production.');
   const version = process.env.CASHFREE_API_VERSION || '2026-01-01';
   if (!/^20\d{2}-\d{2}-\d{2}$/.test(version)) throw new Error('Invalid Cashfree API version.');
@@ -57,12 +57,13 @@ export function moneyPaise(value: unknown): number | null {
   return Number.isFinite(amount) && Number.isSafeInteger(paise) && paise >= 0 && Math.abs(amount * 100 - paise) < 0.00001 ? paise : null;
 }
 export function verifyCashfreeSignature(raw: Buffer, signature: unknown, timestamp: unknown): boolean {
-  const secret = process.env.CASHFREE_SECRET_KEY;
+  const secret = process.env.CASHFREE_WEBHOOK_SECRET || process.env.CASHFREE_SECRET_KEY;
   if (!secret || !Buffer.isBuffer(raw) || typeof signature !== 'string' || typeof timestamp !== 'string' ||
       !/^\d{10,16}$/.test(timestamp) || !/^[A-Za-z0-9+/]{43}=$/.test(signature)) return false;
   // Delivery retries may retain the original timestamp. Durable event/payment uniqueness
   // handles replay, and monotonic SQL transitions prevent restoring refunded access.
-  if (Number(timestamp) > Date.now() + 300000) return false;
+  const tsMs = timestamp.length <= 10 ? Number(timestamp) * 1000 : Number(timestamp);
+  if (!Number.isFinite(tsMs) || tsMs > Date.now() + 300000) return false;
   const expected = crypto.createHmac('sha256', secret).update(timestamp).update(raw).digest();
   const actual = Buffer.from(signature, 'base64');
   return actual.length === expected.length && crypto.timingSafeEqual(expected, actual);
@@ -171,6 +172,7 @@ export function registerCashfreeRoutes(app: Express, auth: RequestHandler, limit
     res.json({success:true,orderId:order.id,paymentSessionId:remote.payment_session_id,environment:order.paymentEnvironment,mode:cashfreeConfig().mode});
   });
   app.post('/api/payments/cashfree/reconcile/:orderId', auth, limiter, async (req:any,res) => {
+    if (typeof req.params.orderId !== 'string' || !merchantOrderId.test(req.params.orderId)) return res.status(400).json({success:false,message:'Invalid order ID.'});
     const order = await Store.getGlobalOrder(req.params.orderId);
     const profile = await Store.getUserProfile(req.userId);
     if (!order || (order.userId !== req.userId && profile?.role !== 'admin')) return res.status(404).json({success:false,message:'Order not found.'});

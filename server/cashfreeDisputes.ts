@@ -7,7 +7,7 @@ import { BUSINESS } from '../src/config/business';
 import { PROXIED_UPLOAD_LIMIT_BYTES, PROXIED_UPLOAD_LIMIT_LABEL } from '../src/config/uploadLimits';
 import { cashfreeConfig, cashfreeRequest, verifyCashfreeSignature } from './cashfree';
 
-const DISPUTE_EVENTS = new Set(['DISPUTE_CREATED', 'DISPUTE_UPDATED', 'DISPUTE_CLOSED']);
+const DISPUTE_EVENTS = new Set(['DISPUTE_CREATED', 'DISPUTE_UPDATED', 'DISPUTE_CLOSED', 'DISPUTE_MERCHANT_WON', 'DISPUTE_MERCHANT_LOST']);
 const documentTypes = new Set(['Delivery/Service Proof', 'Statement of Service', 'Proof of Service Used', 'Cancellation of Service Proof', 'Refund Proof', 'Business model explanation', 'Terms & Conditions', 'Customer Withdrawal Letter', 'Certificate of Authenticity', 'Reseller Agreement']);
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: PROXIED_UPLOAD_LIMIT_BYTES, files: 1, fields: 6, fieldSize: 4000 } });
 const id = (value: unknown) => typeof value === 'string' || typeof value === 'number' ? String(value) : '';

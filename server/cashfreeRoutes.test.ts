@@ -13,14 +13,18 @@ test('Cashfree amounts, reference and raw signature validation reject manipulate
  assert.equal(moneyPaise('100.01'),10001);assert.equal(moneyPaise('100.001'),null);assert.equal(moneyPaise(null),null);assert.equal(moneyPaise(-1),null);
  assert.match(cashfreeIdempotencyKey('one'),/^[a-f\d]{8}-[a-f\d]{4}-4[a-f\d]{3}-[89ab][a-f\d]{3}-[a-f\d]{12}$/);
  assert.equal(cashfreeIdempotencyKey('one'),cashfreeIdempotencyKey('one'));
- const raw=Buffer.from('{"amount":1.00}'),timestamp=String(Date.now()),signature=crypto.createHmac('sha256','test-secret').update(timestamp).update(raw).digest('base64');
- assert.equal(verifyCashfreeSignature(raw,signature,timestamp),true);assert.equal(verifyCashfreeSignature(Buffer.from('{"amount":1}'),signature,timestamp),false);
- assert.equal(verifyCashfreeSignature(raw,'bad',timestamp),false);
- const order={id:'local',paymentProvider:'Cashfree',cashfreeOrderId:'provider',paymentEnvironment:'test',total:100};
- const payment={cf_payment_id:'1001',order_id:'provider',payment_amount:100,payment_currency:'INR',payment_status:'SUCCESS'};
- assert.equal(matchesCashfreePayment(payment,order),true);
- for(const invalid of [{...payment,payment_amount:1},{...payment,order_id:'wrong'},{...payment,payment_currency:'USD'}])assert.equal(matchesCashfreePayment(invalid,order),false);
- assert.equal(matchesCashfreePayment(payment,{...order,paymentEnvironment:'live'}),false);
+  const raw=Buffer.from('{"amount":1.00}'),timestamp=String(Date.now()),signature=crypto.createHmac('sha256','test-secret').update(timestamp).update(raw).digest('base64');
+  assert.equal(verifyCashfreeSignature(raw,signature,timestamp),true);assert.equal(verifyCashfreeSignature(Buffer.from('{"amount":1}'),signature,timestamp),false);
+  assert.equal(verifyCashfreeSignature(raw,'bad',timestamp),false);
+  const futureMs=String(Date.now()+600000),futureSig=crypto.createHmac('sha256','test-secret').update(futureMs).update(raw).digest('base64');
+  assert.equal(verifyCashfreeSignature(raw,futureSig,futureMs),false);
+  const futureSec=String(Math.floor((Date.now()+600000)/1000)),futureSecSig=crypto.createHmac('sha256','test-secret').update(futureSec).update(raw).digest('base64');
+  assert.equal(verifyCashfreeSignature(raw,futureSecSig,futureSec),false);
+  const order={id:'local',paymentProvider:'Cashfree',cashfreeOrderId:'provider',paymentEnvironment:'test',total:100};
+  const payment={cf_payment_id:'1001',order_id:'provider',payment_amount:100,payment_currency:'INR',payment_status:'SUCCESS'};
+  assert.equal(matchesCashfreePayment(payment,order),true);
+  for(const invalid of [{...payment,payment_amount:1},{...payment,order_id:'wrong'},{...payment,payment_currency:'USD'}])assert.equal(matchesCashfreePayment(invalid,order),false);
+  assert.equal(matchesCashfreePayment(payment,{...order,paymentEnvironment:'live'}),false);
 });
 
 test('Cashfree HTTP purchase flow: trusted totals, file readiness, retry/replay, ownership, partial allocation, refunds and test isolation',async()=>{
@@ -62,13 +66,19 @@ test('Cashfree HTTP purchase flow: trusted totals, file readiness, retry/replay,
    const response=await post('/api/orders/create',{items:PRODUCTS.slice(0,2).map(p=>({productId:p.id,quantity:1,price:1})),total:1,customer:{fullName:'Alice',email:'alice@example.com',phone:'9876543210'}});
    assert.equal(response.status,201);return (await response.json()).order;
   };
-  const webhook=async(id:string,valid=true)=>{
-   const raw=JSON.stringify({type:'PAYMENT_SUCCESS_WEBHOOK',data:{order:{order_id:id},payment:{payment_status:'SUCCESS'}}}),timestamp=String(Date.now());
+  const webhook=async(id:string,valid=true,type='PAYMENT_SUCCESS_WEBHOOK',status='SUCCESS')=>{
+   const raw=JSON.stringify({type,data:{order:{order_id:id},payment:{payment_status:status}}}),timestamp=String(Date.now());
    const signature=crypto.createHmac('sha256','test-secret').update(timestamp).update(raw).digest('base64');
    return originalFetch(base+'/api/payments/cashfree/webhook',{method:'POST',headers:{'Content-Type':'application/json','x-webhook-signature':valid?signature:'bad','x-webhook-timestamp':timestamp,Origin:'https://cashfree.com'},body:raw});
   };
-  const config=await(await originalFetch(base+'/api/config/payments')).json();assert.equal(config.gateways.cashfree.configured,true);
+  const configRes=await originalFetch(base+'/api/config/payments');
+  const csp=configRes.headers.get('content-security-policy')||'';
+  assert.match(csp,/default-src 'self'/);assert.match(csp,/https:\/\/sdk\.cashfree\.com/);assert.match(csp,/frame-ancestors 'self'/);assert.match(csp,/object-src 'none'/);
+  const config=await configRes.json();assert.equal(config.gateways.cashfree.configured,true);
   const order=await makeOrder();assert.equal(order.total,PRODUCTS[0].price+PRODUCTS[1].price);
+  assert.equal((await post('/api/payments/cashfree/initiate',{orderId:order.id,agreeTerms:true},'')).status,401);
+  assert.equal((await post(`/api/payments/cashfree/reconcile/${order.id}`,{},'')).status,401);
+  assert.equal((await post('/api/payments/cashfree/reconcile/invalid$order',{})).status,400);
   // Cashfree's documented INR minimum is ₹1; reject an unsupported trusted total before any gateway call.
   const belowMinimum={...order,id:'minimum_total_order',total:0.99};await Store.saveGlobalOrder(belowMinimum);
   const minimumResponse=await post('/api/payments/cashfree/initiate',{orderId:belowMinimum.id,agreeTerms:true});
@@ -91,6 +101,11 @@ test('Cashfree HTTP purchase flow: trusted totals, file readiness, retry/replay,
   refundUnavailable=false;
   const successes=await Promise.all([webhook(order.id),webhook(order.id),post(`/api/payments/cashfree/reconcile/${order.id}`,{})]);for(const success of successes)assert.equal(success.status,200);
   let saved=await Store.getGlobalOrder(order.id);assert.equal(saved.paymentStatus,'PAID');assert.equal(saved.deliveryStatus,'DELIVERED');
+  // Delayed out-of-order FAILED / USER_DROPPED attempt arriving after verified SUCCESS must never revoke paid order
+  attempts.set(order.id,[payment,{cf_payment_id:'100099',order_id:order.id,payment_amount:order.total,payment_currency:'INR',payment_status:'USER_DROPPED'}]);
+  assert.equal((await webhook(order.id,true,'PAYMENT_USER_DROPPED_WEBHOOK','USER_DROPPED')).status,200);
+  saved=await Store.getGlobalOrder(order.id);assert.equal(saved.paymentStatus,'PAID');assert.equal(saved.deliveryStatus,'DELIVERED');
+  attempts.set(order.id,[payment]);
   assert.equal(Object.keys(await Store.get<Record<string,unknown>>('purchases') || {}).length,2);
   assert.equal((await post(`/api/downloads/${PRODUCTS[0].id}/token`,{orderId:order.id},bob)).status,403);
   assert.equal((await post(`/api/downloads/${PRODUCTS[0].id}/token`,{orderId:order.id})).status,200);

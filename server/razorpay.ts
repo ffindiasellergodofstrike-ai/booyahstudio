@@ -78,7 +78,7 @@ export function registerRazorpayRoutes(app: Express, auth: RequestHandler, limit
     const saved = await syncPayment(order, payment);
     res.json({ success: saved.paymentStatus === 'PAID' && saved.deliveryStatus !== 'REVOKED', status: saved.deliveryStatus === 'REVOKED' ? 'REVOKED' : saved.paymentStatus });
   });
-  app.post('/api/payments/razorpay/reconcile/:orderId', auth, async (req: any, res) => {
+  app.post('/api/payments/razorpay/reconcile/:orderId', auth, limiter, async (req: any, res) => {
     const order = await Store.getGlobalOrder(req.params.orderId);
     const profile = await Store.getUserProfile(req.userId);
     if (!order || (order.userId !== req.userId && profile?.role !== 'admin')) return res.status(404).json({ success: false, message: 'Order not found.' });

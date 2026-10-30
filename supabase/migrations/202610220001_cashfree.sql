@@ -1,4 +1,18 @@
 -- Apply after the existing store schema. Idempotent; preserves existing records.
+create table if not exists public.store_state (id boolean primary key default true check(id), data jsonb not null default '{}'::jsonb);
+insert into public.store_state(id) values(true) on conflict do nothing;
+alter table public.store_state enable row level security;
+revoke all on public.store_state from anon, authenticated;
+
+create or replace function public.store_set(doc jsonb, segments text[], val jsonb) returns jsonb
+language plpgsql immutable set search_path = public as $$
+begin
+ if cardinality(segments)=0 then return val; end if;
+ return jsonb_set(coalesce(doc,'{}'), array[segments[1]],
+  case when cardinality(segments)=1 then val else public.store_set(doc->segments[1],segments[2:],val) end,true);
+end $$;
+revoke all on function public.store_set(jsonb,text[],jsonb) from public, anon, authenticated;
+
 -- Cashfree financial records are normalized; only the backend service role may access them.
 create table if not exists public.cashfree_order_bindings (
  environment text not null check(environment in ('live','test')),
@@ -362,3 +376,15 @@ begin
 end $$;
 revoke all on function public.store_operation(text,text,jsonb) from public, anon, authenticated;
 grant execute on function public.store_operation(text,text,jsonb) to service_role;
+
+-- Private product ZIPs. Do not add public/anonymous object policies.
+insert into storage.buckets (id,name,public) values ('products','products',false) on conflict(id) do update set public=false;
+-- Public catalog thumbnails only; never put product ZIPs in this bucket.
+insert into storage.buckets (id,name,public) values ('product-images','product-images',true) on conflict(id) do nothing;
+
+-- Restrictive policy protects paid objects even if an older permissive policy exists.
+-- Service-role signing/upload operations bypass RLS; browser roles may not read/write paid objects directly.
+drop policy if exists products_no_direct_client_access on storage.objects;
+create policy products_no_direct_client_access on storage.objects as restrictive for all to anon, authenticated
+ using (bucket_id <> 'products') with check (bucket_id <> 'products');
+

@@ -182,3 +182,44 @@ adminManagementRouter.post('/products/:id/file-upload/complete', async (req: any
   } catch (error) { storageError(res, error); }
   finally { if (lockKey) await Store.delete(lockKey).catch(() => undefined); }
 });
+
+adminManagementRouter.post('/products/bulk-upload-sync', async (req: any, res) => {
+  const input = z.object({
+    dryRun: z.boolean().default(true),
+    overwrite: z.boolean().default(false),
+    productIds: z.array(identifier).min(1).max(25).optional(),
+    reason,
+  }).strict().safeParse(req.body);
+  if (!input.success) {
+    return res.status(400).json({ success: false, message: 'Provide a valid sync request and a review reason of at least 10 characters.' });
+  }
+  try {
+    const { syncProductArchivesToSupabase, sanitizeStorageErrorMessage } = await import('./productStorageUpload');
+    try {
+      const report = await syncProductArchivesToSupabase({
+        adminUserId: String(req.userId || ''),
+        dryRun: input.data.dryRun,
+        overwrite: input.data.overwrite,
+        productIds: input.data.productIds,
+      });
+      await audit(req, input.data.dryRun ? 'PRIVATE_PRODUCT_BULK_SYNC_DRY_RUN' : 'PRIVATE_PRODUCT_BULK_SYNC', {
+        dryRun: report.dryRun,
+        overwrite: report.overwrite,
+        totalRequested: report.totalRequested,
+        succeeded: report.succeeded,
+        skippedExisting: report.skippedExisting,
+        failed: report.failed,
+        reason: input.data.reason,
+      });
+      return res.json({ success: report.failed === 0, report });
+    } catch (innerError) {
+      return res.status(503).json({
+        success: false,
+        message: sanitizeStorageErrorMessage(innerError),
+      });
+    }
+  } catch (error) {
+    return storageError(res, error);
+  }
+});
+

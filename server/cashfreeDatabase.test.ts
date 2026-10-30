@@ -111,9 +111,17 @@ test('Cashfree database: atomic verification, normalized isolation, retries, ref
    for(const table of ['cashfree_order_bindings','cashfree_payments','cashfree_refunds']) await assert.rejects(db.query(`select * from public.${table}`),/permission denied/);
    await db.exec('reset role');
   }
+  await db.exec(readFileSync(new URL('../supabase/backup_and_rollback.sql', import.meta.url),'utf8'));
   await db.exec(readFileSync(new URL('../supabase/migrations/202610220001_cashfree.sql', import.meta.url),'utf8'));
   await db.exec(readFileSync(new URL('../supabase/migrations/202610220001_cashfree.sql', import.meta.url),'utf8'));
-  assert.equal((await rpc('get','orders/one')).paymentStatus,'REFUNDED','migration reapplication preserves data');
+  await db.exec(readFileSync(new URL('../supabase/verify.sql', import.meta.url),'utf8'));
+  for(const role of ['anon','authenticated']) {
+   await db.exec(`set role ${role}`);
+   await assert.rejects(db.query('select * from private_backups.migration_snapshots'),/permission denied/);
+   await db.exec('reset role');
+  }
+  assert.equal((await db.query<any>('select count(*)::int as count from private_backups.migration_snapshots')).rows[0].count,1,'access-controlled pre-migration snapshot recorded');
+  assert.equal((await rpc('get','orders/one')).paymentStatus,'REFUNDED','migration, backup and verify.sql rollback preserve existing data');
   const historical={userId:'buyer',paymentEnvironment:'live',paymentProvider:'Razorpay',paymentStatus:'PAID',status:'PAID',transactionId:'pay_original',deliveryStatus:'DELIVERED',downloadStatus:'AVAILABLE',items:[{productId:'first'}]};
   assert.equal(isPaidOrderForProduct(historical,'buyer','first'),true,'historic Razorpay entitlement remains valid');
  } finally { await db.close(); }
