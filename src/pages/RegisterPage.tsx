@@ -21,7 +21,7 @@ export const RegisterPage: React.FC = () => {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault(); setErrorMessage(null);
     if (!name.trim() || name.trim().length < 2) { setErrorMessage('Please enter your full name (at least 2 characters).'); return; }
-    if (!/^[6-9][0-9]{9}$/.test(mobile)) { setErrorMessage('Please enter a valid 10-digit Indian mobile number.'); return; }
+    if (!mobile.trim() || mobile.trim().length < 5) { setErrorMessage('Please enter a valid phone number.'); return; }
     if (!email.trim() || !email.includes('@') || !email.includes('.')) { setErrorMessage('Please enter a valid email address.'); return; }
     if (!password || password.length < 8) { setErrorMessage('Choose a password with at least 8 characters.'); return; }
     if (password !== confirmPassword) { setErrorMessage('Your passwords do not match. Please check them and try again.'); return; }

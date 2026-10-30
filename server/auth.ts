@@ -41,11 +41,15 @@ export class AuthServiceServer {
 }
 export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
   app.post('/api/auth/register', limiter, async (req, res) => {
-    const parsed = z.object({ email: normalizedEmail, password: z.string().min(8).max(128), confirmPassword: z.string(), name: z.string().trim().min(2).max(100), mobile: z.string().regex(/^[6-9][0-9]{9}$/) }).safeParse(req.body);
+    const parsed = z.object({ email: normalizedEmail, password: z.string().min(8).max(128), confirmPassword: z.string(), name: z.string().trim().min(2).max(100), mobile: z.string().trim().min(5).max(30) }).safeParse(req.body);
     if (!parsed.success || parsed.data.password !== parsed.data.confirmPassword) return res.status(400).json({ success: false, message: 'Provide valid details and matching passwords of at least 8 characters.' });
     const { email, password, name, mobile } = parsed.data;
     const { error } = await supabaseAuth().auth.signUp({ email: email.toLowerCase(), password, options: { data: { name, mobile }, emailRedirectTo: `${appOrigin()}/login` } });
-    if (error) { if (error.status === 429) res.set('Retry-After', '60'); return res.status(error.status === 429 ? 429 : 400).json({ success: false, message: error.status === 429 ? 'Please wait before requesting another email.' : 'Could not register. Check your details or try password recovery.' }); }
+    if (error) {
+      console.error('Supabase Auth signUp error:', error);
+      if (error.status === 429) res.set('Retry-After', '60');
+      return res.status(error.status === 429 ? 429 : 400).json({ success: false, message: error.message || (error.status === 429 ? 'Please wait before requesting another email.' : 'Could not register. Check your details or try password recovery.') });
+    }
     res.status(201).json({ success: true, message: 'Check your email to confirm your account, then sign in.' });
   });
   app.post('/api/auth/resend-confirmation', limiter, async (req, res) => {

@@ -98,14 +98,18 @@ async function notify(orderInput: any, refund: boolean): Promise<EmailSendResult
       body: JSON.stringify(payload), signal: AbortSignal.timeout(15_000),
     });
     const result = await response.json();
-    if (!response.ok || typeof result?.id !== 'string' || !SAFE_ID.test(result.id)) throw new Error('Email provider rejected the request');
+    if (!response.ok || typeof result?.id !== 'string' || !SAFE_ID.test(result.id)) {
+      console.error('Resend API rejection:', response.status, result);
+      throw new Error('Email provider rejected the request');
+    }
     // "sent" is kept for compatibility with the atomic claim guard. providerStatus explicitly means API acceptance, not inbox receipt.
     const state = { ...metadata, status: 'sent', emailId: result.id, sentAt: new Date().toISOString(), acceptedAt: new Date().toISOString(), nextAttemptAt: null };
     await Store.update(path, state);
     await Store.set(`emailProviderIndex/${result.id}`, { notificationId, orderId: order.id, kind });
     await Store.rpc('email_provider_event', path, { notificationId, emailId: result.id, providerStatus: 'accepted', eventId: crypto.createHash('sha256').update(`accepted:${result.id}`).digest('hex'), eventCreatedAt: state.acceptedAt, receivedAt: state.acceptedAt });
     return { status: 'sent', notificationId };
-  } catch {
+  } catch (err) {
+    console.error('Resend email delivery exception:', err);
     const latest = await Store.get<any>(path);
     if (accepted(latest)) {
       // Repair acceptance persistence atomically; a delayed callback must never downgrade delivered/bounced state.
@@ -122,7 +126,10 @@ async function notify(orderInput: any, refund: boolean): Promise<EmailSendResult
 
 async function safelyNotify(order: any, refund: boolean): Promise<EmailSendResult> {
   try { return await notify(order, refund); }
-  catch { return { status: 'unavailable' }; } // A notification outage cannot undo a committed purchase.
+  catch (err) {
+    console.error('SafelyNotify caught error:', err);
+    return { status: 'unavailable' };
+  }
 }
 export async function sendOrderEmail(order: any) { return safelyNotify(order, false); }
 export async function sendRefundEmail(order: any) { return safelyNotify(order, true); }
