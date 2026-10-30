@@ -643,11 +643,29 @@ app.post('/api/user/orders', requireAuth, authRateLimiter, handleOrderCreation);
 // ============================================
 
 app.get('/api/config/payments', (_req, res) => {
-  const cashfree = cashfreeConfig();
-  res.json({ success: true, gateways: {
-    cashfree: { configured: cashfree.configured, environment: cashfree.environment },
-    razorpay: { configured: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.RAZORPAY_WEBHOOK_SECRET), environment: paymentEnvironment() },
-  } });
+  try {
+    let cashfree;
+    try {
+      cashfree = cashfreeConfig();
+    } catch {
+      cashfree = { configured: false, environment: 'test' };
+    }
+    let razorpayEnv = 'test';
+    try {
+      razorpayEnv = paymentEnvironment();
+    } catch {
+      razorpayEnv = 'test';
+    }
+    res.json({ success: true, gateways: {
+      cashfree: { configured: Boolean(cashfree?.configured), environment: cashfree?.environment || 'test' },
+      razorpay: { configured: Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.RAZORPAY_WEBHOOK_SECRET), environment: razorpayEnv },
+    } });
+  } catch (err) {
+    res.json({ success: true, gateways: {
+      cashfree: { configured: false, environment: 'test' },
+      razorpay: { configured: false, environment: 'test' },
+    } });
+  }
 });
 registerCashfreeRoutes(app, requireAuth, authRateLimiter);
 registerCashfreeDisputeRoutes(app, requireAuth, requireAdmin, authRateLimiter);
