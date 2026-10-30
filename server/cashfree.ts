@@ -11,13 +11,14 @@ const merchantOrderId = /^[A-Za-z0-9_-]{3,45}$/;
 const providerId = /^[A-Za-z0-9_-]{1,100}$/;
 const paymentStates = new Set(['SUCCESS', 'FAILED', 'PENDING', 'USER_DROPPED', 'CANCELLED', 'NOT_ATTEMPTED']);
 export function cashfreeConfig() {
-  const mode = (process.env.CASHFREE_ENV || 'sandbox').trim().toLowerCase();
+  const rawMode = (process.env.CASHFREE_ENV || 'sandbox').trim().replace(/^['"]|['"]$/g, '').toLowerCase();
+  const mode = rawMode === 'live' || rawMode === 'prod' ? 'production' : rawMode === 'test' ? 'sandbox' : rawMode;
   if (!['sandbox', 'production'].includes(mode)) throw new Error('CASHFREE_ENV must be sandbox or production.');
-  const version = process.env.CASHFREE_API_VERSION || '2026-01-01';
-  if (!/^20\d{2}-\d{2}-\d{2}$/.test(version)) throw new Error('Invalid Cashfree API version.');
+  const rawVersion = (process.env.CASHFREE_API_VERSION || '2025-01-01').trim().replace(/^['"]|['"]$/g, '').replace(/^v/i, '');
+  const version = /^20\d{2}-\d{2}-\d{2}$/.test(rawVersion) ? rawVersion : '2025-01-01';
   return { mode, environment: mode === 'production' ? 'live' : 'test', version,
     base: mode === 'production' ? 'https://api.cashfree.com/pg/' : 'https://sandbox.cashfree.com/pg/',
-    configured: Boolean(process.env.CASHFREE_APP_ID && process.env.CASHFREE_SECRET_KEY && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+    configured: Boolean(process.env.CASHFREE_APP_ID?.trim() && process.env.CASHFREE_SECRET_KEY?.trim() && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
   };
 }
 export class CashfreeError extends Error {
