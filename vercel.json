@@ -310,6 +310,10 @@
     "api/index.ts": {
       "maxDuration": 300,
       "includeFiles": "{build/api-app.mjs,dist/index.html}"
+    },
+    "api/private-checkout.ts": {
+      "includeFiles": "{build/api-app.mjs,build/private-checkout/checkout.js}",
+      "maxDuration": 60
     }
   },
   "$schema": "https://openapi.vercel.sh/vercel.json",
