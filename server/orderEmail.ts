@@ -44,7 +44,7 @@ function emailPayload(order: any, refund: boolean) {
     `Copyright ${new Date().getFullYear()} ${BUSINESS.owner} | ${BUSINESS.name}. Product use is subject to its supplied license.`,
   ];
   return {
-    from: process.env.RESEND_FROM_EMAIL!,
+    from: (process.env.RESEND_FROM_EMAIL || '').trim().replace(/^['"]|['"]$/g, ''),
     to: String(order.customerEmail || order.customer?.email || '').trim().toLowerCase(),
     reply_to: BUSINESS.email,
     subject: `${BUSINESS.name}: ${refund ? 'refund recorded' : 'order confirmed'} ${order.id}`,
@@ -66,7 +66,9 @@ async function notify(orderInput: any, refund: boolean): Promise<EmailSendResult
   if (current?.status === 'review_required') return { status: 'review_required', notificationId };
   if (Number(current?.nextAttemptAt || 0) > Date.now()) return { status: 'queued', notificationId };
   const metadata = { orderId: order.id, kind, notificationId, createdAt: current?.createdAt || new Date().toISOString() };
-  if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
+  const resendKey = (process.env.RESEND_API_KEY || '').trim().replace(/^['"]|['"]$/g, '');
+  const resendFrom = (process.env.RESEND_FROM_EMAIL || '').trim().replace(/^['"]|['"]$/g, '');
+  if (!resendKey || !resendFrom) {
     const queued = await Store.rpc<any>('queue_email_state', path, { ...metadata, status: 'not_configured', nextAttemptAt: Date.now() + 60_000 });
     if (accepted(queued)) return { status: 'sent', notificationId };
     if (queued.status === 'review_required') return { status: 'review_required', notificationId };
@@ -94,12 +96,11 @@ async function notify(orderInput: any, refund: boolean): Promise<EmailSendResult
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': notificationId },
+      headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json', 'Idempotency-Key': notificationId },
       body: JSON.stringify(payload), signal: AbortSignal.timeout(15_000),
     });
     const result = await response.json();
     if (!response.ok || typeof result?.id !== 'string' || !SAFE_ID.test(result.id)) {
-      console.error('Resend API rejection:', response.status, result);
       throw new Error('Email provider rejected the request');
     }
     // "sent" is kept for compatibility with the atomic claim guard. providerStatus explicitly means API acceptance, not inbox receipt.
@@ -108,8 +109,7 @@ async function notify(orderInput: any, refund: boolean): Promise<EmailSendResult
     await Store.set(`emailProviderIndex/${result.id}`, { notificationId, orderId: order.id, kind });
     await Store.rpc('email_provider_event', path, { notificationId, emailId: result.id, providerStatus: 'accepted', eventId: crypto.createHash('sha256').update(`accepted:${result.id}`).digest('hex'), eventCreatedAt: state.acceptedAt, receivedAt: state.acceptedAt });
     return { status: 'sent', notificationId };
-  } catch (err) {
-    console.error('Resend email delivery exception:', err);
+  } catch {
     const latest = await Store.get<any>(path);
     if (accepted(latest)) {
       // Repair acceptance persistence atomically; a delayed callback must never downgrade delivered/bounced state.
@@ -126,8 +126,7 @@ async function notify(orderInput: any, refund: boolean): Promise<EmailSendResult
 
 async function safelyNotify(order: any, refund: boolean): Promise<EmailSendResult> {
   try { return await notify(order, refund); }
-  catch (err) {
-    console.error('SafelyNotify caught error:', err);
+  catch {
     return { status: 'unavailable' };
   }
 }

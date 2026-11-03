@@ -17,11 +17,11 @@ export const RegisterPage: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated && currentUser) navigate(authDestination(searchParams?.redirect));
   }, [isAuthenticated, currentUser, navigate, searchParams]);
-  function handleMobileChange(e: React.ChangeEvent<HTMLInputElement>) { setMobile(e.target.value.replace(/\D/g, '').slice(0, 10)); setErrorMessage(null); }
+  function handleMobileChange(e: React.ChangeEvent<HTMLInputElement>) { setMobile(e.target.value.replace(/[^\d+\-\s()]/g, '').slice(0, 20)); setErrorMessage(null); }
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault(); setErrorMessage(null);
     if (!name.trim() || name.trim().length < 2) { setErrorMessage('Please enter your full name (at least 2 characters).'); return; }
-    if (!mobile.trim() || mobile.trim().length < 5) { setErrorMessage('Please enter a valid phone number.'); return; }
+    if (!mobile.trim() || mobile.replace(/\D/g, '').length < 5) { setErrorMessage('Please enter a valid phone number.'); return; }
     if (!email.trim() || !email.includes('@') || !email.includes('.')) { setErrorMessage('Please enter a valid email address.'); return; }
     if (!password || password.length < 8) { setErrorMessage('Choose a password with at least 8 characters.'); return; }
     if (password !== confirmPassword) { setErrorMessage('Your passwords do not match. Please check them and try again.'); return; }
@@ -29,7 +29,7 @@ export const RegisterPage: React.FC = () => {
     try {
       const res = await register({ name: name.trim(), mobile: mobile.trim(), email: email.trim().toLowerCase(), password, confirmPassword });
       if (res.success) {
-        showToast('success', 'Check your email', res.message || 'Confirm your email, then sign in.');
+        showToast('success', 'Account Created', res.message || 'Sign in with your password or Email OTP.');
         navigate('/login', undefined, { ...authReturnSearch(searchParams?.redirect), confirmation: 'sent' });
       } else {
         setErrorMessage(res.message || 'We could not create your account. Please check your details.');
@@ -45,7 +45,7 @@ export const RegisterPage: React.FC = () => {
       <fieldset disabled={isLoading}>
         <div><label htmlFor="reg-name">Full name</label><div className="auth-input-wrap"><UserRound size={17} aria-hidden="true" /><input id="reg-name" type="text" autoComplete="name" value={name} onChange={e => { setName(e.target.value); setErrorMessage(null); }} placeholder="Your name" minLength={2} maxLength={100} required className="auth-input" /></div></div>
         <div><label htmlFor="reg-email">Email address</label><div className="auth-input-wrap"><Mail size={17} aria-hidden="true" /><input id="reg-email" type="email" autoComplete="email" value={email} onChange={e => { setEmail(e.target.value); setErrorMessage(null); }} placeholder="you@example.com" maxLength={254} required className="auth-input" /></div></div>
-        <div><label htmlFor="reg-mobile">Mobile number</label><div className="auth-input-wrap"><Phone size={17} aria-hidden="true" /><input id="reg-mobile" aria-describedby="reg-mobile-hint" type="tel" autoComplete="tel-national" inputMode="numeric" pattern="[6-9][0-9]{9}" maxLength={10} value={mobile} onChange={handleMobileChange} placeholder="10-digit Indian mobile number" required className="auth-input" /></div><p id="reg-mobile-hint" className="auth-helper">A contact number for your orders.</p></div>
+        <div><label htmlFor="reg-mobile">Mobile number</label><div className="auth-input-wrap"><Phone size={17} aria-hidden="true" /><input id="reg-mobile" aria-describedby="reg-mobile-hint" type="tel" autoComplete="tel-national" inputMode="tel" maxLength={20} value={mobile} onChange={handleMobileChange} placeholder="10-digit mobile number" required className="auth-input" /></div><p id="reg-mobile-hint" className="auth-helper">A contact number for your orders.</p></div>
         <div className="auth-input-grid">
           <div><label htmlFor="reg-password">Password</label><div className="auth-input-wrap"><LockKeyhole size={17} aria-hidden="true" /><input id="reg-password" type={showPassword ? 'text' : 'password'} autoComplete="new-password" minLength={8} maxLength={128} value={password} onChange={e => { setPassword(e.target.value); setErrorMessage(null); }} placeholder="At least 8 characters" required className="auth-input auth-password" /><button type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword} className="auth-visibility">{showPassword ? <EyeOff size={16} /> : <Eye size={16} />}</button></div></div>
           <div><label htmlFor="reg-confirm-password">Confirm password</label><div className="auth-input-wrap"><LockKeyhole size={17} aria-hidden="true" /><input id="reg-confirm-password" type={showPassword ? 'text' : 'password'} autoComplete="new-password" minLength={8} maxLength={128} value={confirmPassword} onChange={e => { setConfirmPassword(e.target.value); setErrorMessage(null); }} placeholder="Enter it again" required className="auth-input" /></div></div>

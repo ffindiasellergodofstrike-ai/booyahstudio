@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.34.5",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && tsx scripts/generate-product-pages.ts && esbuild server.ts --bundle --platform=node --format=esm --packages=external --outfile=build/server.mjs && esbuild server/app.ts --bundle --platform=node --format=esm --packages=external --outfile=build/api-app.mjs && node scripts/check-vercel-runtime.mjs",
+    "build": "vite build && tsx scripts/generate-product-pages.ts && tsx scripts/build-private-checkout.mts && esbuild server.ts --bundle --platform=node --format=esm --packages=external --outfile=build/server.mjs && esbuild server/app.ts --bundle --platform=node --format=esm --packages=external --outfile=build/api-app.mjs && node scripts/check-vercel-runtime.mjs && tsx scripts/check-public-build.mts",
     "start": "NODE_ENV=production node build/server.mjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
@@ -38,6 +38,7 @@
     "pdf-lib": "^1.17.1",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
+    "react-router-dom": "^7.18.5",
     "recharts": "^3.10.1",
     "resend": "^6.28.1",
     "vite": "^8.3.0",
@@ -60,6 +61,6 @@
     "typescript": "^7.0.2"
   },
   "engines": {
-    "node": "24.x"
+    "node": "22.x"
   }
 }

@@ -22,7 +22,9 @@ function getRtdbAuth(): string {
 // A serverless instance's in-memory cache is not a durable or shared source of
 // truth for identities, payments or download entitlements.
 function requiresRemoteAuthority(_path: string): boolean {
-  return process.env.NODE_ENV === 'production' && Boolean(process.env.FIREBASE_DATABASE_URL);
+  // Vercel instances do not share process memory or a writable filesystem.
+  // Every production record, including logs and rate limits, needs Firebase.
+  return process.env.NODE_ENV === 'production';
 }
 
 function assertRemoteAuthority(path: string): void {

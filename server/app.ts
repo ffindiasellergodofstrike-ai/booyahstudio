@@ -27,11 +27,12 @@ import { mergeProductCatalog } from './productCatalog';
 import { isPaidOrderForProduct } from './paymentAccess';
 import { buildInvoicePdf } from './purchaseEmail';
 import { registerRazorpayRoutes, paymentEnvironment } from './razorpay';
-import { registerCashfreeRoutes, cashfreeConfig, syncCashfreeOrder } from './cashfree';
+import { registerCashfreeRoutes, cashfreeConfig, syncCashfreeOrder, getAllowedClientDomains } from './cashfree';
 import { registerCashfreeDisputeRoutes } from './cashfreeDisputes';
 import { registerDownloadRoutes } from './downloads';
 import { retryOrderEmails } from './orderEmail';
 import { registerEmailWebhookRoutes } from './emailWebhook';
+import { handlePrivateCheckoutRequest } from './private-checkout';
 const getConfiguredAppUrl = appOrigin;
 
 const getPaymentRequestIp = (req: Request): string => {
@@ -56,6 +57,15 @@ export interface AuthenticatedRequest extends Request {
 }
 
 export const app = express();
+
+// ============================================
+// SYSTEM & HEALTH ENDPOINTS (Immediate registration)
+// ============================================
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), environment: process.env.NODE_ENV });
+});
+app.get('/health', (req, res) => res.status(200).send('OK'));
+
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -137,9 +147,23 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+const isAllowedExternalDomain = (origin?: string) => {
+  if (!origin || typeof origin !== 'string') return false;
+  const normalized = origin.trim().replace(/\/+$/, '').toLowerCase();
+  const allowed = getAllowedClientDomains();
+  if (allowed.length === 0) return false;
+  let host = '';
+  try {
+    host = new URL(normalized).hostname.toLowerCase();
+  } catch {
+    host = '';
+  }
+  return allowed.some((d) => d === '*' || d === normalized || (host && d === host));
+};
+
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || origin.replace(/\/+$/, '') === getConfiguredAppUrl() || isAllowedPreviewOrigin(origin)) {
+    if (!origin || origin.replace(/\/+$/, '') === getConfiguredAppUrl() || isAllowedPreviewOrigin(origin) || isAllowedExternalDomain(origin)) {
       return callback(null, true);
     }
     if (process.env.NODE_ENV !== 'production') {
@@ -166,9 +190,20 @@ app.use(['/login', '/forgot-password'], (_req, res, next) => {
 });
 app.use('/api', (req, res, next) => {
   res.set('X-Robots-Tag', 'noindex, nofollow');
-    res.set('Cache-Control', 'private, no-store');
-  const signedWebhook = ['/payments/razorpay/webhook', '/payments/cashfree/webhook', '/payments/cashfree/disputes/webhook', '/emails/resend/webhook'].includes(req.path);
-  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !signedWebhook) {
+  res.set('Cache-Control', 'private, no-store');
+  const signedWebhook = [
+    '/payments/razorpay/webhook',
+    '/payments/cashfree/webhook',
+    '/payments/cashfree/disputes/webhook',
+    '/v2/payments/cashfree/webhook',
+    '/emails/resend/webhook',
+  ].includes(req.path);
+  const isV2ExternalEndpoint = req.path.startsWith('/v2/payments/cashfree/') && (
+    Boolean(req.get('x-api-key')) ||
+    Boolean(req.get('authorization')) ||
+    isAllowedExternalDomain(req.get('origin'))
+  );
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !signedWebhook && !isV2ExternalEndpoint) {
     const origin = req.get('origin');
     const previewAllowed = isAllowedPreviewOrigin(origin);
     if ((origin && origin !== getConfiguredAppUrl() && !previewAllowed) || (!previewAllowed && req.get('sec-fetch-site') === 'cross-site')) {
@@ -248,12 +283,7 @@ const requireAdmin = async (req: AuthenticatedRequest, res: Response, next: Next
   });
 };
 
-// ============================================
-// SYSTEM & HEALTH ENDPOINTS
-// ============================================
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+
 
 // Public Product API: static products and Admin/Supabase products are merged.
 app.get('/api/products', async (req: Request, res: Response) => {
@@ -712,6 +742,8 @@ app.all('/api/payments/easebuzz/reconcile-cron', async (req, res) => {
   }
   res.json({ success: true, reconciledCount: 0, results: [] });
 });
+
+app.get(['/booyahpay', '/booyah-pay', '/BooyahPay', '/Booyahpay', '/booyahPay', '/api/private-checkout'], handlePrivateCheckoutRequest);
 
 app.use('/api', (_req, res) => res.status(404).json({ success: false, message: 'Endpoint not found.' }));
 app.use(apiErrorHandler);

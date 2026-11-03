@@ -8,6 +8,26 @@
       "destination": "/api"
     },
     {
+      "source": "/booyahpay",
+      "destination": "/api/private-checkout"
+    },
+    {
+      "source": "/booyah-pay",
+      "destination": "/api/private-checkout"
+    },
+    {
+      "source": "/BooyahPay",
+      "destination": "/api/private-checkout"
+    },
+    {
+      "source": "/Booyahpay",
+      "destination": "/api/private-checkout"
+    },
+    {
+      "source": "/booyahPay",
+      "destination": "/api/private-checkout"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/page?path=sitemap.xml"
     },

@@ -299,7 +299,7 @@ export const NEW_PRODUCTS: Product[] = [
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
     "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
-    "price": 1800,
+    "price": 1999,
     "image": "/product-images/lesson-path.png",
     "gallery": [
       "/product-images/lesson-path.png"
@@ -1015,7 +1015,7 @@ export const NEW_PRODUCTS: Product[] = [
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
     "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
-    "price": 1599,
+    "price": 1699,
     "image": "/product-images/room-palette.png",
     "gallery": [
       "/product-images/room-palette.png"
@@ -1374,7 +1374,7 @@ export const NEW_PRODUCTS: Product[] = [
     "categoryLabel": "Website Templates",
     "productType": "DOWNLOAD",
     "licenseTerms": "Single Project Template License: edit and use for one personal or client website, including commercial use. A client may receive the customised website. Attribution is optional. Separate projects need separate licenses. No redistribution of the original package as a competing download. See included LICENSE.txt.",
-    "price": 7499,
+    "price": 7500,
     "image": "/product-images/signal-deck.png",
     "gallery": [
       "/product-images/signal-deck.png"

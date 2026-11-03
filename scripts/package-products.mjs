@@ -328,22 +328,29 @@ export function packageAllProducts(options = {}) {
       sourceRelPath = DEMOFILES_SOURCE_MAP[productId];
       sourceType = 'demofiles_archive';
       let fullSourcePath = path.join(rootDir, sourceRelPath);
-      if (!fs.existsSync(fullSourcePath)) {
-        const fallbackPath = path.join(rootDir, 'private-product-uploads', `${productId}.zip`);
-        if (fs.existsSync(fallbackPath)) {
-          fullSourcePath = fallbackPath;
+      const fallbackZipPath = path.join(rootDir, 'private-product-uploads', `${productId}.zip`);
+      const fallbackDemoDir = path.join(rootDir, 'public', 'demos', productId);
+      if (fs.existsSync(fullSourcePath) || fs.existsSync(fallbackZipPath)) {
+        if (!fs.existsSync(fullSourcePath)) {
+          fullSourcePath = fallbackZipPath;
           sourceRelPath = `private-product-uploads/${productId}.zip`;
-        } else {
-          throw new Error(`Missing source archive for ${productId}: ${sourceRelPath}`);
         }
-      }
-      const rawEntries = readZipEntries(fs.readFileSync(fullSourcePath));
-      for (const entry of rawEntries) {
-        if (isExcludedMemberPath(entry.name)) {
-          excludedRemoved.push(entry.name);
-        } else {
-          filesToPackage.push(entry);
+        const rawEntries = readZipEntries(fs.readFileSync(fullSourcePath));
+        for (const entry of rawEntries) {
+          if (isExcludedMemberPath(entry.name)) {
+            excludedRemoved.push(entry.name);
+          } else {
+            filesToPackage.push(entry);
+          }
         }
+      } else if (fs.existsSync(fallbackDemoDir)) {
+        sourceRelPath = `public/demos/${productId}`;
+        sourceType = 'demo_directory';
+        const { collected, excluded } = collectDirectoryFiles(fallbackDemoDir);
+        filesToPackage = collected;
+        excludedRemoved = excluded;
+      } else {
+        throw new Error(`Missing source archive for ${productId}: ${sourceRelPath}`);
       }
     } else {
       sourceRelPath = `templates/${productId}`;
