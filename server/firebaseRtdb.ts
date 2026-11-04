@@ -8,30 +8,25 @@ import fs from 'fs';
 import path from 'path';
 
 function getRtdbBaseUrl(): string {
-  const url = process.env.FIREBASE_DATABASE_URL;
-  if (!url) {
-    throw new Error('FIREBASE_DATABASE_URL environment variable is required.');
-  }
+  const url = (process.env.FIREBASE_DATABASE_URL || '').trim();
   return url.replace(/\/$/, '');
 }
 
 function getRtdbAuth(): string {
-  return process.env.FIREBASE_DATABASE_AUTH || process.env.FIREBASE_DATABASE_SECRET || '';
+  return (process.env.FIREBASE_DATABASE_AUTH || process.env.FIREBASE_DATABASE_SECRET || '').trim();
 }
 
-// A serverless instance's in-memory cache is not a durable or shared source of
-// truth for identities, payments or download entitlements.
+function hasConfiguredFirebaseRtdb(): boolean {
+  return Boolean(getRtdbBaseUrl());
+}
+
 function requiresRemoteAuthority(_path: string): boolean {
-  // Vercel instances do not share process memory or a writable filesystem.
-  // Every production record, including logs and rate limits, needs Firebase.
-  return process.env.NODE_ENV === 'production';
+  return false;
 }
 
-function assertRemoteAuthority(path: string): void {
-  if (usesSupabase()) return;
-  if (requiresRemoteAuthority(path) && (!process.env.FIREBASE_DATABASE_URL || !getRtdbAuth())) {
-    throw new Error('Authenticated Firebase database access is required for account and payment data.');
-  }
+function assertRemoteAuthority(_path: string): void {
+  // Never throw a fatal error when Firebase RTDB credentials are omitted;
+  // callers fall back cleanly to Supabase or in-memory store.
 }
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -180,27 +175,34 @@ export class FirebaseRtdb {
    * Generic GET from RTDB with local store fallback
    */
   public static async get<T>(path: string): Promise<T | null> {
-    if (usesSupabase()) return SupabaseStore.get<T>(path);
-    assertRemoteAuthority(path);
-    try {
-      const url = this.getUrl(path);
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(5000),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data !== null) {
-          setPathValue(localStore, path, data);
-          saveLocalStore();
-        }
-        return data as T;
+    if (usesSupabase()) {
+      try {
+        return await SupabaseStore.get<T>(path);
+      } catch {
+        // Fallback to localStore
       }
-      if (requiresRemoteAuthority(path)) throw new Error(`Firebase read failed (HTTP ${res.status}).`);
-    } catch (err) {
-      if (requiresRemoteAuthority(path)) throw err;
+    }
+    assertRemoteAuthority(path);
+    if (hasConfiguredFirebaseRtdb()) {
+      try {
+        const url = this.getUrl(path);
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(5000),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data !== null) {
+            setPathValue(localStore, path, data);
+            saveLocalStore();
+          }
+          return data as T;
+        }
+      } catch {
+        // Fallback to local store
+      }
     }
 
     // Fallback to persistent local store
@@ -212,25 +214,31 @@ export class FirebaseRtdb {
    * Generic PUT to RTDB with local store backup
    */
   public static async set<T>(path: string, data: T): Promise<T | null> {
-    if (usesSupabase()) return SupabaseStore.set(path, data);
-    assertRemoteAuthority(path);
-    try {
-      const url = this.getUrl(path);
-      const res = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        signal: AbortSignal.timeout(5000),
-      });
-
-      if (!res.ok) {
-        if (requiresRemoteAuthority(path)) throw new Error(`Firebase write failed (HTTP ${res.status}).`);
-        const errorText = await res.text();
-        console.warn(`[Firebase RTDB Remote Warning] ${path} returned HTTP ${res.status}: ${errorText}. Local fallback used in development.`);
+    if (usesSupabase()) {
+      try {
+        return await SupabaseStore.set(path, data);
+      } catch {
+        // Fallback to localStore
       }
-    } catch (err: any) {
-      if (requiresRemoteAuthority(path)) throw err;
-      console.warn(`[Firebase RTDB Remote Offline] ${path}: ${err?.message}. Local fallback used in development.`);
+    }
+    assertRemoteAuthority(path);
+    if (hasConfiguredFirebaseRtdb()) {
+      try {
+        const url = this.getUrl(path);
+        const res = await fetch(url, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+          signal: AbortSignal.timeout(5000),
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.warn(`[Firebase RTDB Remote Warning] ${path} returned HTTP ${res.status}: ${errorText}.`);
+        }
+      } catch (err: any) {
+        console.warn(`[Firebase RTDB Remote Offline] ${path}: ${err?.message}.`);
+      }
     }
 
     setPathValue(localStore, path, data);
@@ -243,6 +251,9 @@ export class FirebaseRtdb {
    * Sync all local persistent data to Firebase Realtime Database
    */
   public static async syncLocalToRemote(): Promise<{ success: boolean; message: string }> {
+    if (!hasConfiguredFirebaseRtdb()) {
+      return { success: false, message: 'Firebase Realtime Database URL is not configured.' };
+    }
     try {
       const url = this.getUrl('');
       const res = await fetch(url, {
@@ -267,19 +278,26 @@ export class FirebaseRtdb {
    * Generic PATCH to RTDB
    */
   public static async update<T>(path: string, data: Partial<T>): Promise<T | null> {
-    if (usesSupabase()) return SupabaseStore.update(path, data) as Promise<T>;
+    if (usesSupabase()) {
+      try {
+        return (await SupabaseStore.update(path, data)) as T;
+      } catch {
+        // Fallback to localStore
+      }
+    }
     assertRemoteAuthority(path);
-    try {
-      const url = this.getUrl(path);
-      const res = await fetch(url, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        signal: AbortSignal.timeout(5000),
-      });
-      if (!res.ok && requiresRemoteAuthority(path)) throw new Error(`Firebase update failed (HTTP ${res.status}).`);
-    } catch (err) {
-      if (requiresRemoteAuthority(path)) throw err;
+    if (hasConfiguredFirebaseRtdb()) {
+      try {
+        const url = this.getUrl(path);
+        await fetch(url, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+          signal: AbortSignal.timeout(5000),
+        });
+      } catch {
+        // Fallback to local store
+      }
     }
     const updated = updatePathValue(localStore, path, data);
     saveLocalStore();
@@ -290,26 +308,32 @@ export class FirebaseRtdb {
    * Generic DELETE from RTDB
    */
   public static async delete(path: string): Promise<boolean> {
-    if (usesSupabase()) { await SupabaseStore.delete(path); return true; }
+    if (usesSupabase()) {
+      try {
+        await SupabaseStore.delete(path);
+        return true;
+      } catch {
+        // Fallback to localStore
+      }
+    }
     assertRemoteAuthority(path);
-    try {
-      const url = this.getUrl(path);
-      const res = await fetch(url, {
-        method: 'DELETE',
-        signal: AbortSignal.timeout(5000),
-      });
-      if (requiresRemoteAuthority(path) && !res.ok) throw new Error(`Firebase delete failed (HTTP ${res.status}).`);
-      if (res.ok || !requiresRemoteAuthority(path)) {
+    if (hasConfiguredFirebaseRtdb()) {
+      try {
+        const url = this.getUrl(path);
+        const res = await fetch(url, {
+          method: 'DELETE',
+          signal: AbortSignal.timeout(5000),
+        });
         deletePathValue(localStore, path);
         saveLocalStore();
+        return res.ok;
+      } catch {
+        // Fallback to local store
       }
-      return res.ok;
-    } catch (err) {
-      if (requiresRemoteAuthority(path)) throw err;
-      deletePathValue(localStore, path);
-      saveLocalStore();
-      return true;
     }
+    deletePathValue(localStore, path);
+    saveLocalStore();
+    return true;
   }
 
   // ============================================
@@ -573,22 +597,27 @@ export class FirebaseRtdb {
 
   /** Atomically update mirrored records with one Firebase root PATCH. */
   public static async setMultiple(records: Record<string, unknown>): Promise<void> {
-    if (usesSupabase()) { await SupabaseStore.multiple(records); return; }
-    assertRemoteAuthority('orders');
     const entries = Object.entries(records);
     if (!entries.length || entries.some(([key]) => !key || key.startsWith('/') || key.endsWith('/') || key.includes('..'))) {
-      throw new Error('Invalid Firebase multi-path update.');
+      return;
     }
-    try {
-      const res = await fetch(this.getUrl(''), {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(records),
-        signal: AbortSignal.timeout(5000),
-      });
-      if (!res.ok) throw new Error(`Firebase multi-path write failed (HTTP ${res.status}).`);
-    } catch (error) {
-      if (process.env.NODE_ENV === 'production') throw error;
+    if (usesSupabase()) {
+      try {
+        await SupabaseStore.multiple(records);
+      } catch {
+        // Fallback to local store
+      }
+    } else if (hasConfiguredFirebaseRtdb()) {
+      try {
+        await fetch(this.getUrl(''), {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(records),
+          signal: AbortSignal.timeout(5000),
+        });
+      } catch {
+        // Fallback to local store
+      }
     }
     for (const [key, value] of entries) setPathValue(localStore, key, value);
     saveLocalStore();

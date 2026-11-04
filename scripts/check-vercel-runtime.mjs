@@ -126,12 +126,46 @@ try {
   rateAllowed = false;
   assert.equal((await register(details)).status, 429);
   assert.equal(signupCalls, 2, 'Rate limited requests must not reach Supabase Auth');
+
+  // Verify V2 create-order succeeds in production without Firebase RTDB configured and uses standard checkout (no S2S QR)
+  process.env.CASHFREE_APP_ID = 'synthetic-cf-app';
+  process.env.CASHFREE_SECRET_KEY = 'synthetic-cf-secret';
+  globalThis.fetch = async (input, init) => {
+    const url = String(input?.url || input);
+    if (url === 'https://sandbox.cashfree.com/pg/orders') {
+      const cfBody = JSON.parse(init.body);
+      return Response.json({
+        order_id: cfBody.order_id,
+        cf_order_id: '99887766',
+        payment_session_id: 'session_test_normal_checkout',
+        order_status: 'ACTIVE',
+      });
+    }
+    if (url.startsWith(`${base}/`)) return originalFetch(input, init);
+    throw new Error(`Unexpected external call during V2 checkout test: ${url}`);
+  };
+  const v2Res = await fetch(`${base}/api/v2/payments/cashfree/create-order`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Origin: 'https://shop.example.com' },
+    body: JSON.stringify({
+      amount: 599,
+      customer: { name: 'Hemant', phone: '1659401279', email: 'hemanu0567@gmail.com' },
+      upiQr: false,
+      customerAuthorized: true,
+      termsAccepted: true,
+    }),
+  });
+  assert.equal(v2Res.status, 201, 'V2 create-order must return 201 without Firebase error');
+  const v2Json = await v2Res.json();
+  assert.equal(v2Json.success, true);
+  assert.equal(v2Json.paymentSessionId, 'session_test_normal_checkout');
+
   const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
   assert.equal(config.functions['api/index.ts'].includeFiles, '{build/api-app.mjs,dist/index.html}');
   assert.equal(config.functions['api/page.ts'].includeFiles, '{build/api-app.mjs,dist/index.html}');
   assert.equal(config.functions['api/index.ts'].maxDuration, 300);
   assert.equal(config.functions['api/page.ts'].maxDuration, 60);
-  console.log('PASS: native Node API startup; health200; unconfigured503; API404; product404/200/HEAD/405; readable contact, HTML404, policy301, blocked fallback paths; raw signed webhook200; simulated Supabase signup201, invalid400, provider rejection400, rate limit429. No hosted accounts or provider calls.');
+  console.log('PASS: native Node API startup; health200; unconfigured503; API404; product404/200/HEAD/405; readable contact, HTML404, policy301, blocked fallback paths; raw signed webhook200; simulated Supabase signup201, invalid400, provider rejection400, rate limit429; V2 normal checkout201. No hosted accounts or provider calls.');
 } finally {
   globalThis.fetch = originalFetch;
   await new Promise(resolve => server.close(resolve));

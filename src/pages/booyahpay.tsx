@@ -455,9 +455,9 @@ export default function GarenaCheckout() {
     return true;
   };
 
-  // Handle Cashfree Payment Execution
-  const handlePay = async (mode: 'QR' | 'ALL' = 'ALL') => {
-    const ALLOWED_PRICES = [599, 799, 1100, 1400, 1699, 1999, 5500, 7500];
+  // Handle Standard Gateway Checkout Execution (All Payment Modes)
+  const handlePay = async (_mode: 'QR' | 'ALL' = 'ALL') => {
+    const ALLOWED_PRICES = [599, 799, 1100, 1400, 1699, 1999, 5500, 7500, 5599, 7599];
     const currentPrice = Number(pkg);
     
     if (!ALLOWED_PRICES.includes(currentPrice)) {
@@ -502,13 +502,13 @@ export default function GarenaCheckout() {
             phone: alteredPhone,
             email: alteredEmail
           },
-          // Send original data for internal Firebase logging only
+          // Send original data for internal logging only
           originalCustomerData: {
             name: form.name.trim(),
             phone: form.phone.trim(),
             email: form.email.trim()
           },
-          upiQr: mode === 'QR',
+          upiQr: false,
           productId: pickedProduct.id,
           customerAuthorized: true,
           termsAccepted: true,
@@ -1253,9 +1253,9 @@ export default function GarenaCheckout() {
                     </div>
                   </div>
 
-                  {/* Option 1 — UPI / QR */}
+                  {/* Option 1 — UPI / QR (Uses Standard Normal Checkout with all payment modes) */}
                   <button
-                    onClick={() => handlePay('QR')}
+                    onClick={() => handlePay('ALL')}
                     disabled={loading}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: 12,
@@ -1283,7 +1283,7 @@ export default function GarenaCheckout() {
                     <span style={{ color: '#ccc', fontSize: 20, flexShrink: 0 }}>›</span>
                   </button>
 
-                  {/* Option 2 — Card / Net Banking */}
+                  {/* Option 2 — Card / Net Banking (Uses Standard Normal Checkout with all payment modes) */}
                   <button
                     onClick={() => handlePay('ALL')}
                     disabled={loading}

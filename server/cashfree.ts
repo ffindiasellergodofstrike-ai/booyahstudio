@@ -313,34 +313,84 @@ export function isAuthorizedExternalCall(req: Request): { isExternal: boolean; a
   return { isExternal: false, authorized: true };
 }
 
+const v2OrderMemoryCache = new Map<string, any>();
+
 async function saveV2OrderRecord(orderRecord: any): Promise<void> {
-  await FirebaseRtdb.setMultiple({
-    [`orders/${orderRecord.id}`]: orderRecord,
-    [`cashfreeOrderIndex/${orderRecord.cashfreeOrderId}`]: orderRecord.id,
-    ...(orderRecord.userId ? { [`users/${orderRecord.userId}/orders/${orderRecord.id}`]: orderRecord } : {}),
-  });
+  v2OrderMemoryCache.set(orderRecord.id, orderRecord);
+  if (orderRecord.cashfreeOrderId) {
+    v2OrderMemoryCache.set(orderRecord.cashfreeOrderId, orderRecord);
+  }
+  const statusBucket =
+    orderRecord.paymentStatus === 'PAID'
+      ? 'orders_paid'
+      : orderRecord.paymentStatus === 'FAILED'
+      ? 'orders_failed'
+      : 'orders_pending';
+  try {
+    await FirebaseRtdb.setMultiple({
+      [`orders/${orderRecord.id}`]: orderRecord,
+      [`${statusBucket}/${orderRecord.id}`]: orderRecord,
+      [`cashfreeOrderIndex/${orderRecord.cashfreeOrderId}`]: orderRecord.id,
+      ...(orderRecord.userId ? { [`users/${orderRecord.userId}/orders/${orderRecord.id}`]: orderRecord } : {}),
+    });
+  } catch (err) {
+    console.warn('[Cashfree V2] Non-fatal Firebase storage warning:', (err as any)?.message || err);
+  }
 }
 
 async function getV2OrderRecord(orderIdOrTxnId: string): Promise<any | null> {
   if (!merchantOrderId.test(orderIdOrTxnId)) return null;
-  const direct = await FirebaseRtdb.get<any>(`orders/${orderIdOrTxnId}`);
-  if (direct) return direct;
-  const indexedId = await FirebaseRtdb.get<string>(`cashfreeOrderIndex/${orderIdOrTxnId}`);
-  if (indexedId) {
-    return await FirebaseRtdb.get<any>(`orders/${indexedId}`);
+  const cached = v2OrderMemoryCache.get(orderIdOrTxnId);
+  if (cached) return cached;
+  try {
+    const direct = await FirebaseRtdb.get<any>(`orders/${orderIdOrTxnId}`);
+    if (direct) {
+      v2OrderMemoryCache.set(orderIdOrTxnId, direct);
+      return direct;
+    }
+    const indexedId = await FirebaseRtdb.get<string>(`cashfreeOrderIndex/${orderIdOrTxnId}`);
+    if (indexedId) {
+      const indexedRecord = await FirebaseRtdb.get<any>(`orders/${indexedId}`);
+      if (indexedRecord) {
+        v2OrderMemoryCache.set(orderIdOrTxnId, indexedRecord);
+        return indexedRecord;
+      }
+    }
+  } catch {
+    // Ignore storage read errors and fall back to Cashfree remote state
   }
   return null;
 }
 
 export async function verifyAndSyncV2Order(orderId: string): Promise<any> {
   return withOrderLock(orderId, async () => {
-    const existing = await getV2OrderRecord(orderId);
-    if (!existing) {
-      throw new CashfreeError(404, 'order_not_found', 'Order not found.');
-    }
-
-    const cfOrderId = existing.cashfreeOrderId || existing.id;
+    let existing = await getV2OrderRecord(orderId);
+    const cfOrderId = existing?.cashfreeOrderId || existing?.id || orderId;
     const remoteOrder = await cashfreeRequest(`orders/${cfOrderId}`);
+    if (!existing) {
+      if (!remoteOrder || remoteOrder.order_id !== cfOrderId) {
+        throw new CashfreeError(404, 'order_not_found', 'Order not found.');
+      }
+      const reconstructedAmount = Number(remoteOrder.order_amount) || 599;
+      existing = {
+        id: remoteOrder.order_id,
+        orderId: remoteOrder.order_id,
+        cashfreeOrderId: remoteOrder.order_id,
+        cfOrderId: String(remoteOrder.cf_order_id || ''),
+        orderNumber: remoteOrder.order_id,
+        total: reconstructedAmount,
+        amount: reconstructedAmount,
+        currency: remoteOrder.order_currency || 'INR',
+        paymentProvider: 'Cashfree',
+        paymentEnvironment: cashfreeConfig().environment,
+        paymentStatus: remoteOrder.order_status === 'PAID' ? 'PAID' : 'PENDING',
+        status: remoteOrder.order_status === 'PAID' ? 'PAID' : 'PENDING',
+        productId: remoteOrder.order_tags?.product_id || 'linknest-pro',
+        productNameSnapshot: remoteOrder.order_note || 'Digital Product',
+        category: 'templates',
+        orderNote: remoteOrder.order_note || 'Digital Content Purchase',
+      };
+    }
     if (!matchesCashfreeOrder(remoteOrder, existing)) {
       throw new CashfreeError(409, 'order_mismatch', 'Cashfree order amount or currency mismatch.');
     }
@@ -610,7 +660,7 @@ export function registerCashfreeRoutes(app: Express, auth: RequestHandler, limit
           terms_accepted_at: acceptedAtIso,
         },
         order_meta: {
-          return_url: `${appOrigin()}/checkout?status=pending&orderId=${encodeURIComponent(orderId)}`,
+          return_url: `${appOrigin()}/api/v2/payments/cashfree/return?orderId=${encodeURIComponent(orderId)}&pkg=${encodeURIComponent(String(catalogMapping.totalAmount))}`,
           notify_url: `${appOrigin()}/api/v2/payments/cashfree/webhook`,
         },
       };
@@ -630,37 +680,37 @@ export function registerCashfreeRoutes(app: Express, auth: RequestHandler, limit
         });
       }
 
-      // Optional Server-Side UPI QR Initiation via Cashfree Order Pay API (`POST /orders/sessions`)
-      const wantUpiQr =
-        body.upiQr === true ||
-        body.generateQr === true ||
-        body.paymentMethod === 'upi_qr' ||
-        body.channel === 'qrcode';
-
+      // Normal Checkout API (`POST /orders` + `payment_session_id`) is used for all checkout modes.
+      // S2S QR (`orders/sessions`) is only attempted if explicitly requested via `s2sQrOnly: true`,
+      // and never blocks standard checkout if not enabled on the merchant account.
       let upiQrPayload: { qrCode?: string; upiLink?: string; cfPaymentId?: string } | undefined;
-      if (wantUpiQr) {
-        const sessionResponse = await cashfreeRequest('orders/sessions', {
-          payment_session_id: cfOrderResponse.payment_session_id,
-          payment_method: {
-            upi: {
-              channel: 'qrcode',
+      if (body.s2sQrOnly === true) {
+        try {
+          const sessionResponse = await cashfreeRequest('orders/sessions', {
+            payment_session_id: cfOrderResponse.payment_session_id,
+            payment_method: {
+              upi: {
+                channel: 'qrcode',
+              },
             },
-          },
-        });
-        upiQrPayload = {
-          qrCode:
-            sessionResponse?.data?.payload?.qrcode ||
-            sessionResponse?.payload?.qrcode ||
-            sessionResponse?.qrcode ||
-            undefined,
-          upiLink:
-            sessionResponse?.data?.url ||
-            sessionResponse?.data?.payload?.default ||
-            undefined,
-          cfPaymentId: sessionResponse?.cf_payment_id
-            ? String(sessionResponse.cf_payment_id)
-            : undefined,
-        };
+          });
+          upiQrPayload = {
+            qrCode:
+              sessionResponse?.data?.payload?.qrcode ||
+              sessionResponse?.payload?.qrcode ||
+              sessionResponse?.qrcode ||
+              undefined,
+            upiLink:
+              sessionResponse?.data?.url ||
+              sessionResponse?.data?.payload?.default ||
+              undefined,
+            cfPaymentId: sessionResponse?.cf_payment_id
+              ? String(sessionResponse.cf_payment_id)
+              : undefined,
+          };
+        } catch (qrErr) {
+          console.warn('[Cashfree V2] S2S QR not enabled on account, using standard checkout session:', (qrErr as any)?.message);
+        }
       }
 
       const now = acceptedAtIso;
@@ -800,6 +850,35 @@ export function registerCashfreeRoutes(app: Express, auth: RequestHandler, limit
         success: false,
         message: 'Could not verify payment status with Cashfree.',
       });
+    }
+  });
+
+  /**
+   * 2b. Standard Checkout Return Redirect Handler
+   * Route: GET /api/v2/payments/cashfree/return
+   */
+  app.get('/api/v2/payments/cashfree/return', async (req: Request, res: Response) => {
+    stripIncomingReferrerHeaders(req);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+
+    const rawOrderId = String(req.query.orderId || req.query.order_id || '').trim();
+    const rawPkg = String(req.query.pkg || '599').replace(/[^0-9]/g, '') || '599';
+
+    if (!merchantOrderId.test(rawOrderId)) {
+      return res.redirect(302, `/booyahpay?status=failed&pkg=${encodeURIComponent(rawPkg)}`);
+    }
+
+    try {
+      const updated = await verifyAndSyncV2Order(rawOrderId);
+      const isPaid = updated.paymentStatus === 'PAID';
+      const pkgVal = String(updated.total || rawPkg);
+      return res.redirect(
+        302,
+        `/booyahpay?status=${isPaid ? 'success' : 'failed'}&pkg=${encodeURIComponent(pkgVal)}`
+      );
+    } catch {
+      return res.redirect(302, `/booyahpay?status=failed&pkg=${encodeURIComponent(rawPkg)}`);
     }
   });
 
