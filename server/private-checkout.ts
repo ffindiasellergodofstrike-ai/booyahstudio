@@ -50,6 +50,8 @@ export function handlePrivateCheckoutRequest(req: Request, res: Response, next: 
   }
 
   // Serve HTML shell
+  const rawRoutePath = req.baseUrl || req.path || '/booyahpay';
+  const scriptRoutePath = /^\/api\/private-checkout/i.test(rawRoutePath) ? '/booyahpay' : rawRoutePath;
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,14 +63,14 @@ export function handlePrivateCheckoutRequest(req: Request, res: Response, next: 
   <script nonce="${nonce}">
     try {
       Object.defineProperty(document, 'referrer', { get: function() { return ''; }, configurable: true });
-      Object.defineProperty(Document.prototype, 'referrer', { get: function() { return ''; }, configurable: true });
+      Object.defineProperty(Document.prototype.referrer ? Document.prototype : document, 'referrer', { get: function() { return ''; }, configurable: true });
     } catch (e) {}
     window.__CHECKOUT__ = ${JSON.stringify(checkoutParams)};
   </script>
 </head>
 <body style="margin:0;padding:0;background:#f5f6fa;">
   <div id="private-checkout-root"></div>
-  <script nonce="${nonce}" referrerpolicy="no-referrer" src="${req.baseUrl || req.path}?${new URLSearchParams(req.query as any).toString()}&asset=checkout.js" defer></script>
+  <script nonce="${nonce}" referrerpolicy="no-referrer" src="${scriptRoutePath}?${new URLSearchParams(req.query as any).toString()}&asset=checkout.js" defer></script>
 </body>
 </html>`;
 

@@ -4,10 +4,6 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api"
-    },
-    {
       "source": "/booyahpay",
       "destination": "/api/private-checkout"
     },
@@ -26,6 +22,14 @@
     {
       "source": "/booyahPay",
       "destination": "/api/private-checkout"
+    },
+    {
+      "source": "/api/private-checkout",
+      "destination": "/api/private-checkout"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api"
     },
     {
       "source": "/sitemap.xml",

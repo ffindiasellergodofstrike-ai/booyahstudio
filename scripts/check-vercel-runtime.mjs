@@ -60,6 +60,14 @@ try {
   for (const blockedPath of ['api/auth/me', 'API/auth/me', 'demos/linknest-pro', 'assets/private']) {
     assert.equal((await fetch(`${base}/page-check?path=${blockedPath}&native=1`)).status, 404, blockedPath);
   }
+  const booyahValid = await fetch(`${base}/booyahpay?pkg=599&diamonds=1060&uid=987654321&nick=HemantFF&level=65`, { headers: { Accept: 'text/html' } });
+  assert.equal(booyahValid.status, 200, '/booyahpay with valid 5 params must return 200 in production even with Accept: text/html');
+  const booyahHtml = await booyahValid.text();
+  assert.match(booyahHtml, /private-checkout-root/);
+  assert.match(booyahHtml, /HemantFF/);
+  const booyahAsset = await fetch(`${base}/booyahpay?pkg=599&diamonds=1060&uid=987654321&nick=HemantFF&level=65&asset=checkout.js`);
+  assert.equal(booyahAsset.status, 200, '/booyahpay asset=checkout.js must return 200');
+  assert.equal((await fetch(`${base}/booyahpay`, { headers: { Accept: 'text/html' } })).status, 404, 'Bare /booyahpay must return 404');
   assert.equal((await fetch(`${base}/page-check?path=contact&path=about&native=1`)).status, 404);
   assert.equal((await fetch(`${base}/page-check?path=contact&slug=margin-portfolio&native=1`)).status, 404);
   const sitemapPage = await fetch(`${base}/page-check?path=sitemap.xml&native=1`);

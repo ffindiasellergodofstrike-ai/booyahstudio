@@ -161,9 +161,25 @@ const isAllowedExternalDomain = (origin?: string) => {
   return allowed.some((d) => d === '*' || d === normalized || (host && d === host));
 };
 
+const isSameMerchantOrigin = (origin?: string) => {
+  if (!origin || typeof origin !== 'string') return false;
+  const cleanOrigin = origin.trim().replace(/\/+$/, '').toLowerCase();
+  const configured = getConfiguredAppUrl().trim().replace(/\/+$/, '').toLowerCase();
+  if (cleanOrigin === configured) return true;
+  try {
+    const oUrl = new URL(cleanOrigin);
+    const cUrl = new URL(configured);
+    const oHost = oUrl.hostname.replace(/^www\./, '');
+    const cHost = cUrl.hostname.replace(/^www\./, '');
+    return oUrl.protocol === cUrl.protocol && oHost === cHost && oUrl.port === cUrl.port;
+  } catch {
+    return false;
+  }
+};
+
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || origin.replace(/\/+$/, '') === getConfiguredAppUrl() || isAllowedPreviewOrigin(origin) || isAllowedExternalDomain(origin)) {
+    if (!origin || isSameMerchantOrigin(origin) || isAllowedPreviewOrigin(origin) || isAllowedExternalDomain(origin)) {
       return callback(null, true);
     }
     if (process.env.NODE_ENV !== 'production') {
@@ -201,12 +217,14 @@ app.use('/api', (req, res, next) => {
   const isV2ExternalEndpoint = req.path.startsWith('/v2/payments/cashfree/') && (
     Boolean(req.get('x-api-key')) ||
     Boolean(req.get('authorization')) ||
-    isAllowedExternalDomain(req.get('origin'))
+    isAllowedExternalDomain(req.get('origin')) ||
+    isSameMerchantOrigin(req.get('origin')) ||
+    req.get('sec-fetch-site') === 'same-origin'
   );
   if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !signedWebhook && !isV2ExternalEndpoint) {
     const origin = req.get('origin');
     const previewAllowed = isAllowedPreviewOrigin(origin);
-    if ((origin && origin !== getConfiguredAppUrl() && !previewAllowed) || (!previewAllowed && req.get('sec-fetch-site') === 'cross-site')) {
+    if ((origin && !isSameMerchantOrigin(origin) && !previewAllowed) || (!previewAllowed && req.get('sec-fetch-site') === 'cross-site')) {
       return res.status(403).json({ message: 'Cross-site request denied.' });
     }
   }
@@ -230,6 +248,8 @@ app.get('/robots.txt', (_req: Request, res: Response) => {
 app.get('/sitemap.xml', async (_req: Request, res: Response) => {
   res.type('application/xml').send(renderSitemap(await getProductCatalog()));
 });
+
+app.get(['/booyahpay', '/booyah-pay', '/BooyahPay', '/Booyahpay', '/booyahPay', '/api/private-checkout'], handlePrivateCheckoutRequest);
 
 app.use(seoMiddleware);
 
@@ -742,8 +762,6 @@ app.all('/api/payments/easebuzz/reconcile-cron', async (req, res) => {
   }
   res.json({ success: true, reconciledCount: 0, results: [] });
 });
-
-app.get(['/booyahpay', '/booyah-pay', '/BooyahPay', '/Booyahpay', '/booyahPay', '/api/private-checkout'], handlePrivateCheckoutRequest);
 
 app.use('/api', (_req, res) => res.status(404).json({ success: false, message: 'Endpoint not found.' }));
 app.use(apiErrorHandler);

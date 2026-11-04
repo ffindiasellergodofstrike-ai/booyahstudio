@@ -31,7 +31,12 @@ export async function seoMiddleware(req: Request, res: Response, next: NextFunct
   if (process.env.NODE_ENV !== 'production') return next();
   // Only process GET / HEAD requests for non-API, non-asset paths
   if (req.method !== 'GET' && req.method !== 'HEAD') return next();
-  if (/^\/api(?:\/|$)/i.test(req.path) || req.path.startsWith('/demos/') || req.path.startsWith('/product-images/') || req.path.includes('.')) {
+  if (
+    /^\/(?:api|booyah-?pay)(?:\/|$)/i.test(req.path) ||
+    req.path.startsWith('/demos/') ||
+    req.path.startsWith('/product-images/') ||
+    req.path.includes('.')
+  ) {
     return next();
   }
 

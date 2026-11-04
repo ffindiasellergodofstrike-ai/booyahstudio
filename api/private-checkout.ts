@@ -3,6 +3,18 @@ import type { Request, Response } from 'express';
 import app from '../build/api-app.mjs';
 
 export default function handler(req: Request, res: Response) {
+  const rawUrl = req.url || '/booyahpay';
+  const qIndex = rawUrl.indexOf('?');
+  const searchFromUrl = qIndex >= 0 ? rawUrl.slice(qIndex + 1) : '';
+  const mergedParams = new URLSearchParams(searchFromUrl);
+  if (req.query && typeof req.query === 'object') {
+    for (const [k, v] of Object.entries(req.query)) {
+      if (!mergedParams.has(k) && typeof v === 'string') {
+        mergedParams.set(k, v);
+      }
+    }
+  }
+  const qs = mergedParams.toString();
+  req.url = `/booyahpay${qs ? `?${qs}` : ''}`;
   return app(req, res);
 }
-
