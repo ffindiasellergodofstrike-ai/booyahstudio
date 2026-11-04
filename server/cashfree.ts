@@ -660,7 +660,7 @@ export function registerCashfreeRoutes(app: Express, auth: RequestHandler, limit
           terms_accepted_at: acceptedAtIso,
         },
         order_meta: {
-          return_url: `${appOrigin()}/api/v2/payments/cashfree/return?orderId=${encodeURIComponent(orderId)}&pkg=${encodeURIComponent(String(catalogMapping.totalAmount))}`,
+          return_url: `${appOrigin()}/api/v2/payments/cashfree/return?orderId=${encodeURIComponent(orderId)}`,
           notify_url: `${appOrigin()}/api/v2/payments/cashfree/webhook`,
         },
       };
