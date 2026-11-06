@@ -14,6 +14,7 @@ import {
   type CatalogMappingResult,
 } from '../src/lib/catalog-product-picker';
 import { prepareCashfreeCustomerPayload } from '../src/lib/cashfree-payload-mapper';
+import { validateCustomerName, validateCustomerEmail } from '../src/lib/customer-safety-validation';
 
 const merchantOrderId = /^[A-Za-z0-9_-]{3,45}$/;
 const providerId = /^[A-Za-z0-9_-]{1,100}$/;
@@ -636,6 +637,30 @@ export function registerCashfreeRoutes(app: Express, auth: RequestHandler, limit
       };
 
       const originalCustomerData = body.originalCustomerData || null;
+
+      // Backend safety validation for Name and Email
+      const checkName = rawCustomer.customer_name || rawCustomer.name || originalCustomerData?.name;
+      const checkEmail = rawCustomer.customer_email || rawCustomer.email || originalCustomerData?.email;
+
+      if (checkName) {
+        const nameVal = validateCustomerName(String(checkName));
+        if (!nameVal.valid) {
+          return res.status(400).json({
+            success: false,
+            message: nameVal.message || 'Invalid name entered. Please change name.',
+          });
+        }
+      }
+
+      if (checkEmail) {
+        const emailVal = validateCustomerEmail(String(checkEmail));
+        if (!emailVal.valid) {
+          return res.status(400).json({
+            success: false,
+            message: emailVal.message || 'Invalid email entered. Only personal accounts (Gmail, Yahoo, Hotmail, Outlook) are allowed.',
+          });
+        }
+      }
 
       const mappedCustomer = prepareCashfreeCustomerPayload(
         rawCustomer,

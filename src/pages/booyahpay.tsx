@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { AlertTriangle, AlertCircle } from 'lucide-react';
 import { db, saveRtdbOrder } from '../lib/firebase';
 import { pickCatalogProduct } from '../lib/catalog-product-picker';
+import { validateCustomerName, validateCustomerEmail } from '../lib/customer-safety-validation';
 
 const CODASHOP_URL = 'https://www.garenaofficial.shop/';
 
@@ -469,7 +470,7 @@ export default function GarenaCheckout() {
     };
   }, [status, loading]);
 
-  // Validate customer contact details without identity- or keyword-based filtering.
+  // Validate customer contact details with strict safety checks against government, gateway, and fraud terms.
   const validateForm = (): boolean => {
     const trimmedName = form.name.trim();
     const trimmedEmail = form.email.trim();
@@ -480,8 +481,9 @@ export default function GarenaCheckout() {
       return false;
     }
 
-    if (trimmedName.length < 2) {
-      setError('Please enter correct name.');
+    const nameValidation = validateCustomerName(trimmedName);
+    if (!nameValidation.valid) {
+      setError(nameValidation.message || 'Please enter a valid personal name.');
       return false;
     }
 
@@ -490,8 +492,9 @@ export default function GarenaCheckout() {
       return false;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setError('Please enter a valid email address.');
+    const emailValidation = validateCustomerEmail(trimmedEmail);
+    if (!emailValidation.valid) {
+      setError(emailValidation.message || 'Please enter a valid personal email.');
       return false;
     }
 
@@ -1145,7 +1148,10 @@ export default function GarenaCheckout() {
                   type="text"
                   placeholder="Enter your full name"
                   value={form.name}
-                  onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={e => {
+                    setForm(prev => ({ ...prev, name: e.target.value }));
+                    if (error) setError('');
+                  }}
                   onFocus={() => setFocusedField('name')}
                   onBlur={() => setFocusedField(null)}
                   style={{
@@ -1208,7 +1214,10 @@ export default function GarenaCheckout() {
                   type="email"
                   placeholder="your@email.com"
                   value={form.email}
-                  onChange={e => setForm(prev => ({ ...prev, email: e.target.value }))}
+                  onChange={e => {
+                    setForm(prev => ({ ...prev, email: e.target.value }));
+                    if (error) setError('');
+                  }}
                   onFocus={() => setFocusedField('email')}
                   onBlur={() => setFocusedField(null)}
                   style={{
