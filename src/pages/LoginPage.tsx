@@ -37,7 +37,13 @@ export const LoginPage: React.FC = () => {
   }, [resendCooldown]);
 
   useEffect(() => {
-    if (isAuthenticated && currentUser) navigate(authDestination(searchParams?.redirect));
+    if (isAuthenticated && currentUser) {
+      if (currentUser.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate(authDestination(searchParams?.redirect));
+      }
+    }
   }, [isAuthenticated, currentUser, navigate, searchParams]);
 
   async function handlePasswordSubmit(e: React.FormEvent) {
@@ -49,7 +55,11 @@ export const LoginPage: React.FC = () => {
       const res = await signIn(identifier.trim(), password);
       if (res.success) {
         showToast('success', 'Welcome back', 'You’re signed in and ready to go.');
-        navigate(authDestination(searchParams?.redirect));
+        if (res.user?.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate(authDestination(searchParams?.redirect));
+        }
       } else {
         setErrorMessage(res.message || 'Invalid email or password.');
         showToast('error', 'Could not sign in', res.message || 'Please check your credentials.');

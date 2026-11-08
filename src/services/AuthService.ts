@@ -2,6 +2,45 @@ import { User } from '../types';
 
 const USER_STORAGE_KEY = 'booyah-studio_auth_user_v1';
 const LEGACY_STORAGE_KEY = 'booyah_studio_legacy_user_v1';
+const TOKEN_STORAGE_KEY = 'booyah_auth_token_v1';
+
+export function getAuthToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setAuthToken(token: string | null): void {
+  try {
+    if (token) localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    else localStorage.removeItem(TOKEN_STORAGE_KEY);
+  } catch {}
+}
+
+export function authHeaders(existing?: HeadersInit): HeadersInit {
+  const token = getAuthToken();
+  const base = existing instanceof Headers ? Object.fromEntries(existing.entries()) : (existing || {});
+  if (!token) return base;
+  return {
+    ...base,
+    'Authorization': `Bearer ${token}`,
+    'x-session-token': token,
+  };
+}
+
+// API fetch wrapper with Bearer session token attachment for iframe resilience
+export async function apiFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+  const headers = new Headers(init?.headers);
+  const token = getAuthToken();
+  if (token && (url.startsWith('/api/') || url.includes('/api/'))) {
+    if (!headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`);
+    if (!headers.has('x-session-token')) headers.set('x-session-token', token);
+  }
+  return fetch(input, { ...init, headers, credentials: 'include' });
+}
 
 export interface RegisterPayload {
   mobile: string;
@@ -50,9 +89,7 @@ class AuthServiceImpl {
    */
   public async verifySession(): Promise<User | null> {
     try {
-      const res = await fetch('/api/auth/me', {
-        credentials: 'include',
-      });
+      const res = await apiFetch('/api/auth/me');
 
       if (res.ok) {
         const data = await res.json();
@@ -82,10 +119,9 @@ class AuthServiceImpl {
     payload: RegisterPayload
   ): Promise<{ success: boolean; user?: User; message?: string }> {
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await apiFetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(payload),
       });
 
@@ -113,10 +149,9 @@ class AuthServiceImpl {
     password: string
   ): Promise<{ success: boolean; user?: User; message?: string }> {
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await apiFetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ identifier, password }),
       });
 
@@ -129,6 +164,10 @@ class AuthServiceImpl {
         };
       }
 
+      if (data.token) {
+        setAuthToken(data.token);
+      }
+
       this.currentUser = data.user;
       if (this.currentUser) {
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(this.currentUser));
@@ -139,8 +178,8 @@ class AuthServiceImpl {
         success: true,
         user: this.currentUser || undefined,
       };
-    } catch (err) {
-      return { success: false, message: 'Invalid email or password.' };
+    } catch (err: any) {
+      return { success: false, message: err?.message || 'Unable to connect to the authentication service. Please retry.' };
     }
   }
 
@@ -149,10 +188,9 @@ class AuthServiceImpl {
     payload: ResetPasswordPayload
   ): Promise<{ success: boolean; message: string }> {
     try {
-      const res = await fetch('/api/auth/forgot-password', {
+      const res = await apiFetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(payload),
       });
 
@@ -185,10 +223,9 @@ class AuthServiceImpl {
     if (!current) return { success: false };
 
     try {
-      const res = await fetch('/api/user/profile', {
+      const res = await apiFetch('/api/user/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(data),
       });
 
@@ -208,7 +245,12 @@ class AuthServiceImpl {
     return { success: false };
   }
 
+  public getToken(): string | null {
+    return getAuthToken();
+  }
+
   private signOutLocal(): void {
+    setAuthToken(null);
     this.currentUser = null;
     localStorage.removeItem(USER_STORAGE_KEY);
     this.notify();
@@ -219,7 +261,7 @@ class AuthServiceImpl {
    */
   public async signOut(): Promise<boolean> {
     try {
-      const response = await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      const response = await apiFetch('/api/auth/logout', { method: 'POST' });
       if (!response.ok || !(await response.json()).success) return false;
       this.signOutLocal();
       return true;

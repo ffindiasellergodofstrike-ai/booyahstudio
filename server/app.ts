@@ -253,26 +253,45 @@ app.get(['/booyahpay', '/booyah-pay', '/BooyahPay', '/Booyahpay', '/booyahPay', 
 
 app.use(seoMiddleware);
 
-// Shared database rate limiter
-const authRateLimiter = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const ip = getPaymentRequestIp(req) || req.ip || 'unknown';
-    const now = Date.now();
-    const windowMs = 15 * 60 * 1000;
-    const maxAttempts = 20;
+// Shared database rate limiter with in-memory fallback for logins
+const inMemoryLoginRateLimits = new Map<string, { count: number; resetAt: number }>();
 
+const authRateLimiter = async (req: Request, res: Response, next: NextFunction) => {
+  const ip = getPaymentRequestIp(req) || req.ip || 'unknown';
+  const now = Date.now();
+  const windowMs = 15 * 60 * 1000;
+  const maxAttempts = 20;
+
+  try {
     const allowed = await Store.rpc('rate', `rateLimits/${crypto.createHash('sha256').update(`${req.path}:${ip}`).digest('hex')}`, { now, windowMs, maxAttempts });
     if (!allowed) return res.status(429).json({ success: false, message: 'Too many requests. Please try again later.' });
     next();
   } catch {
-    // Do not permit unlimited login guesses when the shared limiter is down.
+    // If this is a login attempt, fallback to in-memory rate limiting so admin and dev logins are not blocked by unconfigured Supabase
+    if (req.path === '/api/auth/login') {
+      const key = `${req.path}:${ip}`;
+      const entry = inMemoryLoginRateLimits.get(key);
+      if (!entry || now > entry.resetAt) {
+        inMemoryLoginRateLimits.set(key, { count: 1, resetAt: now + windowMs });
+        return next();
+      }
+      if (entry.count >= maxAttempts) {
+        return res.status(429).json({ success: false, message: 'Too many requests. Please try again later.' });
+      }
+      entry.count += 1;
+      return next();
+    }
+    // Do not permit unlimited registration guesses when the shared limiter is down.
     res.status(503).json({ success: false, message: 'Authentication is temporarily unavailable.' });
   }
 };
 
-// Authentication Middleware via Opaque Session Cookie "sid"
+// Authentication Middleware via Opaque Session Cookie "sid" or Authorization Header (iframe resilient)
 const requireAuth = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  const sid = req.cookies?.sid;
+  const authHeader = req.get('authorization');
+  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
+  const headerToken = (req.get('x-session-token') || bearerToken || '').trim();
+  const sid = req.cookies?.sid || headerToken;
   if (!sid) {
     return res.status(401).json({ success: false, message: 'Authentication session required.' });
   }

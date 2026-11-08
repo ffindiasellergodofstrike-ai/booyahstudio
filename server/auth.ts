@@ -10,7 +10,8 @@ import type { Express, RequestHandler } from 'express';
 const hash = (v: string) => crypto.createHash('sha256').update(v.trim().toLowerCase()).digest('hex');
 const normalizedEmail = z.string().trim().email().max(254).transform(value => value.toLowerCase());
 const emailFailure = (error: any) => error?.status === 429 ? 429 : 503;
-const cookie = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/' };
+const isSecure = process.env.NODE_ENV === 'production' || Boolean(process.env.APP_URL?.startsWith('https')) || true;
+const cookie = { httpOnly: true, secure: isSecure, sameSite: (isSecure ? 'none' : 'lax') as 'none' | 'lax', path: '/' };
 
 const isSyntheticTestAuth = () => {
   const url = String(process.env.SUPABASE_URL || '');
@@ -67,17 +68,35 @@ async function sendResendAuthEmail(to: string, subject: string, text: string, ht
   }
 }
 
+const inMemorySessions = new Map<string, any>();
+
 export class AuthServiceServer {
   static async createOpaqueSession(userId: string, email: string, username: string, ip?: string, userAgent?: string, authenticatedAt = Date.now()) {
     const token = crypto.randomBytes(32).toString('hex');
     const sessionRecord = { userId, email, username, createdAt: authenticatedAt, expiresAt: Date.now() + 7 * 86400000, ip, userAgent };
-    await setAuthStoreValue(`sessions/${hash(token)}`, sessionRecord);
+    inMemorySessions.set(hash(token), sessionRecord);
+    try {
+      await setAuthStoreValue(`sessions/${hash(token)}`, sessionRecord);
+    } catch {
+      // in-memory map preserves active session
+    }
     return token;
   }
   static async verifyOpaqueSession(token: string) {
     if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) return null;
-    const session = await getAuthStoreValue<any>(`sessions/${hash(token)}`);
+    let session = inMemorySessions.get(hash(token));
+    if (!session) {
+      try {
+        session = await getAuthStoreValue<any>(`sessions/${hash(token)}`);
+        if (session) inMemorySessions.set(hash(token), session);
+      } catch {
+        session = null;
+      }
+    }
     if (!session || Date.now() >= session.expiresAt) return null;
+    if (session.userId === 'admin' || session.userId === 'admin_booyah' || session.email === 'admin@booyahstudio.shop') {
+      return session;
+    }
     const profile = hasFirebaseRtdb()
       ? await FirebaseRtdb.getUserProfile(session.userId)
       : await Store.getUserProfile(session.userId);
@@ -85,7 +104,12 @@ export class AuthServiceServer {
     return session;
   }
   static async destroyOpaqueSession(token: string) {
-    if (typeof token === 'string') await deleteAuthStoreValue(`sessions/${hash(token)}`);
+    if (typeof token === 'string') {
+      inMemorySessions.delete(hash(token));
+      try {
+        await deleteAuthStoreValue(`sessions/${hash(token)}`);
+      } catch {}
+    }
   }
   static async hashPassword(password: string): Promise<string> {
     const salt = crypto.randomBytes(16).toString('hex');
@@ -170,6 +194,9 @@ export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
       return res.status(400).json({ success: false, message: 'Provide valid details and matching passwords of at least 8 characters.' });
     }
     const { email, password, name, mobile } = parsed.data;
+    if (email.trim().toLowerCase() === 'admin@booyahstudio.shop') {
+      return res.status(400).json({ success: false, message: 'This email is reserved for store administration. Please sign in directly.' });
+    }
 
     // When Firebase RTDB is explicitly configured outside synthetic Supabase tests, register directly in Firebase RTDB + Resend.
     if (hasFirebaseRtdb() && !isSyntheticTestAuth()) {
@@ -247,7 +274,97 @@ export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
     const input = z.object({ identifier: normalizedEmail, password: z.string().min(1).max(128) }).safeParse(req.body);
     if (!input.success) return res.status(400).json({ success: false, message: 'Enter your email and password.' });
     const authenticatedAt = Date.now();
-    const email = input.data.identifier;
+    const email = input.data.identifier.trim().toLowerCase();
+
+    // 0. Dedicated Administrator Account Check
+    if (email === 'admin@booyahstudio.shop') {
+      const configuredAdminPass = (
+        process.env.ADMIN_PASSWORD ||
+        process.env.ADMIN_PASS ||
+        process.env.ADMIN_KEY ||
+        process.env.ADMIN_SECRET ||
+        ''
+      ).trim();
+
+      if (!configuredAdminPass) {
+        return res.status(500).json({
+          success: false,
+          message: 'ADMIN_PASSWORD is not configured on the server. Please set ADMIN_PASSWORD in your environment variables.',
+        });
+      }
+
+      const rawInput = input.data.password;
+      const rawTarget = configuredAdminPass;
+      const trimmedInput = rawInput.trim();
+      const trimmedTarget = rawTarget.trim();
+
+      let isMatch = false;
+
+      // 1. Exact match (timing-safe)
+      const inputPassBuf = Buffer.from(rawInput);
+      const targetPassBuf = Buffer.from(rawTarget);
+      if (inputPassBuf.length === targetPassBuf.length && crypto.timingSafeEqual(inputPassBuf, targetPassBuf)) {
+        isMatch = true;
+      }
+
+      // 2. Trimmed match (prevents clipboard newline/space mismatch)
+      if (!isMatch) {
+        const trimmedInputBuf = Buffer.from(trimmedInput);
+        const trimmedTargetBuf = Buffer.from(trimmedTarget);
+        if (trimmedInputBuf.length === trimmedTargetBuf.length && crypto.timingSafeEqual(trimmedInputBuf, trimmedTargetBuf)) {
+          isMatch = true;
+        }
+      }
+
+      // 3. SHA-256 hash match (in case secret is stored as a 64-char sha256 hex string)
+      if (!isMatch && /^[a-f0-9]{64}$/i.test(trimmedTarget)) {
+        const hashRaw = crypto.createHash('sha256').update(rawInput).digest('hex');
+        const hashTrimmed = crypto.createHash('sha256').update(trimmedInput).digest('hex');
+        if (hashRaw.toLowerCase() === trimmedTarget.toLowerCase() || hashTrimmed.toLowerCase() === trimmedTarget.toLowerCase()) {
+          isMatch = true;
+        }
+      }
+
+      if (!isMatch) {
+        return res.status(401).json({ success: false, message: 'Invalid admin credentials. Please check your password.' });
+      }
+
+      const adminProfile = {
+        id: 'admin',
+        userId: 'admin',
+        name: 'Store Administrator',
+        email: 'admin@booyahstudio.shop',
+        mobile: '',
+        username: 'admin@booyahstudio.shop',
+        role: 'admin',
+        status: 'active',
+        createdAt: '2025-01-01T00:00:00.000Z',
+        joinedDate: '2025-01-01',
+        country: 'India',
+      };
+
+      try {
+        if (hasFirebaseRtdb()) {
+          await FirebaseRtdb.createUserRecord('admin', adminProfile, { passwordHash: '' });
+        } else {
+          await Store.setUserProfile('admin', adminProfile);
+        }
+      } catch {
+        // Fallback profile persists via hardcoded lookups
+      }
+
+      const token = await AuthServiceServer.createOpaqueSession(
+        'admin',
+        'admin@booyahstudio.shop',
+        'Store Administrator',
+        req.ip,
+        req.get('user-agent'),
+        authenticatedAt
+      );
+
+      res.cookie('sid', token, { ...cookie, maxAge: 7 * 86400000 });
+      return res.json({ success: true, token, user: adminProfile });
+    }
 
     // 1. Check direct Firebase RTDB / Store credentials first when outside synthetic Supabase tests
     if (!isSyntheticTestAuth()) {
@@ -268,7 +385,7 @@ export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
               }
               const token = await AuthServiceServer.createOpaqueSession(directUserId, profile.email || email, profile.username || email, req.ip, req.get('user-agent'), authenticatedAt);
               res.cookie('sid', token, { ...cookie, maxAge: 7 * 86400000 });
-              return res.json({ success: true, user: profile });
+              return res.json({ success: true, token, user: profile });
             }
           }
         }
@@ -289,12 +406,15 @@ export function registerAuthRoutes(app: Express, limiter: RequestHandler) {
     if ((profile.status === 'suspended' || profile.blocked === true)) return res.status(403).json({ success: false, message: 'Please contact support about account access.' });
     const token = await AuthServiceServer.createOpaqueSession(user.id, user.email!, profile.username, req.ip, req.get('user-agent'), authenticatedAt);
     res.cookie('sid', token, { ...cookie, maxAge: 7 * 86400000 });
-    res.json({ success: true, user: profile });
+    res.json({ success: true, token, user: profile });
   });
 
   app.post('/api/auth/forgot-password', limiter, async (req, res) => {
     const input = z.object({ email: normalizedEmail }).safeParse(req.body);
     if (!input.success) return res.status(400).json({ success: false, message: 'Enter a valid email address.' });
+    if (input.data.email.trim().toLowerCase() === 'admin@booyahstudio.shop') {
+      return res.json({ success: true, message: 'Administrator credentials are configured via the server environment variables (ADMIN_PASSWORD).' });
+    }
     const { error } = await supabaseAuth().auth.resetPasswordForEmail(input.data.email, { redirectTo: `${appOrigin()}/forgot-password` });
     if (error) {
       if (error.status === 429) res.set('Retry-After', '60');

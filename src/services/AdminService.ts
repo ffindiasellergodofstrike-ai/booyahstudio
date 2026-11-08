@@ -1,13 +1,21 @@
+import { getAuthToken } from './AuthService';
+
 export class AdminApiError extends Error {
   constructor(message: string, public httpStatus: number) { super(message); this.name = 'AdminApiError'; }
 }
 
-/** Same-origin cookie requests; API failures remain visible instead of becoming empty lists. */
+/** Same-origin cookie and bearer token requests; API failures remain visible instead of becoming empty lists. */
 export class AdminService {
   private static async request(path: string, options: RequestInit = {}): Promise<any> {
     let response: Response;
     try {
-      response = await fetch(path, { ...options, credentials: 'include', signal: options.signal || AbortSignal.timeout(55_000) });
+      const token = getAuthToken();
+      const headers = new Headers(options.headers);
+      if (token) {
+        if (!headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`);
+        if (!headers.has('x-session-token')) headers.set('x-session-token', token);
+      }
+      response = await fetch(path, { ...options, headers, credentials: 'include', signal: options.signal || AbortSignal.timeout(55_000) });
     } catch { throw new AdminApiError('The server could not be reached. Check your connection and retry.', 0); }
     let data: any;
     try { data = await response.json(); }

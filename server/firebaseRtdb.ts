@@ -505,6 +505,21 @@ export class FirebaseRtdb {
    * Get user profile (SAFE, credentials stripped)
    */
   public static async getUserProfile(userId: string): Promise<any | null> {
+    if (userId === 'admin' || userId === 'admin_booyah') {
+      return {
+        id: 'admin',
+        userId: 'admin',
+        name: 'Store Administrator',
+        email: 'admin@booyahstudio.shop',
+        mobile: '',
+        username: 'admin@booyahstudio.shop',
+        role: 'admin',
+        status: 'active',
+        createdAt: '2025-01-01T00:00:00.000Z',
+        joinedDate: '2025-01-01',
+        country: 'India',
+      };
+    }
     return await this.get(`users/${userId}/profile`);
   }
 

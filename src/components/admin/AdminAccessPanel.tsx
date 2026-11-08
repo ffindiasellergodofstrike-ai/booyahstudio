@@ -31,7 +31,7 @@ export const AdminAccessPanel: React.FC<Props> = ({ state, message, onSignIn, on
         </div>}
         <form className="space-y-5" onSubmit={submit}>
           <div><label htmlFor="admin-email" className="text-xs font-bold uppercase tracking-wider text-slate-500">Admin email</label>
-            <div className="relative mt-2"><Mail className="absolute left-3.5 top-3.5 w-5 h-5 text-slate-400" /><input id="admin-email" type="email" autoComplete="username" required maxLength={254} value={email} onChange={e => setEmail(e.target.value)} className="w-full pl-11 pr-4 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm" placeholder="owner@example.com" /></div>
+            <div className="relative mt-2"><Mail className="absolute left-3.5 top-3.5 w-5 h-5 text-slate-400" /><input id="admin-email" type="email" autoComplete="username" required maxLength={254} value={email} onChange={e => setEmail(e.target.value)} className="w-full pl-11 pr-4 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm" placeholder="admin@booyahstudio.shop" /></div>
           </div>
           <div><div className="flex justify-between gap-3"><label htmlFor="admin-password" className="text-xs font-bold uppercase tracking-wider text-slate-500">Password</label><a href="/forgot-password" className="text-xs font-semibold text-blue-600 hover:underline">Forgot password?</a></div>
             <input id="admin-password" type="password" autoComplete="current-password" required maxLength={128} value={password} onChange={e => setPassword(e.target.value)} className="mt-2 w-full px-4 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 rounded-xl text-sm" />
