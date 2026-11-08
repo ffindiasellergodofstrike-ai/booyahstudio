@@ -37,6 +37,8 @@ export class AdminService {
   public static deleteProduct(id: string) { return AdminService.request(`/api/admin/products/${encodeURIComponent(id)}`, { method: 'DELETE' }); }
   public static cloneProduct(id: string) { return AdminService.request(`/api/admin/products/${encodeURIComponent(id)}/clone`, { method: 'POST' }); }
   public static async getOrders(): Promise<any[]> { return (await this.request('/api/admin/orders')).orders; }
+  public static syncCashfreeOrders(orderIds: string | string[]) { return this.request('/api/admin/orders/sync-cashfree', this.json('POST', { orderIds })); }
+  public static importOrders(orders: any[]) { return this.request('/api/admin/orders/import', this.json('POST', { orders })); }
   public static async getOrderTimeline(id: string): Promise<any[]> { return (await this.request(`/api/admin/orders/${encodeURIComponent(id)}/timeline`)).timeline; }
   public static getOrderDeliveryDetails(id: string) { return this.request(`/api/admin/orders/${encodeURIComponent(id)}/delivery`); }
   public static retryOrderEmail(id: string) { return this.request(`/api/admin/orders/${encodeURIComponent(id)}/retry-email`, { method: 'POST' }); }

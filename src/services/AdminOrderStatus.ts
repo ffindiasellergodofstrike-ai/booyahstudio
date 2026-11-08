@@ -42,8 +42,10 @@ export function adminEmailStatus(order: any): AdminStatus {
   const email = order?.emailDelivery;
   const providerStatus = String(email?.providerStatus || '').toLowerCase();
   const statuses: Record<string, AdminStatus> = {
-    delivered: { key: 'delivered', label: 'Email delivered', tone: 'green', detail: 'Recipient mail server accepted the email.' },
-    accepted: { key: 'accepted', label: 'Accepted by Resend', tone: 'blue', detail: 'Inbox delivery is not yet confirmed.' },
+    delivered: email?.openedAt
+      ? { key: 'delivered', label: 'Delivered & Opened', tone: 'green', detail: 'Email delivered to inbox and opened by the customer.' }
+      : { key: 'delivered', label: 'Email delivered', tone: 'green', detail: 'Recipient mail server accepted the email.' },
+    accepted: { key: 'accepted', label: 'Accepted by mail server', tone: 'blue', detail: 'Inbox delivery is not yet confirmed.' },
     delayed: { key: 'delayed', label: 'Email delayed', tone: 'amber' },
     bounced: { key: 'failed', label: 'Email bounced', tone: 'red' },
     failed: { key: 'failed', label: 'Email delivery failed', tone: 'red' },
@@ -66,7 +68,7 @@ export function filterAdminOrders(orders: any[], filters: AdminOrderFilters): an
     if (filters.access && filters.access !== 'all' && adminAccessStatus(order).key !== filters.access) return false;
     if (filters.email && filters.email !== 'all' && adminEmailStatus(order).key !== filters.email) return false;
     if (filters.environment && filters.environment !== 'all' && order.paymentEnvironment !== filters.environment) return false;
-    const text = [order.id, order.orderNumber, order.userId, order.customerEmail, order.customerName, order.customer?.email, order.customer?.fullName, order.customer?.phone, order.paymentProvider, order.transactionId, order.paymentId, order.cashfreeOrderId, order.razorpayOrderId, ...(order.items || []).map((item: any) => `${item.productId || ''} ${item.productTitle || item.title || ''}`)].join(' ').toLowerCase();
+    const text = [order.id, order.orderNumber, order.userId, order.customerEmail, order.customerName, order.customer?.email, order.customer?.fullName, order.customer?.phone, order.paymentProvider, order.paymentMethod, order.orderNote, order.transactionId, order.paymentId, order.cashfreeOrderId, order.razorpayOrderId, order.emailDelivery?.customLogId, order.emailDelivery?.emailId, ...(order.items || []).map((item: any) => `${item.productId || ''} ${item.productTitle || item.title || ''}`)].join(' ').toLowerCase();
     return terms.every(term => text.includes(term));
   });
 }
@@ -80,6 +82,8 @@ export function adminOrderSummary(orders: any[]) {
     pending: states.filter(state => ['pending', 'unavailable'].includes(state.access.key)).length,
     revoked: states.filter(state => state.access.key === 'revoked').length,
     emailProblems: states.filter(state => ['failed', 'not_configured', 'review'].includes(state.email.key)).length,
+    emailOpened: orders.filter(order => Boolean(order?.emailDelivery?.openedAt)).length,
+    fileAccessed: orders.filter(order => Boolean(order?.fileAccessedAt || order?.emailDelivery?.fileAccessedAt)).length,
   };
 }
 

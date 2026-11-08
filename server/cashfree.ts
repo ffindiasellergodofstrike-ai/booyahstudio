@@ -316,6 +316,12 @@ export function isAuthorizedExternalCall(req: Request): { isExternal: boolean; a
 
 const v2OrderMemoryCache = new Map<string, any>();
 
+function hasRealSupabaseStore(): boolean {
+  const url = (process.env.SUPABASE_URL || '').trim();
+  const key = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
+  return Boolean(url && key && !url.includes('synthetic.supabase.co'));
+}
+
 async function saveV2OrderRecord(orderRecord: any): Promise<void> {
   v2OrderMemoryCache.set(orderRecord.id, orderRecord);
   if (orderRecord.cashfreeOrderId) {
@@ -327,13 +333,21 @@ async function saveV2OrderRecord(orderRecord: any): Promise<void> {
       : orderRecord.paymentStatus === 'FAILED'
       ? 'orders_failed'
       : 'orders_pending';
+  const updates: Record<string, unknown> = {
+    [`orders/${orderRecord.id}`]: orderRecord,
+    [`${statusBucket}/${orderRecord.id}`]: orderRecord,
+    [`cashfreeOrderIndex/${orderRecord.cashfreeOrderId || orderRecord.id}`]: orderRecord.id,
+    ...(orderRecord.userId ? { [`users/${orderRecord.userId}/orders/${orderRecord.id}`]: orderRecord } : {}),
+  };
+  if (hasRealSupabaseStore()) {
+    try {
+      await Store.setMultiple(updates);
+    } catch (err) {
+      console.warn('[Cashfree V2] Non-fatal Store warning:', (err as any)?.message || err);
+    }
+  }
   try {
-    await FirebaseRtdb.setMultiple({
-      [`orders/${orderRecord.id}`]: orderRecord,
-      [`${statusBucket}/${orderRecord.id}`]: orderRecord,
-      [`cashfreeOrderIndex/${orderRecord.cashfreeOrderId}`]: orderRecord.id,
-      ...(orderRecord.userId ? { [`users/${orderRecord.userId}/orders/${orderRecord.id}`]: orderRecord } : {}),
-    });
+    await FirebaseRtdb.setMultiple(updates);
   } catch (err) {
     console.warn('[Cashfree V2] Non-fatal Firebase storage warning:', (err as any)?.message || err);
   }
@@ -343,6 +357,25 @@ async function getV2OrderRecord(orderIdOrTxnId: string): Promise<any | null> {
   if (!merchantOrderId.test(orderIdOrTxnId)) return null;
   const cached = v2OrderMemoryCache.get(orderIdOrTxnId);
   if (cached) return cached;
+  if (hasRealSupabaseStore()) {
+    try {
+      const storeDirect = await Store.get<any>(`orders/${orderIdOrTxnId}`);
+      if (storeDirect) {
+        v2OrderMemoryCache.set(orderIdOrTxnId, storeDirect);
+        return storeDirect;
+      }
+      const storeIndexedId = await Store.get<string>(`cashfreeOrderIndex/${orderIdOrTxnId}`);
+      if (storeIndexedId) {
+        const storeIndexedRecord = await Store.get<any>(`orders/${storeIndexedId}`);
+        if (storeIndexedRecord) {
+          v2OrderMemoryCache.set(orderIdOrTxnId, storeIndexedRecord);
+          return storeIndexedRecord;
+        }
+      }
+    } catch {
+      // Fall back to FirebaseRtdb / Cashfree remote state
+    }
+  }
   try {
     const direct = await FirebaseRtdb.get<any>(`orders/${orderIdOrTxnId}`);
     if (direct) {
@@ -373,23 +406,46 @@ export async function verifyAndSyncV2Order(orderId: string): Promise<any> {
         throw new CashfreeError(404, 'order_not_found', 'Order not found.');
       }
       const reconstructedAmount = Number(remoteOrder.order_amount) || 599;
+      const catalogMapping = mapExternalAmountToCatalogProduct(
+        reconstructedAmount,
+        remoteOrder.order_tags?.product_id,
+        PRODUCTS
+      );
+      const custDetails = remoteOrder.customer_details || {};
+      const createdAtIso = remoteOrder.created_at || new Date().toISOString();
       existing = {
         id: remoteOrder.order_id,
         orderId: remoteOrder.order_id,
         cashfreeOrderId: remoteOrder.order_id,
         cfOrderId: String(remoteOrder.cf_order_id || ''),
         orderNumber: remoteOrder.order_id,
+        userId: custDetails.customer_id || 'guest_buyer',
+        customerName: custDetails.customer_name || 'Customer',
+        customerEmail: custDetails.customer_email || '',
+        customer: {
+          fullName: custDetails.customer_name || 'Customer',
+          email: custDetails.customer_email || '',
+          phone: custDetails.customer_phone || '',
+        },
+        date: String(createdAtIso).slice(0, 10),
+        createdAt: createdAtIso,
+        updatedAt: createdAtIso,
         total: reconstructedAmount,
+        subtotal: reconstructedAmount,
         amount: reconstructedAmount,
         currency: remoteOrder.order_currency || 'INR',
         paymentProvider: 'Cashfree',
         paymentEnvironment: cashfreeConfig().environment,
-        paymentStatus: remoteOrder.order_status === 'PAID' ? 'PAID' : 'PENDING',
-        status: remoteOrder.order_status === 'PAID' ? 'PAID' : 'PENDING',
-        productId: remoteOrder.order_tags?.product_id || 'linknest-pro',
-        productNameSnapshot: remoteOrder.order_note || 'Digital Product',
-        category: 'templates',
-        orderNote: remoteOrder.order_note || 'Digital Content Purchase',
+        paymentStatus: 'PENDING',
+        status: 'PENDING',
+        orderStatus: 'PENDING',
+        deliveryStatus: 'PENDING',
+        downloadStatus: 'UNAVAILABLE',
+        productId: catalogMapping.primaryProductId,
+        productNameSnapshot: catalogMapping.primaryProductName,
+        category: catalogMapping.primaryCategory,
+        items: catalogMapping.items,
+        orderNote: remoteOrder.order_note || catalogMapping.orderNote,
       };
     }
     if (!matchesCashfreeOrder(remoteOrder, existing)) {
@@ -425,24 +481,44 @@ export async function verifyAndSyncV2Order(orderId: string): Promise<any> {
     }
 
     const now = new Date().toISOString();
-    // Never downgrade an already PAID order
-    if (existing.paymentStatus === 'PAID') {
+    // Never downgrade an already PAID order, but ensure it is persisted to Store
+    if (existing.paymentStatus === 'PAID' && existing.transactionId && existing.payments?.[existing.transactionId]) {
+      await saveV2OrderRecord(existing);
       return existing;
     }
 
     if (verifiedSuccessPayment) {
+      const txId = String(verifiedSuccessPayment.cf_payment_id);
+      const paidAtTime = verifiedSuccessPayment.payment_completion_time || verifiedSuccessPayment.payment_time || now;
+      const env = existing.paymentEnvironment || cashfreeConfig().environment;
+      const paymentEntry = {
+        id: txId,
+        order_id: cfOrderId,
+        amount: expectedPaise,
+        currency: 'INR',
+        status: 'SUCCESS',
+        environment: env,
+        providerCreatedAt: paidAtTime,
+        verifiedAt: now,
+      };
       const updated = {
         ...existing,
         status: 'PAID',
         paymentStatus: 'PAID',
         orderStatus: 'COMPLETED',
-        deliveryStatus: existing.paymentEnvironment === 'live' ? 'DELIVERED' : 'TEST_ONLY',
-        downloadStatus: existing.paymentEnvironment === 'live' ? 'AVAILABLE' : 'UNAVAILABLE',
+        deliveryStatus: env === 'live' ? 'DELIVERED' : 'TEST_ONLY',
+        downloadStatus: env === 'live' ? 'AVAILABLE' : 'UNAVAILABLE',
         latestPaymentStatus: 'SUCCESS',
-        transactionId: String(verifiedSuccessPayment.cf_payment_id),
-        cfPaymentId: String(verifiedSuccessPayment.cf_payment_id),
-        paidAt: verifiedSuccessPayment.payment_completion_time || now,
-        paymentVerifiedAt: now,
+        transactionId: txId,
+        paymentId: txId,
+        cfPaymentId: txId,
+        payments: {
+          ...(existing.payments || {}),
+          [txId]: paymentEntry,
+        },
+        paidAt: paidAtTime,
+        paymentVerifiedAt: paidAtTime,
+        deliveredAt: env === 'live' ? (existing.deliveredAt || paidAtTime) : null,
         updatedAt: now,
       };
       await saveV2OrderRecord(updated);

@@ -264,10 +264,12 @@ const authRateLimiter = async (req: Request, res: Response, next: NextFunction) 
 
   try {
     const allowed = await Store.rpc('rate', `rateLimits/${crypto.createHash('sha256').update(`${req.path}:${ip}`).digest('hex')}`, { now, windowMs, maxAttempts });
-    if (!allowed) return res.status(429).json({ success: false, message: 'Too many requests. Please try again later.' });
-    next();
-  } catch {
-    // If this is a login attempt, fallback to in-memory rate limiting so admin and dev logins are not blocked by unconfigured Supabase
+    if (!allowed) {
+      return res.status(429).json({ success: false, message: 'Too many requests. Please try again later.' });
+    }
+    return next();
+  } catch (err) {
+    // If this is a login attempt and database store is unconfigured/offline, use in-memory rate limiting fallback
     if (req.path === '/api/auth/login') {
       const key = `${req.path}:${ip}`;
       const entry = inMemoryLoginRateLimits.get(key);
@@ -281,8 +283,7 @@ const authRateLimiter = async (req: Request, res: Response, next: NextFunction) 
       entry.count += 1;
       return next();
     }
-    // Do not permit unlimited registration guesses when the shared limiter is down.
-    res.status(503).json({ success: false, message: 'Authentication is temporarily unavailable.' });
+    return next(err);
   }
 };
 
