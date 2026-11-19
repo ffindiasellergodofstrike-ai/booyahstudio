@@ -17,3 +17,6 @@ build/
 # Owner-only paid uploads and archives must not be added to a public repository.
 private-product-uploads/
 **/*.zip
+
+# Netlify CLI local project linkage (do not commit)
+.netlify/

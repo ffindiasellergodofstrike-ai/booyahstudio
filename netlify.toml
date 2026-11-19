@@ -1,0 +1,69 @@
+"$schema" = "https://open-api.netlify.com/netlify.schema.json"
+
+[build]
+  command = "pnpm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  included_files = ["dist/index.html", "build/private-checkout/checkout.js"]
+
+# Keep all authenticated endpoints and payment webhooks on the server.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/site/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/booyahpay"
+  to = "/.netlify/functions/site/booyahpay"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/booyah-pay"
+  to = "/.netlify/functions/site/booyah-pay"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/BooyahPay"
+  to = "/.netlify/functions/site/BooyahPay"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/Booyahpay"
+  to = "/.netlify/functions/site/Booyahpay"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/booyahPay"
+  to = "/.netlify/functions/site/booyahPay"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/site/sitemap.xml"
+  status = 200
+  force = true
+
+# Allow pre-rendered pages and static assets to win. Other pages reach SEO middleware.
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/site/:splat"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
